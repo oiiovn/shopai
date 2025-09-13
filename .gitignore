@@ -1,0 +1,62 @@
+# Dependencies
+/vendor/
+/node_modules/
+
+# Configuration files with sensitive data
+Script/includes/config.php
+Script/content/uploads/
+Script/content/backups/
+
+# Cache and compiled files
+Script/content/themes/*/templates_compiled/
+Script/content/cache/
+
+# Logs
+*.log
+Script/logs/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary files
+*.tmp
+*.temp
+
+# Backup files
+*.bak
+*.backup
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Database dumps
+*.sql
+*.dump
+
+# XAMPP specific
+Script/cookies.txt
+
+# Large files that shouldn't be in version control
+Script.zip
+*.zip
+*.tar.gz
+*.rar
+
+# Compiled assets
+Script/content/themes/*/css/compiled/
+Script/content/themes/*/js/compiled/
