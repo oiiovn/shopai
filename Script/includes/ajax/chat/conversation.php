@@ -10,6 +10,11 @@
 // fetch bootstrap
 require('../../../bootstrap.php');
 
+// check if user messaging is enabled
+if (!$system['user_messaging_enabled']) {
+    return_json(['error' => true]);
+}
+
 // check AJAX Request
 is_ajax();
 

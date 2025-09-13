@@ -191,9 +191,11 @@
               <!-- follow -->
 
               <!-- message -->
-              <button type="button" class="btn btn-icon rounded-pill btn-light mlr5 js_chat-start" data-uid="{$profile['user_id']}" data-name="{$profile['name']}" data-link="{$profile['user_name']}" data-picture="{$profile['user_picture']}">
-                {include file='__svg_icons.tpl' icon="header-messages" class="main-icon" width="20px" height="20px"}
-              </button>
+              {if $system['user_messaging_enabled']}
+                <button type="button" class="btn btn-icon rounded-pill btn-light mlr5 js_chat-start" data-uid="{$profile['user_id']}" data-name="{$profile['name']}" data-link="{$profile['user_name']}" data-picture="{$profile['user_picture']}">
+                  {include file='__svg_icons.tpl' icon="header-messages" class="main-icon" width="20px" height="20px"}
+                </button>
+              {/if}
               <!-- message -->
 
               <!-- poke & report & block menu -->

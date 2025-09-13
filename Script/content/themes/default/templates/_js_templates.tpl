@@ -616,7 +616,7 @@
     <!-- Emoji Menu -->
 
     <!-- Chat -->
-    {if $system['chat_enabled']}
+    {if $system['chat_enabled'] && $system['user_messaging_enabled']}
       <!-- Chat Sidebar -->
       <div class="chat-sidebar {if !$user->_data['user_chat_enabled']}disabled{/if}">
         <div class="chat-sidebar-content">

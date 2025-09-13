@@ -199,7 +199,9 @@
                           <!-- friend requests -->
 
                           <!-- messages -->
-                          {include file='_header.messages.tpl'}
+                          {if $system['user_messaging_enabled']}
+                            {include file='_header.messages.tpl'}
+                          {/if}
                           <!-- messages -->
 
                           <!-- notifications -->

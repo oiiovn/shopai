@@ -25,9 +25,11 @@
       </div>
       <div>
         <!-- message -->
-        <button type="button" class="btn btn-sm btn-primary rounded-pill js_chat-start" data-uid="{$candidate['user_id']}" data-name="{if $system['show_usernames_enabled']}{$candidate['user_name']}{else}{$candidate['user_firstname']} {$candidate['user_lastname']}{/if}" data-link="{$candidate['user_name']}" data-picture="{$candidate['user_picture']}">
-          <i class="fa fa-comments mr5"></i>{__("Message")}
-        </button>
+        {if $system['user_messaging_enabled']}
+          <button type="button" class="btn btn-sm btn-primary rounded-pill js_chat-start" data-uid="{$candidate['user_id']}" data-name="{if $system['show_usernames_enabled']}{$candidate['user_name']}{else}{$candidate['user_firstname']} {$candidate['user_lastname']}{/if}" data-link="{$candidate['user_name']}" data-picture="{$candidate['user_picture']}">
+            <i class="fa fa-comments mr5"></i>{__("Message")}
+          </button>
+        {/if}
         <!-- message -->
       </div>
     </div>

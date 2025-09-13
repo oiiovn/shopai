@@ -93,9 +93,11 @@
         <!-- follow -->
 
         <!-- message -->
-        <button type="button" class="btn btn-icon rounded-pill btn-light js_chat-start" data-uid="{$profile['user_id']}" data-name="{if $system['show_usernames_enabled']}{$profile['user_name']}{else}{$profile['user_firstname']} {$profile['user_lastname']}{/if}" data-link="{$profile['user_name']}" data-picture="{$profile['user_picture']}">
-          {include file='__svg_icons.tpl' icon="header-messages" class="main-icon" width="16px" height="16px"}
-        </button>
+        {if $system['user_messaging_enabled']}
+          <button type="button" class="btn btn-icon rounded-pill btn-light js_chat-start" data-uid="{$profile['user_id']}" data-name="{if $system['show_usernames_enabled']}{$profile['user_name']}{else}{$profile['user_firstname']} {$profile['user_lastname']}{/if}" data-link="{$profile['user_name']}" data-picture="{$profile['user_picture']}">
+            {include file='__svg_icons.tpl' icon="header-messages" class="main-icon" width="16px" height="16px"}
+          </button>
+        {/if}
         <!-- message -->
       {else}
         <!-- edit -->

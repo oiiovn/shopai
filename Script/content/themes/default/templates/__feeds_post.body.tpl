@@ -1063,13 +1063,15 @@
                 {/if}
               </div>
             </div>
-            <div class="col-12 col-md-3">
-              <div class="d-grid">
-                <button type="button" class="btn btn-light js_chat-start" data-uid="{$_post['author_id']}" data-name="{$_post['post_author_name']}" data-link="{$_post['user_name']}" data-picture="{$_post['post_author_picture']}">
-                  {include file='__svg_icons.tpl' icon="header-messages" class="main-icon" width="20px" height="20px"}
-                </button>
+            {if $system['user_messaging_enabled']}
+              <div class="col-12 col-md-3">
+                <div class="d-grid">
+                  <button type="button" class="btn btn-light js_chat-start" data-uid="{$_post['author_id']}" data-name="{$_post['post_author_name']}" data-link="{$_post['user_name']}" data-picture="{$_post['post_author_picture']}">
+                    {include file='__svg_icons.tpl' icon="header-messages" class="main-icon" width="20px" height="20px"}
+                  </button>
+                </div>
               </div>
-            </div>
+            {/if}
           </div>
         {/if}
       </div>

@@ -840,6 +840,27 @@
               </div>
             </div>
 
+            <div class="divider"></div>
+
+            <div class="form-table-row">
+              <div class="avatar">
+                <i class="fa fa-comments fa-lg text-primary"></i>
+              </div>
+              <div>
+                <div class="form-label h6">{__("Tin Nhắn Người Dùng")}</div>
+                <div class="form-text d-none d-sm-block">
+                  {__("Cho phép người dùng gửi tin nhắn cho nhau")}<br>
+                  {__("Khi tắt, tất cả tính năng nhắn tin sẽ bị ẩn")}
+                </div>
+              </div>
+              <div class="text-end">
+                <label class="switch" for="user_messaging_enabled">
+                  <input type="checkbox" name="user_messaging_enabled" id="user_messaging_enabled" {if $system['user_messaging_enabled']}checked{/if}>
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            </div>
+
             <!-- success -->
             <div class="alert alert-success mt15 mb0 x-hidden"></div>
             <!-- success -->

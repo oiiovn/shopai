@@ -87,6 +87,7 @@ try {
       $_POST['gifts_enabled'] = (isset($_POST['gifts_enabled'])) ? '1' : '0';
       $_POST['cookie_consent_enabled'] = (isset($_POST['cookie_consent_enabled'])) ? '1' : '0';
       $_POST['adblock_detector_enabled'] = (isset($_POST['adblock_detector_enabled'])) ? '1' : '0';
+      $_POST['user_messaging_enabled'] = (isset($_POST['user_messaging_enabled'])) ? '1' : '0';
       /* update */
       update_system_options([
         'location_finder_enabled' => secure($_POST['location_finder_enabled']),
@@ -98,7 +99,8 @@ try {
         'pokes_enabled' => secure($_POST['pokes_enabled']),
         'gifts_enabled' => secure($_POST['gifts_enabled']),
         'cookie_consent_enabled' => secure($_POST['cookie_consent_enabled']),
-        'adblock_detector_enabled' => secure($_POST['adblock_detector_enabled'])
+        'adblock_detector_enabled' => secure($_POST['adblock_detector_enabled']),
+        'user_messaging_enabled' => secure($_POST['user_messaging_enabled'])
       ]);
       break;
 

@@ -13,6 +13,11 @@ require('bootloader.php');
 // user access
 user_access();
 
+// check if user messaging is enabled
+if (!$system['user_messaging_enabled']) {
+    redirect('/');
+}
+
 // page header
 page_header(__("Messages"));
 

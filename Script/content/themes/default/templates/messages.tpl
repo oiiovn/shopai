@@ -14,11 +14,13 @@
               {include file='__svg_icons.tpl' icon="comments" class="main-icon mr5" width="20px" height="20px"}
               {__("Messenger")}
             </div>
-            <div class="col-xl-4 text-start text-xl-end">
-              <a class="btn btn-sm btn-light rounded-pill js_chat-new" href="{$system['system_url']}/messages/new">
-                {include file='__svg_icons.tpl' icon="start_chat" class="main-icon" width="16px" height="16px"}
-              </a>
-            </div>
+            {if $system['user_messaging_enabled']}
+              <div class="col-xl-4 text-start text-xl-end">
+                <a class="btn btn-sm btn-light rounded-pill js_chat-new" href="{$system['system_url']}/messages/new">
+                  {include file='__svg_icons.tpl' icon="start_chat" class="main-icon" width="16px" height="16px"}
+                </a>
+              </div>
+            {/if}
           </div>
         </div>
         <div class="card-body plr0 js_live-messages-alt">
@@ -140,9 +142,11 @@
             <div class="card-body text-center text-muted" style="min-height: 510px;">
               {include file='__svg_icons.tpl' icon="empty" class="mb20" width="96px" height="96px"}
               <p class="mt10 mb0"><strong>{__("No Conversation Selected")}</strong></p>
-              <a class="mt20 btn btn-md rounded-pill btn-primary js_chat-new" href="{$system['system_url']}/messages/new">
-                {__("New Message")}
-              </a>
+              {if $system['user_messaging_enabled']}
+                <a class="mt20 btn btn-md rounded-pill btn-primary js_chat-new" href="{$system['system_url']}/messages/new">
+                  {__("New Message")}
+                </a>
+              {/if}
             </div>
           </div>
         {/if}
