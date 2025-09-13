@@ -178,6 +178,11 @@ RewriteRule ^people/find/?$ people.php?view=find [L,QSA]
 RewriteRule ^people/friend_requests/?$ people.php?view=friend_requests [L,QSA]
 RewriteRule ^people/sent_requests/?$ people.php?view=sent_requests [L,QSA]
 
+# Shop AI
+RewriteRule ^shop-ai/?$ shop-ai.php [L,QSA]
+RewriteRule ^shop-ai/check/?$ shop-ai.php?view=check [L,QSA]
+RewriteRule ^shop-ai/recharge/?$ shop-ai.php?view=recharge [L,QSA]
+
 # Pages
 RewriteRule ^pages/?$ pages.php [L,QSA]
 RewriteRule ^pages/liked/?$ pages.php?view=liked [L,QSA]
