@@ -275,6 +275,12 @@
                                 {include file='__svg_icons.tpl' icon="settings" class="main-icon mr10" width="20px" height="20px"}
                                 {__("Settings")}
                               </a>
+                              {if $system['pages_enabled'] && $user->_data['can_create_pages']}
+                                <a class="dropdown-item" href="{$system['system_url']}/pages/manage">
+                                  {include file='__svg_icons.tpl' icon="pages" class="main-icon mr10" width="20px" height="20px"}
+                                  {__("My Pages")}
+                                </a>
+                              {/if}
                               {if $user->_is_admin}
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="{$system['system_url']}/admincp">

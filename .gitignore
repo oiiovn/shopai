@@ -60,3 +60,6 @@ Script.zip
 # Compiled assets
 Script/content/themes/*/css/compiled/
 Script/content/themes/*/js/compiled/
+
+# Embedded git repositories
+Apps/IOS/SngineWeb/
