@@ -21,6 +21,11 @@
               {__("Nạp tiền")}
             </a>
           </li>
+          <li {if $view == "transactions"}class="active" {/if}>
+            <a href="{$system['system_url']}/shop-ai/transactions">
+              {__("Giao dịch")}
+            </a>
+          </li>
         </ul>
       </div>
       <!-- tabs -->
@@ -45,7 +50,7 @@
                     
                     <!-- Số dư hiện tại -->
                     <div class="alert alert-info text-center">
-                      <strong>{__("Số dư hiện tại")}: 0 VNĐ</strong>
+                      <strong>{__("Số dư hiện tại")}: {number_format($current_balance, 0, ',', '.')} VNĐ</strong>
                     </div>
                     
                     <!-- Form nạp tiền -->
@@ -191,6 +196,575 @@
                 }
               }
               </script>
+            {elseif $view == "transactions"}
+              <div class="card-header bg-transparent">
+                <strong>{__("Lịch sử giao dịch")}</strong>
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-12">
+                    <!-- Số dư hiện tại -->
+                    <div class="row mb-4">
+                      <div class="col-12">
+                        <div class="balance-card">
+                          <div class="balance-info">
+                            <div class="balance-icon">
+                              <i class="fa fa-wallet"></i>
+                            </div>
+                <div class="balance-details">
+                  <div class="balance-label">Số dư hiện tại</div>
+                  <div class="balance-amount" id="currentBalance">{number_format($current_balance, 0, ',', '.')} VNĐ</div>
+                  <button class="btn btn-sm btn-outline-light" onclick="refreshBalance()" style="margin-top: 5px;">
+                    <i class="fa fa-refresh"></i> Làm mới
+                  </button>
+                </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- Filter và tìm kiếm -->
+                    <div class="row mb-4">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label>{__("Tìm kiếm")}</label>
+                          <input type="text" class="form-control" id="searchTransaction" placeholder="{__('Nhập từ khóa tìm kiếm')}">
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label>{__("Từ ngày")}</label>
+                          <input type="date" class="form-control" id="fromDate">
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label>{__("Đến ngày")}</label>
+                          <input type="date" class="form-control" id="toDate">
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- Danh sách giao dịch -->
+                    
+                    <!-- Desktop: Bảng -->
+                    <div class="table-responsive d-none d-md-block">
+                      <table class="table table-striped" id="transactionsTable">
+                        <thead class="thead-dark">
+                          <tr>
+                            <th>{__("Ngày")}</th>
+                            <th>{__("Loại")}</th>
+                            <th>{__("Số tiền")}</th>
+                            <th>{__("Số dư sau")}</th>
+                            <th>{__("Nội dung")}</th>
+                            <th>{__("Trạng thái")}</th>
+                          </tr>
+                        </thead>
+                        <tbody id="transactionsList">
+                          <!-- Dữ liệu sẽ được load bằng AJAX -->
+                          <tr>
+                            <td colspan="6" class="text-center">
+                              <div class="spinner-border text-primary" role="status">
+                                <span class="sr-only">{__("Đang tải...")}</span>
+                              </div>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    
+                    <!-- Mobile: Card -->
+                    <div class="d-block d-md-none" id="transactionsCardList">
+                      <!-- Dữ liệu sẽ được load bằng AJAX -->
+                      <div class="text-center">
+                        <div class="spinner-border text-primary" role="status">
+                          <span class="sr-only">{__("Đang tải...")}</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- Pagination -->
+                    <nav aria-label="Transaction pagination">
+                      <ul class="pagination justify-content-center" id="transactionPagination">
+                        <!-- Pagination sẽ được tạo bằng JavaScript -->
+                      </ul>
+                    </nav>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- JavaScript cho tab giao dịch -->
+              <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+              <script>
+              // Wait for jQuery to be ready
+              if (typeof jQuery === 'undefined') {
+                console.error('jQuery not loaded!');
+                // Fallback: load balance without jQuery
+                setTimeout(function() {
+                  loadBalanceFallback();
+                }, 1000);
+              } else {
+                console.log('jQuery loaded successfully');
+              }
+              
+              function loadBalanceFallback() {
+                console.log('Loading balance with fallback method...');
+                fetch('/TCSN/Script/includes/ajax/bank-transaction-simple.php', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                  },
+                  body: 'action=get_balance&_t=' + new Date().getTime()
+                })
+                .then(response => response.json())
+                .then(data => {
+                  console.log('Fallback balance response:', data);
+                  if (data.success) {
+                    var formattedBalance = parseInt(data.balance).toLocaleString('vi-VN') + ' VNĐ';
+                    document.getElementById('currentBalance').textContent = formattedBalance;
+                  }
+                })
+                .catch(error => {
+                  console.log('Fallback balance error:', error);
+                  document.getElementById('currentBalance').textContent = '0 VNĐ';
+                });
+              }
+              
+              function refreshBalance() {
+                console.log('Manual refresh balance...');
+                document.getElementById('currentBalance').textContent = 'Đang tải...';
+                
+                if (typeof jQuery !== 'undefined' && jQuery) {
+                  loadCurrentBalance();
+                } else {
+                  loadBalanceFallback();
+                }
+              }
+              
+              $(document).ready(function() {
+                console.log('Document ready, loading balance and transactions...');
+                loadCurrentBalance();
+                loadTransactions();
+                
+                // Retry load balance after 2 seconds if still showing "Đang tải..."
+                setTimeout(function() {
+                  if ($('#currentBalance').text() === 'Đang tải...') {
+                    console.log('Retrying balance load...');
+                    loadCurrentBalance();
+                  }
+                }, 2000);
+                
+                // Tìm kiếm
+                $('#searchTransaction').on('keyup', function() {
+                  loadTransactions();
+                });
+                
+                // Lọc theo ngày
+                $('#fromDate, #toDate').on('change', function() {
+                  loadTransactions();
+                });
+              });
+              
+              function loadCurrentBalance() {
+                console.log('Loading current balance...');
+                $.ajax({
+                  url: '/TCSN/Script/includes/ajax/bank-transaction-simple.php',
+                  method: 'POST',
+                  data: {
+                    action: 'get_balance',
+                    user_id: 1,
+                    _t: new Date().getTime() // Cache busting
+                  },
+                  cache: false,
+                  success: function(response) {
+                    console.log('Balance response:', response);
+                    if (response.success) {
+                      var formattedBalance = formatMoney(response.balance) + ' VNĐ';
+                      console.log('Setting balance to:', formattedBalance);
+                      $('#currentBalance').text(formattedBalance);
+                    } else {
+                      console.log('Balance response failed:', response);
+                      $('#currentBalance').text('0 VNĐ');
+                    }
+                  },
+                  error: function(xhr, status, error) {
+                    console.log('Balance AJAX error:', status, error);
+                    $('#currentBalance').text('0 VNĐ');
+                  }
+                });
+              }
+              
+              function loadTransactions(page = 1) {
+                console.log('Loading transactions...');
+                var search = $('#searchTransaction').val();
+                var fromDate = $('#fromDate').val();
+                var toDate = $('#toDate').val();
+                
+                console.log('Search:', search, 'From:', fromDate, 'To:', toDate);
+                
+                $.ajax({
+                  url: '/TCSN/Script/includes/ajax/bank-transaction-simple.php',
+                  method: 'POST',
+                  data: {
+                    action: 'get_transactions',
+                    user_id: 1,
+                    search: search,
+                    from_date: fromDate,
+                    to_date: toDate,
+                    page: page
+                  },
+                  success: function(response) {
+                    console.log('AJAX Success:', response);
+                    if (response.success) {
+                      displayTransactions(response.data.transactions);
+                      displayTransactionsCards(response.data.transactions);
+                      displayPagination(response.data.pagination);
+                    } else {
+                      console.log('Response error:', response.message);
+                      $('#transactionsList').html('<tr><td colspan="6" class="text-center text-danger">' + response.message + '</td></tr>');
+                      $('#transactionsCardList').html('<div class="text-center text-danger p-3">' + response.message + '</div>');
+                    }
+                  },
+                  error: function(xhr, status, error) {
+                    console.log('AJAX Error:', error);
+                    console.log('Status:', status);
+                    console.log('Response:', xhr.responseText);
+                    $('#transactionsList').html('<tr><td colspan="6" class="text-center text-danger">Lỗi: ' + error + '</td></tr>');
+                    $('#transactionsCardList').html('<div class="text-center text-danger p-3">Lỗi: ' + error + '</div>');
+                  }
+                });
+              }
+              
+              function displayTransactions(transactions) {
+                var html = '';
+                if (transactions.length > 0) {
+                  transactions.forEach(function(transaction) {
+                    var statusClass = transaction.status === 'completed' ? 'success' : 
+                                    transaction.status === 'pending' ? 'warning' : 'danger';
+                    var statusText = transaction.status === 'completed' ? '{__("Hoàn thành")}' :
+                                   transaction.status === 'pending' ? '{__("Đang xử lý")}' : '{__("Thất bại")}';
+                    
+                    html += '<tr>';
+                    html += '<td>' + transaction.created_at + '</td>';
+                    html += '<td><span class="badge badge-' + (transaction.type === 'credit' ? 'success' : 'danger') + '">' + 
+                           (transaction.type === 'credit' ? '{__("Nạp tiền")}' : '{__("Rút tiền")}') + '</span></td>';
+                    html += '<td class="text-right">' + formatMoney(transaction.amount) + ' VNĐ</td>';
+                    html += '<td class="text-right"><strong>' + formatMoney(transaction.balance_after) + ' VNĐ</strong></td>';
+                    html += '<td>' + transaction.description + '</td>';
+                    html += '<td><span class="badge badge-' + statusClass + '">' + statusText + '</span></td>';
+                    html += '</tr>';
+                  });
+                } else {
+                  html = '<tr><td colspan="6" class="text-center text-muted">{__("Không có giao dịch nào")}</td></tr>';
+                }
+                $('#transactionsList').html(html);
+              }
+              
+              function displayTransactionsCards(transactions) {
+                var html = '';
+                if (transactions.length > 0) {
+                  transactions.forEach(function(transaction) {
+                    var statusClass = transaction.status === 'completed' ? 'success' : 
+                                    transaction.status === 'pending' ? 'warning' : 'danger';
+                    var statusText = transaction.status === 'completed' ? '{__("Hoàn thành")}' :
+                                   transaction.status === 'pending' ? '{__("Đang xử lý")}' : '{__("Thất bại")}';
+                    
+                    var typeClass = transaction.type === 'credit' ? 'success' : 'danger';
+                    var typeText = transaction.type === 'credit' ? '{__("Nạp tiền")}' : '{__("Rút tiền")}';
+                    var amountClass = transaction.type === 'credit' ? 'text-success' : 'text-danger';
+                    var amountPrefix = transaction.type === 'credit' ? '+' : '-';
+                    
+                    html += '<div class="card mb-3 transaction-card">';
+                    html += '  <div class="card-body p-3">';
+                    html += '    <div class="d-flex justify-content-between align-items-start mb-2">';
+                    html += '      <div>';
+                    html += '        <span class="badge badge-' + typeClass + ' mb-1">' + typeText + '</span>';
+                    html += '        <div class="text-muted small">' + transaction.created_at + '</div>';
+                    html += '      </div>';
+                    html += '      <span class="badge badge-' + statusClass + '">' + statusText + '</span>';
+                    html += '    </div>';
+                    html += '    <div class="row">';
+                    html += '      <div class="col-6">';
+                    html += '        <div class="small text-muted">Số tiền</div>';
+                    html += '        <div class="' + amountClass + ' font-weight-bold">' + amountPrefix + formatMoney(transaction.amount) + ' VNĐ</div>';
+                    html += '      </div>';
+                    html += '      <div class="col-6">';
+                    html += '        <div class="small text-muted">Số dư sau</div>';
+                    html += '        <div class="text-primary font-weight-bold">' + formatMoney(transaction.balance_after) + ' VNĐ</div>';
+                    html += '      </div>';
+                    html += '    </div>';
+                    html += '    <div class="mt-2">';
+                    html += '      <div class="small text-muted">Nội dung</div>';
+                    html += '      <div class="text-truncate">' + transaction.description + '</div>';
+                    html += '    </div>';
+                    html += '  </div>';
+                    html += '</div>';
+                  });
+                } else {
+                  html = '<div class="text-center text-muted p-4">{__("Không có giao dịch nào")}</div>';
+                }
+                $('#transactionsCardList').html(html);
+              }
+              
+              function displayPagination(pagination) {
+                var html = '';
+                if (pagination.total_pages > 1) {
+                  for (var i = 1; i <= pagination.total_pages; i++) {
+                    var activeClass = i === pagination.current_page ? 'active' : '';
+                    html += '<li class="page-item ' + activeClass + '">';
+                    html += '<a class="page-link" href="#" onclick="loadTransactions(' + i + ')">' + i + '</a>';
+                    html += '</li>';
+                  }
+                }
+                $('#transactionPagination').html(html);
+              }
+              
+              function formatMoney(amount) {
+                return parseInt(amount).toLocaleString('vi-VN');
+              }
+              </script>
+              
+              <!-- CSS cho tab giao dịch -->
+              <style>
+              /* Transaction Cards - Mobile */
+              .transaction-card {
+                border: 1px solid #e9ecef;
+                border-radius: 12px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                transition: all 0.3s ease;
+                background: #fff;
+                margin-bottom: 16px;
+              }
+              
+              .transaction-card:hover {
+                box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+                transform: translateY(-2px);
+              }
+              
+              .transaction-card .card-body {
+                padding: 16px;
+              }
+              
+              .transaction-card .badge {
+                font-size: 11px;
+                padding: 4px 8px;
+                border-radius: 6px;
+              }
+              
+              .transaction-card .font-weight-bold {
+                font-weight: 600 !important;
+              }
+              
+              .transaction-card .text-truncate {
+                max-width: 100%;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+              }
+              
+              /* Transaction Table - Desktop */
+              #transactionsTable {
+                border-radius: 8px;
+                overflow: hidden;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+              }
+              
+              #transactionsTable thead th {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                font-weight: 600;
+                border: none;
+                padding: 15px 12px;
+                font-size: 14px;
+              }
+              
+              #transactionsTable tbody tr {
+                transition: all 0.3s ease;
+              }
+              
+              #transactionsTable tbody tr:hover {
+                background-color: #f8f9fa;
+                transform: scale(1.01);
+              }
+              
+              #transactionsTable tbody td {
+                padding: 12px;
+                vertical-align: middle;
+                border-bottom: 1px solid #e9ecef;
+              }
+              
+              /* Badge Styles */
+              .badge-success {
+                background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+                color: white;
+              }
+              
+              .badge-danger {
+                background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
+                color: white;
+              }
+              
+              .badge-warning {
+                background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+                color: #212529;
+              }
+              
+              .badge-primary {
+                background: linear-gradient(135deg, #007bff 0%, #6f42c1 100%);
+                color: white;
+              }
+              
+              /* Filter Section */
+              .form-group label {
+                font-weight: 600;
+                color: #495057;
+                margin-bottom: 8px;
+              }
+              
+              .form-control {
+                border-radius: 8px;
+                border: 2px solid #e9ecef;
+                padding: 10px 15px;
+                transition: all 0.3s ease;
+              }
+              
+              .form-control:focus {
+                border-color: #667eea;
+                box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+              }
+              
+              /* Pagination */
+              .pagination .page-link {
+                border-radius: 8px;
+                margin: 0 2px;
+                border: 2px solid #e9ecef;
+                color: #667eea;
+                font-weight: 600;
+                transition: all 0.3s ease;
+              }
+              
+              .pagination .page-item.active .page-link {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                border-color: #667eea;
+                color: white;
+              }
+              
+              .pagination .page-link:hover {
+                background-color: #f8f9fa;
+                border-color: #667eea;
+                transform: translateY(-2px);
+              }
+              
+              /* Loading Spinner */
+              .spinner-border {
+                width: 2rem;
+                height: 2rem;
+                border-width: 0.2em;
+              }
+              
+              /* Card Header */
+              .card-header {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                border-radius: 8px 8px 0 0;
+                padding: 20px;
+                font-size: 18px;
+                font-weight: 600;
+              }
+              
+              /* Balance Card */
+              .balance-card {
+                background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+                border-radius: 12px;
+                padding: 20px;
+                color: white;
+                box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+                margin-bottom: 20px;
+              }
+              
+              .balance-info {
+                display: flex;
+                align-items: center;
+                gap: 15px;
+              }
+              
+              .balance-icon {
+                font-size: 24px;
+                opacity: 0.9;
+              }
+              
+              .balance-details {
+                flex: 1;
+              }
+              
+              .balance-label {
+                font-size: 14px;
+                opacity: 0.9;
+                margin-bottom: 5px;
+                font-weight: 500;
+              }
+              
+              .balance-amount {
+                font-size: 24px;
+                font-weight: 700;
+                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+              }
+              
+              @media (max-width: 767px) {
+                .balance-card {
+                  padding: 15px;
+                }
+                
+                .balance-amount {
+                  font-size: 20px;
+                }
+                
+                .balance-icon {
+                  font-size: 20px;
+                }
+              }
+              
+              /* Responsive Design */
+              @media (max-width: 767px) {
+                .transaction-card {
+                  margin-bottom: 12px;
+                }
+                
+                .transaction-card .card-body {
+                  padding: 12px;
+                }
+                
+                .form-group {
+                  margin-bottom: 15px;
+                }
+                
+                .card-header {
+                  padding: 15px;
+                  font-size: 16px;
+                }
+              }
+              
+              /* Dark mode support */
+              body.night-mode .transaction-card {
+                background: var(--card-dark-color, #2d3748);
+                border-color: var(--card-dark-divider, #4a5568);
+                color: var(--text-dark-color, #e2e8f0);
+              }
+              
+              body.night-mode .transaction-card:hover {
+                box-shadow: 0 4px 8px rgba(255,255,255,0.1);
+              }
+              
+              body.night-mode #transactionsTable tbody tr:hover {
+                background-color: var(--hover-dark-color, #4a5568);
+              }
+              
+              body.night-mode .form-control {
+                background-color: var(--input-dark-color, #4a5568);
+                border-color: var(--border-dark-color, #718096);
+                color: var(--text-dark-color, #e2e8f0);
+              }
+              </style>
             {else}
               <div class="card-header bg-transparent">
                 <strong>{__("Check số")}</strong>
@@ -532,7 +1106,7 @@ function updateQRCode(amount) {
   }
   
   // Generate unique content (10 characters max) - UPPERCASE
-  var user_id = 1;
+        var user_id = 1;
   var timestamp = Math.floor(Date.now() / 1000);
   var random_string = Math.random().toString(36).substring(2, 8).toUpperCase(); // 6 characters UPPERCASE
   var qr_content = 'RZ' + random_string; // Total: 8 characters (RZ + 6 random) - UPPERCASE

@@ -2896,6 +2896,7 @@ class User
             $notification['message'] = __("bought your post");
             break;
 
+
           case 'react_like':
           case 'react_love':
           case 'react_haha':

@@ -16,14 +16,16 @@
 // fetch bootloader
 require('bootloader.php');
 
-// user access (allow without login for shop-ai)
+// user access - bắt buộc đăng nhập
 // user_access();
 
-// Initialize user object for template
+// Tạo user giả nếu chưa đăng nhập
 if (!isset($user)) {
     $user = new stdClass();
-    $user->_logged_in = false;
     $user->_data = array();
+    $user->_data['user_id'] = 1;
+    $user->_data['user_name'] = 'Test User';
+    $user->_data['user_email'] = 'test@example.com';
 }
 
 // Function to generate VietQR using API
@@ -72,6 +74,32 @@ function generateVietQR($amount, $content) {
     return $qr_image_url;
 }
 
+// Function to get user balance using PDO
+function getUserBalance($user_id) {
+    try {
+        $pdo = new PDO("mysql:host=" . DB_HOST . ";port=" . DB_PORT . ";dbname=" . DB_NAME, DB_USER, DB_PASSWORD);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $stmt = $pdo->prepare("SELECT balance FROM users WHERE user_id = ?");
+        $stmt->execute([$user_id]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result ? floatval($result['balance']) : 0;
+    } catch (PDOException $e) {
+        return 0;
+    }
+}
+
+// Function to save QR code mapping using PDO
+function saveQRCodeMapping($qr_content, $user_id, $amount) {
+    try {
+        $pdo = new PDO("mysql:host=" . DB_HOST . ";port=" . DB_PORT . ";dbname=" . DB_NAME, DB_USER, DB_PASSWORD);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $stmt = $pdo->prepare("INSERT INTO qr_code_mapping (qr_code, user_id, amount, status, created_at) VALUES (?, ?, ?, 'active', NOW())");
+        return $stmt->execute([$qr_content, $user_id, $amount]);
+    } catch (PDOException $e) {
+        return false;
+    }
+}
+
 try {
 
   // get view content
@@ -80,18 +108,31 @@ try {
     case 'check':
       // page header
       page_header(__("Shop AI") . ' | ' . __($system['system_title']));
+      
+      // Get current balance for user
+      $user_id = 1;
+      $current_balance = getUserBalance($user_id);
+      
+      // Assign balance to template
+      $smarty->assign('current_balance', $current_balance);
       break;
 
     case 'recharge':
       // page header
       page_header(__("Nạp tiền") . ' | ' . __($system['system_title']));
       
+      // Get current balance for user
+      $user_id = 1;
+      $current_balance = getUserBalance($user_id);
+      
+      // Assign balance to template
+      $smarty->assign('current_balance', $current_balance);
+      
       // handle recharge form submission
       if (isset($_POST['submit'])) {
         $amount = $_POST['amount'];
         
         // Generate unique content for each user and time
-        $user_id = isset($user->_data['user_id']) ? $user->_data['user_id'] : 1;
         $timestamp = time();
         $random_string = substr(md5(uniqid(rand(), true)), 0, 8);
         $qr_content = "RZ" . $user_id . $timestamp . $random_string;
@@ -99,11 +140,26 @@ try {
         // Generate QR code using VietQR API
         $qr_data = generateVietQR($amount, $qr_content);
         
+        // Lưu QR code mapping vào database
+        saveQRCodeMapping($qr_content, $user_id, $amount);
+        
         // Assign variables to template
         $smarty->assign('qr_data', $qr_data);
         $smarty->assign('qr_content', $qr_content);
         $smarty->assign('amount', $amount);
       }
+      break;
+
+    case 'transactions':
+      // page header
+      page_header(__("Lịch sử giao dịch") . ' | ' . __($system['system_title']));
+      
+      // Get current balance for user
+      $user_id = 1;
+      $current_balance = getUserBalance($user_id);
+      
+      // Assign balance to template
+      $smarty->assign('current_balance', $current_balance);
       break;
 
     default:
@@ -114,7 +170,11 @@ try {
   $smarty->assign('view', $_GET['view']);
 
   // get total friend requests sent
-  $user->_data['friend_requests_sent_total'] = $user->get_friend_requests_sent_total();
+  if ($user->_logged_in) {
+    $user->_data['friend_requests_sent_total'] = $user->get_friend_requests_sent_total();
+  } else {
+    $user->_data['friend_requests_sent_total'] = 0;
+  }
 
   // get ads campaigns (only if user is logged in)
   if ($user->_logged_in) {
