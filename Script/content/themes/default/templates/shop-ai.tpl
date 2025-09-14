@@ -54,22 +54,56 @@
                         <div class="col-md-6">
                           <div class="form-group">
                             <label class="form-label">{__("Số tiền nạp")}</label>
-                            <select class="form-select" name="amount" required>
-                              <option value="">{__("Chọn số tiền")}</option>
-                              <option value="10000">10,000 VNĐ</option>
-                              <option value="20000">20,000 VNĐ</option>
-                              <option value="50000">50,000 VNĐ</option>
-                              <option value="100000">100,000 VNĐ</option>
-                              <option value="200000">200,000 VNĐ</option>
-                              <option value="500000">500,000 VNĐ</option>
-                              <option value="1000000">1,000,000 VNĐ</option>
-                            </select>
+                            <div class="input-group">
+                              <input type="number" 
+                                     class="form-control" 
+                                     id="amountInput" 
+                                     name="amount" 
+                                     placeholder="Nhập số tiền" 
+                                     min="10000" 
+                                     max="50000000" 
+                                     step="1000"
+                                     oninput="updateAmountPreview(this.value)"
+                                     required>
+                              <span class="input-group-text">VNĐ</span>
+                            </div>
+                            <small class="form-text text-muted mt-2">
+                              Số tiền tối thiểu: 10,000 VNĐ - Tối đa: 50,000,000 VNĐ
+                            </small>
+                            
+                            <!-- Quick amount buttons -->
+                            <div class="mt-3">
+                              <label class="form-label small">{__("Chọn nhanh")}:</label>
+                              <div class="quick-select-container">
+                                <div class="quick-select-scroll">
+                                  <button type="button" class="btn btn-outline-primary quick-select-btn" onclick="setQuickAmount(50000)">50K</button>
+                                  <button type="button" class="btn btn-outline-primary quick-select-btn" onclick="setQuickAmount(100000)">100K</button>
+                                  <button type="button" class="btn btn-outline-primary quick-select-btn" onclick="setQuickAmount(200000)">200K</button>
+                                  <button type="button" class="btn btn-outline-primary quick-select-btn" onclick="setQuickAmount(500000)">500K</button>
+                                  <button type="button" class="btn btn-outline-primary quick-select-btn" onclick="setQuickAmount(1000000)">1M</button>
+                                  <button type="button" class="btn btn-outline-primary quick-select-btn" onclick="setQuickAmount(2000000)">2M</button>
+                                  <button type="button" class="btn btn-outline-primary quick-select-btn" onclick="setQuickAmount(5000000)">5M</button>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            <!-- Amount preview -->
+                            <div class="mt-3" id="amountPreview" style="display: none;">
+                              <div class="alert alert-success text-center">
+                                <strong>Số tiền sẽ nạp: <span id="previewAmount">0</span> VNĐ</strong>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
                       
                     <div class="text-center">
-                      <button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#rechargeModal" onclick="openRechargeModal()">
+                      <button type="button" 
+                              class="btn btn-primary btn-lg" 
+                              data-bs-toggle="modal" 
+                              data-bs-target="#rechargeModal" 
+                              onclick="openRechargeModal()"
+                              id="rechargeBtn">
                         <i class="fa fa-qrcode mr5"></i>{__("Nạp tiền ngay")}
                       </button>
                     </div>
@@ -213,7 +247,7 @@
                         <i class="fa fa-money-bill-wave text-success"></i>
                         {__("Số tiền")}
                       </div>
-                      <div class="info-value" id="modalAmountDisplay">0 VNĐ</div>
+                      <div class="info-value" id="modalAmountDisplay">100.000 VNĐ</div>
                     </div>
                   </div>
                   <div class="col-md-6">
@@ -335,9 +369,14 @@
   transition: all 0.3s ease;
 }
 
-.btn-primary:hover {
+.btn-primary:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .btn-info {
@@ -354,7 +393,7 @@
   box-shadow: 0 10px 25px rgba(23, 162, 184, 0.4);
 }
 
-.form-select {
+.form-control {
   border-radius: 10px;
   border: 2px solid #e9ecef;
   padding: 12px 15px;
@@ -362,9 +401,30 @@
   transition: all 0.3s ease;
 }
 
-.form-select:focus {
+.form-control:focus {
   border-color: #667eea;
   box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.input-group-text {
+  border-radius: 0 10px 10px 0;
+  border: 2px solid #e9ecef;
+  border-left: none;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-weight: 600;
+}
+
+.btn-group .btn {
+  border-radius: 8px !important;
+  margin-right: 5px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-group .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
 }
 
             .alert-info {
@@ -375,15 +435,93 @@
               font-weight: 600;
             }
 
+            /* Quick select horizontal scroll for mobile */
+            .quick-select-container {
+              overflow-x: auto;
+              overflow-y: hidden;
+              -webkit-overflow-scrolling: touch;
+              scrollbar-width: none; /* Firefox */
+              -ms-overflow-style: none; /* IE and Edge */
+            }
+
+            .quick-select-container::-webkit-scrollbar {
+              display: none; /* Chrome, Safari, Opera */
+            }
+
+            .quick-select-scroll {
+              display: flex;
+              gap: 8px;
+              padding: 5px 0;
+              min-width: max-content;
+            }
+
+            .quick-select-btn {
+              flex-shrink: 0;
+              min-width: 60px;
+              white-space: nowrap;
+              border-radius: 20px;
+              font-weight: 600;
+              transition: all 0.3s ease;
+            }
+
+            .quick-select-btn:hover {
+              transform: translateY(-2px);
+              box-shadow: 0 4px 12px rgba(0,123,255,0.3);
+            }
+
+            .quick-select-btn:active {
+              transform: translateY(0);
+            }
+
+            /* Desktop: show all buttons in a row */
+            @media (min-width: 768px) {
+              .quick-select-scroll {
+                flex-wrap: wrap;
+                justify-content: center;
+              }
+              
+              .quick-select-btn {
+                flex: 1;
+                max-width: 120px;
+              }
+            }
+
+            /* Mobile: horizontal scroll */
+            @media (max-width: 767px) {
+              .quick-select-scroll {
+                flex-wrap: nowrap;
+                padding-bottom: 10px;
+              }
+              
+              .quick-select-btn {
+                min-width: 70px;
+                font-size: 14px;
+              }
+            }
+
 </style>
 
 <script>
 // Function to open modal and auto-generate QR
 function openRechargeModal() {
-  // Set default amount to 100,000 VNĐ
-  var defaultAmount = '100000';
-  // Auto-generate QR code
-  updateQRCode(defaultAmount);
+  // Get amount from input field
+  var amount = document.getElementById('amountInput').value;
+  
+  // Validate amount
+  if (!amount || amount < 10000) {
+    alert('Vui lòng nhập số tiền tối thiểu 10,000 VNĐ');
+    document.getElementById('amountInput').focus();
+    return;
+  }
+  
+  if (amount > 50000000) {
+    alert('Số tiền tối đa là 50,000,000 VNĐ');
+    document.getElementById('amountInput').focus();
+    return;
+  }
+  
+  // Auto-generate QR code with entered amount
+  updateQRCode(amount);
 }
 
 // Function to update QR code when amount changes
@@ -417,27 +555,63 @@ function generateVietQR(amount, content) {
   // VietQR configuration
   var accountNo = 'PHATLOC46241987';
   var accountName = 'BUI QUOC VU';
-  var bankName = 'ACB - BUI QUOC VU'; // Full bank information
-  var bankCode = 'acb'; // ACB Bank code for API
+  var bankCode = '970416'; // ACB Bank code for VietQR
+  var bankName = 'ACB';
   
-  // Create VietQR URL
-  var qr_url = 'https://vietqr.net/transfer/' + accountNo + '?amount=' + amount + '&content=' + encodeURIComponent(content);
+  // Method 1: Try VietQR API with proper EMV format
+  var vietqr_api_url = 'https://api.vietqr.io/v2/generate';
+  var vietqr_data = {
+    accountNo: accountNo,
+    accountName: accountName,
+    acqId: bankCode,
+    amount: parseInt(amount),
+    addInfo: content,
+    format: 'text',
+    template: 'compact'
+  };
   
-  // Use VietQR image service with timestamp to avoid cache
+  // Method 2: VietQR image service with proper format
   var timestamp = Date.now();
   var qr_image_url = 'https://img.vietqr.io/image/' + bankCode + '-' + accountNo + '-' + amount + '-' + encodeURIComponent(content) + '.jpg?t=' + timestamp;
   
-  // Try VietQR image service first
-  var img = new Image();
-  img.onload = function() {
-    $('#modalQRImage').attr('src', qr_image_url);
-  };
-  img.onerror = function() {
-    // Fallback to QR Server if VietQR image service fails
-    var fallback_url = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' + encodeURIComponent(qr_url);
-    $('#modalQRImage').attr('src', fallback_url);
-  };
-  img.src = qr_image_url;
+  // Method 3: Create VietQR dynamic URL for fallback
+  var qr_url = 'https://vietqr.net/transfer/' + bankCode + '-' + accountNo + '?amount=' + amount + '&addInfo=' + encodeURIComponent(content);
+  var fallback_url = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' + encodeURIComponent(qr_url);
+  
+  // Try VietQR API first (most reliable for dynamic QR)
+  $.ajax({
+    url: vietqr_api_url,
+    method: 'POST',
+    data: JSON.stringify(vietqr_data),
+    contentType: 'application/json',
+    success: function(response) {
+      if (response.data && response.data.qrDataURL) {
+        $('#modalQRImage').attr('src', response.data.qrDataURL);
+      } else {
+        // Fallback to VietQR image service
+        tryVietQRImageService();
+      }
+    },
+    error: function() {
+      // Fallback to VietQR image service
+      tryVietQRImageService();
+    }
+  });
+  
+  function tryVietQRImageService() {
+    var img = new Image();
+    
+    img.onload = function() {
+      $('#modalQRImage').attr('src', img.src);
+    };
+    
+    img.onerror = function() {
+      // Final fallback to QR Server with VietQR URL
+      $('#modalQRImage').attr('src', fallback_url);
+    };
+    
+    img.src = qr_image_url;
+  }
 }
 
 
@@ -453,6 +627,30 @@ function generateVietQR(amount, content) {
             }
 
 
+            // Function to update amount preview
+            function updateAmountPreview(amount) {
+              if (amount && amount >= 10000) {
+                document.getElementById('previewAmount').textContent = parseInt(amount).toLocaleString();
+                document.getElementById('amountPreview').style.display = 'block';
+              } else {
+                document.getElementById('amountPreview').style.display = 'none';
+              }
+            }
+            
+            // Function to set quick amount
+            function setQuickAmount(amount) {
+              document.getElementById('amountInput').value = amount;
+              updateAmountPreview(amount);
+              
+              // Update button state
+              $('#rechargeBtn').prop('disabled', false);
+              
+              // Auto-generate QR if modal is open
+              if ($('#rechargeModal').hasClass('show')) {
+                updateQRCode(amount);
+              }
+            }
+            
             // Initialize when document is ready
             $(document).ready(function() {
               // Save QR Code
@@ -463,6 +661,21 @@ function generateVietQR(amount, content) {
                 $('#modalQRSection').hide();
                 $('#saveQRBtn').hide();
               });
+              
+              // Auto-generate QR when amount changes (if modal is open)
+              $('#amountInput').on('input', function() {
+                var amount = $(this).val();
+                if (amount && amount >= 10000 && $('#rechargeModal').hasClass('show')) {
+                  updateQRCode(amount);
+                }
+                
+                // Update button state
+                var isValid = amount && amount >= 10000 && amount <= 50000000;
+                $('#rechargeBtn').prop('disabled', !isValid);
+              });
+              
+              // Initial button state
+              $('#rechargeBtn').prop('disabled', true);
             });
 </script>
 

@@ -30,13 +30,44 @@ if (!isset($user)) {
 function generateVietQR($amount, $content) {
     // Bank information - ACB Bank
     $bank_account = 'PHATLOC46241987';
-    $bank_name = 'ACB - BUI QUOC VU'; // Full bank information
+    $bank_code = '970416'; // ACB Bank code for VietQR
+    $bank_name = 'ACB - BUI QUOC VU';
     
-    // Create VietQR URL
-    $qr_url = "https://vietqr.net/transfer/{$bank_account}?amount={$amount}&content=" . urlencode($content);
+    // Method 1: Try VietQR API with proper EMV format
+    $vietqr_api_url = 'https://api.vietqr.io/v2/generate';
+    $vietqr_data = array(
+        'accountNo' => $bank_account,
+        'accountName' => 'BUI QUOC VU',
+        'acqId' => $bank_code,
+        'amount' => intval($amount),
+        'addInfo' => $content,
+        'format' => 'text',
+        'template' => 'compact'
+    );
     
-    // Use VietQR image service for ACB bank
-    $qr_image_url = "https://img.vietqr.io/image/acb-{$bank_account}-{$amount}-" . urlencode($content) . ".jpg";
+    // Try VietQR API first
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $vietqr_api_url);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($vietqr_data));
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+    
+    $response = curl_exec($ch);
+    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    
+    if ($http_code == 200 && $response) {
+        $result = json_decode($response, true);
+        if (isset($result['data']['qrDataURL'])) {
+            return $result['data']['qrDataURL'];
+        }
+    }
+    
+    // Method 2: Fallback to VietQR image service
+    $timestamp = time();
+    $qr_image_url = "https://img.vietqr.io/image/{$bank_code}-{$bank_account}-{$amount}-" . urlencode($content) . ".jpg?t={$timestamp}";
     
     return $qr_image_url;
 }
