@@ -10,7 +10,7 @@ header('Content-Type: application/json');
 
 // Kết nối database trực tiếp
 $host = '127.0.0.1';
-$port = '3306';
+$port = '3307';
 $dbname = 'db_mxh';
 $username = 'root';
 $password = '';
