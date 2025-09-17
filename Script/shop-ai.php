@@ -16,30 +16,48 @@
 // fetch bootloader
 require('bootloader.php');
 
-// user access - bắt buộc đăng nhập
-// user_access();
+// Handle API requests
+if (isset($_GET['action']) || (isset($_SERVER['CONTENT_TYPE']) && strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== false)) {
+    handleAPIRequest();
+    exit;
+}
 
-// Lấy user_id thật từ session hoặc mặc định = 1
-if (!isset($user) || !isset($user->_data['user_id'])) {
-    $user = new stdClass();
-    $user->_data = array();
-    $user->_data['user_id'] = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 1;
-    $user->_data['user_name'] = isset($_SESSION['user_name']) ? $_SESSION['user_name'] : 'Test User';
-    $user->_data['user_email'] = isset($_SESSION['user_email']) ? $_SESSION['user_email'] : 'test@example.com';
+// user access - có test mode với parameter user_id
+if (isset($_GET['test_user_id']) && is_numeric($_GET['test_user_id'])) {
+    // Test mode - cho phép test với user_id khác nhau
+    $test_user_id = intval($_GET['test_user_id']);
+    
+    // Kiểm tra user có tồn tại không
+    $pdo = new PDO("mysql:host=" . DB_HOST . ";port=" . DB_PORT . ";dbname=" . DB_NAME, DB_USER, DB_PASSWORD);
+    $stmt = $pdo->prepare("SELECT user_id, user_name, user_email, user_wallet_balance FROM users WHERE user_id = ?");
+    $stmt->execute([$test_user_id]);
+    $test_user = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    if ($test_user) {
+        $user = new stdClass();
+        $user->_data = $test_user;
+        $user->_logged_in = true; // Test mode
+        echo "<!-- TEST MODE: User ID {$test_user_id} ({$test_user['user_name']}) -->\n";
+    } else {
+        die("User ID {$test_user_id} không tồn tại!");
+    }
+} else {
+    // Production mode - yêu cầu đăng nhập thật
+    user_access();
 }
 
 // Function to generate VietQR using API
 function generateVietQR($amount, $content) {
     // Bank information - ACB Bank
-    $bank_account = 'PHATLOC46241987';
+    $bank_account = '46241987';  // STK ACB thật
     $bank_code = '970416'; // ACB Bank code for VietQR
-    $bank_name = 'ACB - BUI QUOC VU';
+    $bank_name = 'ACB';
     
     // Method 1: Try VietQR API with proper EMV format
     $vietqr_api_url = 'https://api.vietqr.io/v2/generate';
     $vietqr_data = array(
         'accountNo' => $bank_account,
-        'accountName' => 'BUI QUOC VU',
+        'accountName' => 'ACB Account',  // Tên tài khoản
         'acqId' => $bank_code,
         'amount' => intval($amount),
         'addInfo' => $content,
@@ -74,28 +92,38 @@ function generateVietQR($amount, $content) {
     return $qr_image_url;
 }
 
-// Function to get user balance using PDO
+// Function to get user balance using PDO - chỉ dùng user_wallet_balance
 function getUserBalance($user_id) {
     try {
         $pdo = new PDO("mysql:host=" . DB_HOST . ";port=" . DB_PORT . ";dbname=" . DB_NAME, DB_USER, DB_PASSWORD);
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $stmt = $pdo->prepare("SELECT balance FROM users WHERE user_id = ?");
+        $stmt = $pdo->prepare("SELECT user_wallet_balance FROM users WHERE user_id = ?");
         $stmt->execute([$user_id]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $result ? floatval($result['balance']) : 0;
+        return $result ? floatval($result['user_wallet_balance']) : 0;
     } catch (PDOException $e) {
         return 0;
     }
 }
 
 // Function to save QR code mapping using PDO
-function saveQRCodeMapping($qr_content, $user_id, $amount) {
+function saveQRCodeMapping($qr_content, $user_id, $amount, $expires_minutes = 15) {
     try {
         $pdo = new PDO("mysql:host=" . DB_HOST . ";port=" . DB_PORT . ";dbname=" . DB_NAME, DB_USER, DB_PASSWORD);
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $stmt = $pdo->prepare("INSERT INTO qr_code_mapping (qr_code, user_id, amount, status, created_at) VALUES (?, ?, ?, 'active', NOW())");
-        return $stmt->execute([$qr_content, $user_id, $amount]);
+        
+        // Tạo nội dung chuyển khoản đầy đủ để so sánh với Pay2S
+        $transfer_content = $qr_content . " - Nap tien Shop AI";
+        
+        // Sử dụng MySQL để tính thời gian hết hạn (lấy giờ hiện tại + 15 phút)
+        $stmt = $pdo->prepare("
+            INSERT INTO qr_code_mapping 
+            (qr_code, user_id, amount, status, expires_at, description, transfer_content, created_at, updated_at) 
+            VALUES (?, ?, ?, 'active', DATE_ADD(NOW(), INTERVAL ? MINUTE), 'Shop-AI Recharge QR Code', ?, NOW(), NOW())
+        ");
+        return $stmt->execute([$qr_content, $user_id, $amount, $expires_minutes, $transfer_content]);
     } catch (PDOException $e) {
+        error_log("QR Code mapping error: " . $e->getMessage());
         return false;
     }
 }
@@ -327,6 +355,293 @@ function getPhoneCheckStats($checker_user_id) {
     }
 }
 
+// Function to handle API requests
+function handleAPIRequest() {
+    header('Content-Type: application/json');
+    
+    // Get action from GET or POST
+    $action = $_GET['action'] ?? '';
+    
+    // If no action in GET, try to get from JSON POST body
+    if (empty($action) && $_SERVER['REQUEST_METHOD'] === 'POST') {
+        $json = file_get_contents('php://input');
+        $data = json_decode($json, true);
+        $action = $data['action'] ?? '';
+    }
+    
+    switch ($action) {
+        case 'check_payment_status':
+            handleCheckPaymentStatus();
+            break;
+            
+        case 'save_qr_mapping':
+            handleSaveQRMapping();
+            break;
+            
+        default:
+            echo json_encode([
+                'success' => false,
+                'message' => 'Invalid action'
+            ]);
+            break;
+    }
+}
+
+// Function to check payment status
+function handleCheckPaymentStatus() {
+    try {
+        // Get parameters
+        $json = file_get_contents('php://input');
+        $data = json_decode($json, true);
+        
+        $qrCode = $data['qr_code'] ?? '';
+        $amount = floatval($data['amount'] ?? 0);
+        $userId = intval($data['user_id'] ?? 0);
+        
+        if (empty($qrCode) || $amount <= 0 || $userId <= 0) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Invalid parameters'
+            ]);
+            return;
+        }
+        
+        // Connect to database
+        $pdo = new PDO("mysql:host=" . DB_HOST . ";port=" . DB_PORT . ";dbname=" . DB_NAME, DB_USER, DB_PASSWORD);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        
+        // Check QR code mapping status
+        $stmt = $pdo->prepare("
+            SELECT qr_id, status, expires_at, used_at 
+            FROM qr_code_mapping 
+            WHERE qr_code = ? AND user_id = ? AND amount = ?
+            ORDER BY created_at DESC 
+            LIMIT 1
+        ");
+        $stmt->execute([$qrCode, $userId, $amount]);
+        $qrMapping = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$qrMapping) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'QR code not found'
+            ]);
+            return;
+        }
+        
+        // Check if expired
+        if (strtotime($qrMapping['expires_at']) < time()) {
+            echo json_encode([
+                'success' => true,
+                'status' => 'expired',
+                'message' => 'QR code expired'
+            ]);
+            return;
+        }
+        
+        // Check if used (completed)
+        if ($qrMapping['status'] === 'used') {
+            // Get transaction details
+            $stmt = $pdo->prepare("
+                SELECT bt.transaction_id, bt.amount, u.user_wallet_balance 
+                FROM bank_transactions bt 
+                JOIN users u ON u.user_id = bt.user_id 
+                WHERE bt.user_id = ? AND bt.amount = ? AND bt.status = 'completed'
+                ORDER BY bt.created_at DESC 
+                LIMIT 1
+            ");
+            $stmt->execute([$userId, $amount]);
+            $transaction = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            echo json_encode([
+                'success' => true,
+                'status' => 'completed',
+                'message' => 'Payment completed',
+                'amount' => $amount,
+                'new_balance' => $transaction['user_wallet_balance'] ?? 0,
+                'transaction_id' => $transaction['transaction_id'] ?? ''
+            ]);
+            return;
+        }
+        
+        // Still pending
+        echo json_encode([
+            'success' => true,
+            'status' => 'pending',
+            'message' => 'Payment pending'
+        ]);
+        
+    } catch (Exception $e) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Server error: ' . $e->getMessage()
+        ]);
+    }
+}
+
+// Function to save QR mapping via AJAX
+function handleSaveQRMapping() {
+    try {
+        // Get parameters
+        $json = file_get_contents('php://input');
+        $data = json_decode($json, true);
+        
+        $qrCode = $data['qr_code'] ?? '';
+        $amount = floatval($data['amount'] ?? 0);
+        $userId = intval($data['user_id'] ?? 0);
+        
+        if (empty($qrCode) || $amount <= 0 || $userId <= 0) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Invalid parameters'
+            ]);
+            return;
+        }
+        
+        // Validate amount range
+        if ($amount < 10000 || $amount > 50000000) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Amount must be between 10,000 and 50,000,000 VND'
+            ]);
+            return;
+        }
+        
+        // Save QR mapping
+        $result = saveQRCodeMapping($qrCode, $userId, $amount, 15);
+        
+        if ($result) {
+            echo json_encode([
+                'success' => true,
+                'message' => 'QR mapping saved successfully',
+                'qr_code' => $qrCode,
+                'amount' => $amount,
+                'user_id' => $userId,
+                'expires_in_minutes' => 15
+            ]);
+        } else {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Failed to save QR mapping'
+            ]);
+        }
+        
+    } catch (Exception $e) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Server error: ' . $e->getMessage()
+        ]);
+    }
+}
+
+// Function to get Shop-AI transactions from users_wallets_transactions
+function getShopAITransactions($user_id, $limit = 50) {
+    try {
+        $pdo = new PDO("mysql:host=" . DB_HOST . ";port=" . DB_PORT . ";dbname=" . DB_NAME, DB_USER, DB_PASSWORD);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        
+        // Fix MariaDB LIMIT issue by using direct string concatenation
+        $limit = intval($limit); // Sanitize
+        $stmt = $pdo->prepare("
+            SELECT * FROM users_wallets_transactions 
+            WHERE user_id = ? AND type = 'recharge' 
+            ORDER BY time DESC 
+            LIMIT $limit
+        ");
+        $stmt->execute([$user_id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log("Error getting Shop-AI transactions: " . $e->getMessage());
+        return [];
+    }
+}
+
+// Function to get Shop-AI transactions with pagination
+function getShopAITransactionsPaginated($user_id, $limit = 10, $offset = 0) {
+    try {
+        $pdo = new PDO("mysql:host=" . DB_HOST . ";port=" . DB_PORT . ";dbname=" . DB_NAME, DB_USER, DB_PASSWORD);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        
+        // Fix MariaDB LIMIT OFFSET issue
+        $limit = intval($limit);
+        $offset = intval($offset);
+        $stmt = $pdo->prepare("
+            SELECT * FROM users_wallets_transactions 
+            WHERE user_id = ? AND type = 'recharge' 
+            ORDER BY time DESC 
+            LIMIT $limit OFFSET $offset
+        ");
+        $stmt->execute([$user_id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log("Error getting paginated Shop-AI transactions: " . $e->getMessage());
+        return [];
+    }
+}
+
+// Function to get total count of Shop-AI transactions
+function getTotalShopAITransactions($user_id) {
+    try {
+        $pdo = new PDO("mysql:host=" . DB_HOST . ";port=" . DB_PORT . ";dbname=" . DB_NAME, DB_USER, DB_PASSWORD);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        
+        $stmt = $pdo->prepare("
+            SELECT COUNT(*) as total FROM users_wallets_transactions 
+            WHERE user_id = ? AND type = 'recharge'
+        ");
+        $stmt->execute([$user_id]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return intval($result['total']);
+    } catch (PDOException $e) {
+        error_log("Error getting total Shop-AI transactions: " . $e->getMessage());
+        return 0;
+    }
+}
+
+// Function to get QR code mappings
+function getQRCodeMappings($user_id, $limit = 50) {
+    try {
+        $pdo = new PDO("mysql:host=" . DB_HOST . ";port=" . DB_PORT . ";dbname=" . DB_NAME, DB_USER, DB_PASSWORD);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        
+        // Fix MariaDB LIMIT issue
+        $limit = intval($limit);
+        $stmt = $pdo->prepare("
+            SELECT * FROM qr_code_mapping 
+            WHERE user_id = ? 
+            ORDER BY created_at DESC 
+            LIMIT $limit
+        ");
+        $stmt->execute([$user_id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log("Error getting QR mappings: " . $e->getMessage());
+        return [];
+    }
+}
+
+// Function to get bank transactions
+function getBankTransactions($user_id, $limit = 50) {
+    try {
+        $pdo = new PDO("mysql:host=" . DB_HOST . ";port=" . DB_PORT . ";dbname=" . DB_NAME, DB_USER, DB_PASSWORD);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        
+        // Fix MariaDB LIMIT issue
+        $limit = intval($limit);
+        $stmt = $pdo->prepare("
+            SELECT * FROM bank_transactions 
+            WHERE user_id = ? AND business_type = 'shop_ai_recharge'
+            ORDER BY transaction_date DESC 
+            LIMIT $limit
+        ");
+        $stmt->execute([$user_id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log("Error getting bank transactions: " . $e->getMessage());
+        return [];
+    }
+}
+
 try {
 
   // get view content
@@ -411,14 +726,40 @@ try {
 
     case 'transactions':
       // page header
-      page_header(__("Lịch sử giao dịch") . ' | ' . __($system['system_title']));
+      page_header(__("Lịch Sử Giao Dịch Shop-AI") . ' | ' . __($system['system_title']));
       
-      // Get current balance for user
+      // Get current user info
       $user_id = $user->_data['user_id'];
       $current_balance = getUserBalance($user_id);
       
-      // Assign balance to template
+      // Pagination parameters
+      $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+      $per_page = 10; // 10 giao dịch mỗi trang
+      $offset = ($page - 1) * $per_page;
+      
+      // Get transactions with pagination
+      $shop_ai_transactions = getShopAITransactionsPaginated($user_id, $per_page, $offset);
+      
+      // Get total count for pagination
+      $total_transactions = getTotalShopAITransactions($user_id);
+      $total_pages = ceil($total_transactions / $per_page);
+      
+      // Pagination info
+      $pagination = [
+        'current_page' => $page,
+        'per_page' => $per_page,
+        'total_items' => $total_transactions,
+        'total_pages' => $total_pages,
+        'has_prev' => $page > 1,
+        'has_next' => $page < $total_pages,
+        'prev_page' => $page - 1,
+        'next_page' => $page + 1
+      ];
+      
+      // Assign variables to template
       $smarty->assign('current_balance', $current_balance);
+      $smarty->assign('shop_ai_transactions', $shop_ai_transactions);
+      $smarty->assign('pagination', $pagination);
       break;
 
     case 'history':

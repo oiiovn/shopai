@@ -5,18 +5,19 @@
  */
 
 return [
-    // Pay2S API Settings
+    // Pay2S API Settings từ tích hợp Web/App
+    'partner_code' => 'PAY2S23DW78K2CVCZFW9',  // Partner code
+    'access_key' => '88d3b56b2702dbf15a6648cc2eda93001f5c80ab9cdcc232393b4f368e9ec9c6',  // Access key  
+    'secret_key' => '1ece1f568539eeb7b971578c32a317369defbf0e64b8336124bdc47399a3419e',  // Secret key
+    'pay2s_token' => base64_encode('1ece1f568539eeb7b971578c32a317369defbf0e64b8336124bdc47399a3419e'),  // Base64 của Secret Key
     'api_url' => 'https://my.pay2s.vn/userapi',
-    'api_key' => 'PAY2S23DW78K2CVCZFW9',  // API key thật
-    'api_secret' => '88d3b56b2702dbf15a6648cc2eda93001f5c80ab9cdcc232393b4f368e9ec9c6',  // API secret thật
-    'pay2s_token' => 'MWVjZTFmNTY4NTM5ZWViN2I5NzE1NzhjMzJhMzE3MzY5ZGVmYmYwZTY0YjgzMzYxMjRiZGM0NzM5OWEzNDFl',  // Base64 của Secret Key (như Google Apps Script)
     
     // Webhook Settings
     'webhook_url' => 'https://yourdomain.com/TCSN/Script/pay2s-api-handler.php?webhook=1',
     'webhook_secret' => '1ece1f568539eeb7b971578c32a317369defbf0e64b8336124bdc47399a3419e',  // Webhook secret thật
     
     // Bank Settings
-    'account_number' => '46241987',
+    'account_number' => '46241987',  // STK ACB thật
     'bank_code' => '970416',  // ACB Bank code
     'bank_name' => 'ACB',
     

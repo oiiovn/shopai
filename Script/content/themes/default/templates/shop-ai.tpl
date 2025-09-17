@@ -123,6 +123,25 @@
                             <img src="{$qr_data}" alt="QR Code" class="img-fluid" style="max-width: 300px;">
                           </div>
                           
+                          <!-- Payment Status -->
+                          <div id="payment-status">
+                            <div class="alert alert-info">
+                              <i class="fa fa-clock-o mr5"></i>Đang chờ thanh toán...
+                            </div>
+                          </div>
+                          
+                          <!-- Payment Countdown -->
+                          <div id="payment-countdown" class="mb-3">
+                            <div class="text-muted mb-2">Thời gian còn lại:</div>
+                            <div class="h4 text-primary" id="countdown-timer">15:00</div>
+                            <div class="progress">
+                              <div class="progress-bar bg-info" id="countdown-progress" style="width: 100%"></div>
+                            </div>
+                          </div>
+                          
+                          <!-- Payment Message -->
+                          <div id="payment-message"></div>
+                          
                           <div class="row">
                             <div class="col-md-6">
                               <div class="alert alert-info">
@@ -177,6 +196,19 @@
               
               <!-- JavaScript for QR functions -->
               <script>
+              // Load monitoring script
+              {if $qr_data && $qr_content && $amount}
+              $(document).ready(function() {
+                // Load monitoring script
+                $.getScript('{$system.system_url}/js/shop-ai-recharge-monitor.js', function() {
+                  console.log('Starting recharge monitoring...');
+                  startRechargeMonitoring('{$qr_content}', {$amount}, {$user->_data.user_id});
+                }).fail(function() {
+                  console.error('Failed to load monitoring script');
+                });
+              });
+              {/if}
+              
               function saveQRCode() {
                 // Tạo link download cho QR code
                 var qrImg = document.querySelector('#qrSection img');
@@ -197,100 +229,154 @@
               }
               </script>
             {elseif $view == "transactions"}
-              <div class="card-header bg-transparent">
-                <strong>{__("Lịch sử giao dịch")}</strong>
+              <div class="card-header with-icon">
+                {include file='__svg_icons.tpl' icon="wallet" class="main-icon mr10" width="24px" height="24px"}
+                {__("Lịch Sử Giao Dịch")}
               </div>
               <div class="card-body">
-                <div class="row">
-                  <div class="col-12">
-                    <!-- Số dư hiện tại -->
-                    <div class="row mb-4">
-                      <div class="col-12">
-                        <div class="balance-card">
-                          <div class="balance-info">
-                            <div class="balance-icon">
-                              <i class="fa fa-wallet"></i>
-                            </div>
-                <div class="balance-details">
-                  <div class="balance-label">Số dư hiện tại</div>
-                  <div class="balance-amount" id="currentBalance">{number_format($current_balance, 0, ',', '.')} VNĐ</div>
-                  <button class="btn btn-sm btn-outline-light" onclick="refreshBalance()" style="margin-top: 5px;">
-                    <i class="fa fa-refresh"></i> Làm mới
-                  </button>
-                </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <!-- Filter và tìm kiếm -->
-                    <div class="row mb-4">
-                      <div class="col-md-6">
-                        <div class="form-group">
-                          <label>{__("Tìm kiếm")}</label>
-                          <input type="text" class="form-control" id="searchTransaction" placeholder="{__('Nhập từ khóa tìm kiếm')}">
-                        </div>
-                      </div>
-                      <div class="col-md-3">
-                        <div class="form-group">
-                          <label>{__("Từ ngày")}</label>
-                          <input type="date" class="form-control" id="fromDate">
-                        </div>
-                      </div>
-                      <div class="col-md-3">
-                        <div class="form-group">
-                          <label>{__("Đến ngày")}</label>
-                          <input type="date" class="form-control" id="toDate">
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <!-- Danh sách giao dịch -->
-                    
-                    <!-- Desktop: Bảng -->
+                
+                <!-- Wallet transactions -->
+                <div class="col-12 mt20">
+                  <div class="section-title mt10 mb20">
+                    {__("Lịch Sử Giao Dịch Shop-AI")}
+                  </div>
+                  {if $shop_ai_transactions}
+                    <!-- Desktop: Table -->
                     <div class="table-responsive d-none d-md-block">
-                      <table class="table table-striped" id="transactionsTable">
-                        <thead class="thead-dark">
+                      <table class="table table-striped table-bordered table-hover js_dataTable">
+                        <thead>
                           <tr>
-                            <th>{__("Ngày")}</th>
-                            <th>{__("Loại")}</th>
-                            <th>{__("Số tiền")}</th>
-                            <th>{__("Số dư sau")}</th>
-                            <th>{__("Nội dung")}</th>
-                            <th>{__("Trạng thái")}</th>
+                            <th>{__("ID")}</th>
+                            <th>{__("Số Tiền")}</th>
+                            <th>{__("Loại Giao Dịch")}</th>
+                            <th>{__("Số Dư Sau")}</th>
+                            <th>{__("Mô Tả")}</th>
+                            <th>{__("Thời Gian")}</th>
                           </tr>
                         </thead>
-                        <tbody id="transactionsList">
-                          <!-- Dữ liệu sẽ được load bằng AJAX -->
-                          <tr>
-                            <td colspan="6" class="text-center">
-                              <div class="spinner-border text-primary" role="status">
-                                <span class="sr-only">{__("Đang tải...")}</span>
-                              </div>
-                            </td>
-                          </tr>
+                        <tbody>
+                          {assign var="running_balance" value=$current_balance}
+                          {foreach $shop_ai_transactions as $transaction}
+                            <tr>
+                              <td>#{$transaction.transaction_id}</td>
+                              <td>
+                                <span class="badge rounded-pill badge-lg bg-success mr5">
+                                  <i class="far fa-arrow-alt-circle-up"></i>
+                                </span>
+                                <strong class="text-success">
+                                  +{number_format($transaction.amount, 0, ',', '.')} VNĐ
+                                </strong>
+                              </td>
+                              <td>
+                                <span class="badge rounded-pill badge-lg bg-success mr10">{__("Nạp Tiền")}</span>
+                                {__("Shop-AI")}
+                              </td>
+                              <td>
+                                <strong class="text-primary">
+                                  {assign var="balance_after" value=$running_balance}
+                                  {number_format($balance_after, 0, ',', '.')} VNĐ
+                                </strong>
+                                {assign var="running_balance" value=$running_balance-$transaction.amount}
+                              </td>
+                              <td>
+                                <small class="text-muted">
+                                  <i class="fa fa-qrcode mr5"></i>
+                                  {$transaction.description}
+                                </small>
+                              </td>
+                              <td>
+                                <small class="text-muted">
+                                  <i class="fa fa-calendar mr5"></i>
+                                  {date('d/m/Y', strtotime($transaction.time))}
+                                </small>
+                              </td>
+                            </tr>
+                          {/foreach}
                         </tbody>
                       </table>
                     </div>
                     
-                    <!-- Mobile: Card -->
-                    <div class="d-block d-md-none" id="transactionsCardList">
-                      <!-- Dữ liệu sẽ được load bằng AJAX -->
-                      <div class="text-center">
-                        <div class="spinner-border text-primary" role="status">
-                          <span class="sr-only">{__("Đang tải...")}</span>
+                    <!-- Mobile: Cards -->
+                    <div class="d-block d-md-none">
+                      {assign var="running_balance_mobile" value=$current_balance}
+                      {foreach $shop_ai_transactions as $transaction}
+                        <div class="card mb-3">
+                          <div class="card-body">
+                            <div class="row align-items-center">
+                              <div class="col-8">
+                                <div class="d-flex align-items-center mb-2">
+                                  <span class="badge bg-success mr10">
+                                    <i class="fa fa-plus-circle"></i> Nạp Tiền
+                                  </span>
+                                  <small class="text-muted">#{$transaction.transaction_id}</small>
+                                </div>
+                                <h6 class="mb-1 text-success font-weight-bold">
+                                  +{number_format($transaction.amount, 0, ',', '.')} VNĐ
+                                </h6>
+                                <p class="text-muted small mb-1">
+                                  <i class="fa fa-qrcode mr5"></i>
+                                  {$transaction.description}
+                                </p>
+                                <small class="text-muted">
+                                  <i class="fa fa-calendar mr5"></i>
+                                  {date('d/m/Y', strtotime($transaction.time))}
+                                </small>
+                              </div>
+                              <div class="col-4 text-right">
+                                <div class="text-center">
+                                  <small class="text-muted d-block">Số dư sau</small>
+                                  <strong class="text-primary">
+                                    {assign var="balance_after_mobile" value=$running_balance_mobile}
+                                    {number_format($balance_after_mobile, 0, ',', '.')} VNĐ
+                                  </strong>
+                                  {assign var="running_balance_mobile" value=$running_balance_mobile-$transaction.amount}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
                         </div>
-                      </div>
+                      {/foreach}
                     </div>
-                    
-                    <!-- Pagination -->
-                    <nav aria-label="Transaction pagination">
-                      <ul class="pagination justify-content-center" id="transactionPagination">
-                        <!-- Pagination sẽ được tạo bằng JavaScript -->
+                  {else}
+                    {include file='_no_transactions.tpl'}
+                  {/if}
+                  
+                  <!-- Pagination -->
+                  {if $pagination.total_pages > 1}
+                    <nav aria-label="Transaction pagination" class="mt20">
+                      <ul class="pagination justify-content-center">
+                        {if $pagination.has_prev}
+                          <li class="page-item">
+                            <a class="page-link" href="?test_user_id={$user->_data.user_id}&page={$pagination.prev_page}">
+                              <i class="fa fa-chevron-left"></i> {__("Trước")}
+                            </a>
+                          </li>
+                        {/if}
+                        
+                        {for $i=1 to $pagination.total_pages}
+                          <li class="page-item {if $i == $pagination.current_page}active{/if}">
+                            <a class="page-link" href="?test_user_id={$user->_data.user_id}&page={$i}">{$i}</a>
+                          </li>
+                        {/for}
+                        
+                        {if $pagination.has_next}
+                          <li class="page-item">
+                            <a class="page-link" href="?test_user_id={$user->_data.user_id}&page={$pagination.next_page}">
+                              {__("Tiếp")} <i class="fa fa-chevron-right"></i>
+                            </a>
+                          </li>
+                        {/if}
                       </ul>
                     </nav>
-                  </div>
+                    
+                    <!-- Pagination info -->
+                    <div class="text-center text-muted small mt10">
+                      {__("Hiển thị")} {($pagination.current_page-1)*$pagination.per_page+1} - {min($pagination.current_page*$pagination.per_page, $pagination.total_items)} {__("trong tổng số")} {$pagination.total_items} {__("giao dịch")}
+                    </div>
+                  {/if}
                 </div>
+                <!-- wallet transactions -->
+                
               </div>
               
               <!-- JavaScript cho tab giao dịch -->
@@ -342,59 +428,37 @@
               }
               
               $(document).ready(function() {
-                console.log('Document ready, loading balance and transactions...');
-                loadCurrentBalance();
-                loadTransactions();
-                
-                // Retry load balance after 2 seconds if still showing "Đang tải..."
-                setTimeout(function() {
-                  if ($('#currentBalance').text() === 'Đang tải...') {
-                    console.log('Retrying balance load...');
-                    loadCurrentBalance();
-                  }
-                }, 2000);
+                console.log('Document ready - using server-side data only...');
+                // Tất cả dữ liệu đã được load từ server, không cần AJAX
+                console.log('Current balance from server:', $('#currentBalance').text());
+                console.log('Transactions loaded from server-side template');
                 
                 // Tìm kiếm
                 $('#searchTransaction').on('keyup', function() {
-                  loadTransactions();
+                  // loadTransactions(); // Commented out - will implement later
+                  console.log('Search functionality will be implemented later');
                 });
                 
                 // Lọc theo ngày
                 $('#fromDate, #toDate').on('change', function() {
-                  loadTransactions();
+                  // loadTransactions(); // Commented out - will implement later
+                  console.log('Date filter functionality will be implemented later');
                 });
               });
               
-              function loadCurrentBalance() {
-                console.log('Loading current balance...');
-                $.ajax({
-                  url: '/TCSN/Script/includes/ajax/bank-transaction-simple.php',
-                  method: 'POST',
-                  data: {
-                    action: 'get_balance',
-                    user_id: 1,
-                    _t: new Date().getTime() // Cache busting
-                  },
-                  cache: false,
-                  success: function(response) {
-                    console.log('Balance response:', response);
-                    if (response.success) {
-                      var formattedBalance = formatMoney(response.balance) + ' VNĐ';
-                      console.log('Setting balance to:', formattedBalance);
-                      $('#currentBalance').text(formattedBalance);
-                    } else {
-                      console.log('Balance response failed:', response);
-                      $('#currentBalance').text('0 VNĐ');
-                    }
-                  },
-                  error: function(xhr, status, error) {
-                    console.log('Balance AJAX error:', status, error);
-                    $('#currentBalance').text('0 VNĐ');
-                  }
-                });
+              // Disabled AJAX balance loading - using server-side data only
+              function loadCurrentBalance_disabled() {
+                console.log('Balance loading disabled - using server-side data');
+                // Server-side balance is already displayed in template
               }
               
-              function loadTransactions(page = 1) {
+              function refreshBalance() {
+                console.log('Refreshing page...');
+                window.location.reload();
+              }
+              
+              // Removed loadTransactions function - using server-side data only
+              function loadTransactions_disabled(page = 1) {
                 console.log('Loading transactions...');
                 var search = $('#searchTransaction').val();
                 var fromDate = $('#fromDate').val();
@@ -407,7 +471,7 @@
                   method: 'POST',
                   data: {
                     action: 'get_transactions',
-                    user_id: 1,
+                    user_id: {if isset($user->_data.user_id)}{$user->_data.user_id}{else}1{/if},
                     search: search,
                     from_date: fromDate,
                     to_date: toDate,
@@ -2883,11 +2947,11 @@ function updateQRCode(amount) {
     return;
   }
   
-  // Generate unique content (10 characters max) - UPPERCASE
-        var user_id = 1;
+  // Generate unique content giống với PHP format
+  var user_id = {if isset($user->_data.user_id)}{$user->_data.user_id}{else}1{/if};
   var timestamp = Math.floor(Date.now() / 1000);
-  var random_string = Math.random().toString(36).substring(2, 8).toUpperCase(); // 6 characters UPPERCASE
-  var qr_content = 'RZ' + random_string; // Total: 8 characters (RZ + 6 random) - UPPERCASE
+  var random_string = Math.random().toString(36).substring(2, 8).toUpperCase();
+  var qr_content = 'RZ' + user_id + timestamp + random_string; // Format giống PHP
   
   // Show loading
   $('#modalQRImage').attr('src', 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2Y4ZjlmYSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM2Yzc1N2QiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5U4bqjIG3hu5kgUVIuLi48L3RleHQ+PC9zdmc+');
@@ -2898,15 +2962,22 @@ function updateQRCode(amount) {
   $('#modalQRSection').show();
   $('#saveQRBtn').show();
   
-  // Generate QR using VietQR API
-  generateVietQR(amount, qr_content);
+  // Save QR mapping to database first
+  saveQRMapping(qr_content, user_id, amount, function(success) {
+    if (success) {
+      // Generate QR using VietQR API after saving successfully
+      generateVietQR(amount, qr_content);
+    } else {
+      alert('Lỗi lưu QR mapping. Vui lòng thử lại.');
+    }
+  });
 }
 
 // Function to generate QR using VietQR
 function generateVietQR(amount, content) {
   // VietQR configuration
-  var accountNo = 'PHATLOC46241987';
-  var accountName = 'BUI QUOC VU';
+  var accountNo = '46241987';  // STK ACB thật
+  var accountName = 'ACB Account';
   var bankCode = '970416'; // ACB Bank code for VietQR
   var bankName = 'ACB';
   
@@ -3029,6 +3100,33 @@ function generateVietQR(amount, content) {
               // Initial button state
               $('#rechargeBtn').prop('disabled', true);
             });
+
+            // Function to save QR mapping via AJAX
+            function saveQRMapping(qrCode, userId, amount, callback) {
+              $.ajax({
+                url: '{$system.system_url}/shop-ai.php?action=save_qr_mapping',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                  qr_code: qrCode,
+                  user_id: userId,
+                  amount: amount
+                }),
+                success: function(response) {
+                  console.log('QR mapping saved:', response);
+                  if (response.success) {
+                    callback(true);
+                  } else {
+                    console.error('Failed to save QR mapping:', response.message);
+                    callback(false);
+                  }
+                },
+                error: function(xhr, status, error) {
+                  console.error('AJAX error saving QR mapping:', error);
+                  callback(false);
+                }
+              });
+            }
 </script>
 
 {include file='_footer.tpl'}
