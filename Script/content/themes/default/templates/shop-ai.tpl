@@ -1757,9 +1757,51 @@
                         <h5 class="section-title">
                           <i class="fa fa-mobile mr-2"></i>Check Số Điện Thoại Shopee
                         </h5>
+                        
+                        <!-- Thông tin số dư và giá check -->
+                        <div class="alert alert-info mb-3" style="border-radius: 8px;">
+                          <div class="row">
+                            <div class="col-6">
+                              <div class="text-center">
+                                <i class="fa fa-wallet fa-lg mb-2" style="color: #28a745;"></i>
+                                <div class="small text-muted">Số dư hiện tại</div>
+                                <div class="h6 mb-0 font-weight-bold" style="color: #28a745;">
+                                  {if isset($current_balance)}
+                                    {number_format($current_balance, 0, ',', '.')} VNĐ
+                                  {else}
+                                    0 VNĐ
+                                  {/if}
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-6">
+                              <div class="text-center">
+                                <i class="fa fa-tag fa-lg mb-2" style="color: #007bff;"></i>
+                                <div class="small text-muted">Giá check</div>
+                                <div class="h6 mb-0 font-weight-bold" style="color: #007bff;">
+                                  {if isset($user_rank) && isset($user_rank.check_price)}
+                                    {number_format($user_rank.check_price, 0, ',', '.')} VNĐ
+                                  {else}
+                                    30.000 VNĐ
+                                  {/if}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          {if isset($user_rank)}
+                          <hr class="my-2">
+                          <div class="text-center">
+                            <small class="text-muted">
+                              <span class="mr-2">{$user_rank.rank_emoji}</span>
+                              Rank hiện tại: <strong>{$user_rank.rank_name}</strong>
+                            </small>
+                          </div>
+                          {/if}
+                        </div>
+                        
                         <div class="form-group">
                           <label for="usernameInput" class="form-label">
-                            <i class="fa fa-user mr-2"></i>Shopee Username
+                            <i class="fa fa-user mr-2"></i>Shopee Username Khách hàng
                           </label>
                           <div class="row">
                             <div class="col-8">
@@ -1775,9 +1817,7 @@
                               </button>
                             </div>
                           </div>
-                          <small class="form-text text-muted">
-                            3–30 ký tự, a–z, 0–9, chấm (.), gạch dưới (_), gạch ngang (-)
-                          </small>
+
                         </div>
                       </div>
                     </div>
@@ -3372,6 +3412,41 @@ function generateVietQR(amount, content) {
             }
             
 </script>
+
+<style>
+  /* Shop-AI balance info styling */
+  .alert-info {
+    background-color: #d1ecf1;
+    border-color: #bee5eb;
+    color: #0c5460;
+  }
+  
+  .alert-info hr {
+    border-top-color: #abdde5;
+  }
+  
+  .alert-info .small {
+    font-size: 0.875rem;
+  }
+  
+  .alert-info .h6 {
+    font-size: 1rem;
+  }
+  
+  @media (max-width: 767px) {
+    .alert-info .h6 {
+      font-size: 0.9rem;
+    }
+    
+    .alert-info .small {
+      font-size: 0.8rem;
+    }
+    
+    .alert-info .fa-lg {
+      font-size: 1.2em !important;
+    }
+  }
+</style>
 
 
 {include file='_footer.tpl'}

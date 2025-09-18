@@ -7,16 +7,38 @@
  * @author Zamblek
  */
 
-// Error reporting enabled for debugging
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-ini_set('log_errors', 1);
 
 // fetch bootloader
 require('bootloader.php');
 
-// Include rank system
-require_once(__DIR__ . '/includes/class-rank.php');
+// Note: Using database rank system only (not class-rank.php)
+
+/**
+ * Get all ranks from database
+ */
+function getAllRanksFromDB() {
+    global $db;
+    
+    try {
+        $get_ranks = $db->query("
+            SELECT * FROM shop_ai_ranks 
+            WHERE is_active = 1 
+            ORDER BY rank_order ASC
+        ");
+        
+        $ranks = [];
+        if ($get_ranks->num_rows > 0) {
+            while ($rank = $get_ranks->fetch_assoc()) {
+                $ranks[] = $rank;
+            }
+        }
+        
+        return $ranks;
+    } catch (Exception $e) {
+        error_log("Error getting ranks: " . $e->getMessage());
+        return [];
+    }
+}
 
 // Handle API requests
 if (isset($_GET['action']) || (isset($_SERVER['CONTENT_TYPE']) && strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== false)) {
@@ -714,6 +736,30 @@ try {
       $user_id = $user->_data['user_id'];
       $current_balance = getUserBalance($user_id);
       
+      /* get Shop-AI rank info - SAME AS ADMIN PANEL */
+      // Get current rank for this specific user
+      $current_user_id = secure($user_id, 'int');
+      $get_shop_ai_rank = $db->query(sprintf("
+        SELECT sur.*, sr.rank_name, sr.rank_emoji, sr.check_price, sr.min_spending
+        FROM shop_ai_user_ranks sur 
+        LEFT JOIN shop_ai_ranks sr ON sur.current_rank_id = sr.rank_id 
+        WHERE sur.user_id = %s
+      ", $current_user_id));
+      
+      $user_rank = null;
+      if ($get_shop_ai_rank->num_rows > 0) {
+        $shop_ai_rank_data = $get_shop_ai_rank->fetch_assoc();
+        $user_rank = [
+          'rank_id' => $shop_ai_rank_data['current_rank_id'],
+          'rank_name' => $shop_ai_rank_data['rank_name'],
+          'rank_emoji' => $shop_ai_rank_data['rank_emoji'],
+          'check_price' => $shop_ai_rank_data['check_price'],
+          'min_spending' => $shop_ai_rank_data['min_spending'],
+          'user_total_spent' => $shop_ai_rank_data['total_spending']
+        ];
+      }
+      
+      
       // Get phone check history (5 giao dịch gần nhất)
       $check_history = getPhoneCheckHistory($user_id, 5);
       
@@ -776,6 +822,7 @@ try {
       
       // Assign variables to template
       $smarty->assign('current_balance', $current_balance);
+      $smarty->assign('user_rank', $user_rank);
       $smarty->assign('check_history', $check_history);
       $smarty->assign('check_result', $check_result);
       break;
@@ -901,27 +948,62 @@ try {
       page_header(__("Bảng Giá Check Số Điện Thoại") . ' | ' . __($system['system_title']));
       
       // Initialize rank system
-      $rankSystem = new RankSystem();
+      // Using database rank system only
       
       // Get all ranks for pricing table
-      $all_ranks = $rankSystem->getAllRanks();
+      $all_ranks = getAllRanksFromDB();
       
       // Get user info if logged in
       if ($user->_logged_in) {
         $user_id = $user->_data['user_id'];
         $current_balance = getUserBalance($user_id);
         
-        // Get current user rank
-        $user_rank = $rankSystem->getUserRank($user_id);
+        /* get Shop-AI rank info - SAME AS ADMIN PANEL */
+        // Get current rank for this specific user
+        $current_user_id = secure($user_id, 'int');
+        $get_shop_ai_rank = $db->query(sprintf("
+          SELECT sur.*, sr.rank_name, sr.rank_emoji, sr.check_price, sr.min_spending
+          FROM shop_ai_user_ranks sur 
+          LEFT JOIN shop_ai_ranks sr ON sur.current_rank_id = sr.rank_id 
+          WHERE sur.user_id = %s
+        ", $current_user_id));
         
-        // Get rank progress
-        $rank_progress = $rankSystem->getRankProgress($user_id);
+        $user_rank = null;
+        if ($get_shop_ai_rank->num_rows > 0) {
+          $shop_ai_rank_data = $get_shop_ai_rank->fetch_assoc();
+          $user_rank = [
+            'rank_id' => $shop_ai_rank_data['current_rank_id'],
+            'rank_name' => $shop_ai_rank_data['rank_name'],
+            'rank_emoji' => $shop_ai_rank_data['rank_emoji'],
+            'check_price' => $shop_ai_rank_data['check_price'],
+            'min_spending' => $shop_ai_rank_data['min_spending'],
+            'user_total_spent' => $shop_ai_rank_data['total_spending']
+          ];
+        }
+        
+        // Get actual spending from transactions for this specific user
+        $get_actual_spending = $db->query(sprintf("
+          SELECT COALESCE(SUM(amount), 0) as actual_spending 
+          FROM users_wallets_transactions 
+          WHERE user_id = %s AND type = 'withdraw'
+        ", $current_user_id));
+        
+        $actual_spending = 0;
+        if ($get_actual_spending->num_rows > 0) {
+          $actual_spending = $get_actual_spending->fetch_assoc()['actual_spending'];
+        }
+        
+        // Debug info
+        $smarty->assign('debug_logged_in', 'YES');
+        $smarty->assign('debug_user_id', $user_id);
+        $smarty->assign('debug_query_result', $get_shop_ai_rank->num_rows);
         
         // Assign user-specific variables
         $smarty->assign('current_balance', $current_balance);
         $smarty->assign('user_rank', $user_rank);
-        $smarty->assign('rank_progress', $rank_progress);
+        $smarty->assign('actual_spending', $actual_spending);
       }
+      
       
       // Assign common variables
       $smarty->assign('all_ranks', $all_ranks);

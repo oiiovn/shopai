@@ -718,6 +718,43 @@ try {
             $packages = $user->get_packages();
             $smarty->assign('packages', $packages);
           }
+          
+          /* get Shop-AI rank info */
+          // Get current rank for this specific user
+          $current_user_id = secure($_GET['id'], 'int');
+          $get_shop_ai_rank = $db->query(sprintf("
+            SELECT sur.*, sr.rank_name, sr.rank_emoji, sr.check_price, sr.min_spending
+            FROM shop_ai_user_ranks sur 
+            LEFT JOIN shop_ai_ranks sr ON sur.current_rank_id = sr.rank_id 
+            WHERE sur.user_id = %s
+          ", $current_user_id));
+          
+          if ($get_shop_ai_rank->num_rows > 0) {
+            $data['shop_ai_rank'] = $get_shop_ai_rank->fetch_assoc();
+          }
+          
+          // Get actual spending from transactions for this specific user
+          $get_actual_spending = $db->query(sprintf("
+            SELECT COALESCE(SUM(amount), 0) as actual_spending 
+            FROM users_wallets_transactions 
+            WHERE user_id = %s AND type = 'withdraw'
+          ", $current_user_id));
+          
+          if ($get_actual_spending->num_rows > 0) {
+            $data['actual_spending'] = $get_actual_spending->fetch_assoc()['actual_spending'];
+          } else {
+            $data['actual_spending'] = 0;
+          }
+          
+          // Get available ranks
+          $get_available_ranks = $db->query("SELECT * FROM shop_ai_ranks ORDER BY rank_order ASC");
+          $available_ranks = [];
+          if ($get_available_ranks->num_rows > 0) {
+            while ($rank = $get_available_ranks->fetch_assoc()) {
+              $available_ranks[] = $rank;
+            }
+          }
+          $smarty->assign('available_ranks', $available_ranks);
           /* prepare monetization */
           $data['can_monetize_content'] = $system['monetization_enabled'] && $user->check_user_permission($data['user_id'], 'monetization_permission');
           // get monetozaion plans

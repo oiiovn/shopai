@@ -401,6 +401,76 @@ try {
       return_json(array('success' => true, 'message' => __("User info have been updated")));
       break;
 
+    case 'edit_shop_ai_rank':
+      /* valid inputs */
+      if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
+        _error(400);
+      }
+      /* get user info */
+      $user_info = $user->get_user($_GET['id']);
+      if (!$user_info) {
+        throw new Exception(__("This account not exist"));
+      }
+      
+      /* validate inputs */
+      if (!isset($_POST['shop_ai_rank_id']) || !is_numeric($_POST['shop_ai_rank_id'])) {
+        throw new Exception("Invalid rank ID");
+      }
+      
+      if (!isset($_POST['shop_ai_total_spending']) || !is_numeric($_POST['shop_ai_total_spending']) || $_POST['shop_ai_total_spending'] < 0) {
+        throw new Exception("Invalid spending amount");
+      }
+      
+      $rank_id = (int)$_POST['shop_ai_rank_id'];
+      $total_spending = (float)$_POST['shop_ai_total_spending'];
+      
+      /* check if rank exists */
+      $get_rank = $db->query(sprintf("SELECT * FROM shop_ai_ranks WHERE rank_id = %s", secure($rank_id, 'int')));
+      if ($get_rank->num_rows == 0) {
+        throw new Exception("Rank not found");
+      }
+      $rank_data = $get_rank->fetch_assoc();
+      
+      /* auto-adjust spending to minimum required for rank if needed */
+      $min_spending = (float)$rank_data['min_spending'];
+      if ($total_spending < $min_spending) {
+        $total_spending = $min_spending;
+      }
+      
+      /* check if user already has a rank record */
+      $get_user_rank = $db->query(sprintf("SELECT * FROM shop_ai_user_ranks WHERE user_id = %s", secure($_GET['id'], 'int')));
+      
+      if ($get_user_rank->num_rows > 0) {
+        /* update existing record */
+        $db->query(sprintf("
+          UPDATE shop_ai_user_ranks 
+          SET current_rank_id = %s, total_spending = %s, last_updated = NOW() 
+          WHERE user_id = %s
+        ", secure($rank_id, 'int'), secure($total_spending), secure($_GET['id'], 'int'))) or _error('SQL_ERROR_THROWEN');
+      } else {
+        /* insert new record */
+        $db->query(sprintf("
+          INSERT INTO shop_ai_user_ranks 
+          (user_id, current_rank_id, total_spending, created_at, last_updated) 
+          VALUES (%s, %s, %s, NOW(), NOW())
+        ", secure($_GET['id'], 'int'), secure($rank_id, 'int'), secure($total_spending))) or _error('SQL_ERROR_THROWEN');
+      }
+      
+      /* return success with rank info */
+      $message = "Shop-AI rank updated successfully";
+      if ($total_spending > (float)$_POST['shop_ai_total_spending']) {
+        $message .= " (Total spending auto-adjusted to minimum required: " . number_format($total_spending, 0, ',', '.') . " VNĐ)";
+      }
+      
+      return_json(array(
+        'success' => true, 
+        'message' => $message,
+        'rank_name' => $rank_data['rank_emoji'] . ' ' . $rank_data['rank_name'],
+        'check_price' => number_format($rank_data['check_price'], 0, ',', '.') . ' VNĐ',
+        'total_spending' => number_format($total_spending, 0, ',', '.') . ' VNĐ'
+      ));
+      break;
+
     case 'fake_generator':
       /* fake users generator */
       $generated = $user->fake_users_generator($_POST['users_num'], $_POST['default_password'], $_POST['random_Avatar'], $_POST['language']);

@@ -223,6 +223,11 @@
             </a>
           </li>
         {/if}
+        <li class="nav-item">
+          <a class="nav-link" href="#shop-ai-rank" data-bs-toggle="tab">
+            <i class="fa fa-trophy fa-fw mr5"></i><strong class="mr5">Shop-AI Rank</strong>
+          </a>
+        </li>
       </ul>
       <!-- tabs nav -->
 
@@ -1497,9 +1502,227 @@
           </form>
         </div>
         <!-- extra tab -->
+
+        <!-- shop-ai-rank tab -->
+        <div class="tab-pane" id="shop-ai-rank">
+          <form class="js_ajax-forms" data-url="admin/users.php?id={$data['user_id']}&do=edit_shop_ai_rank">
+            
+            <!-- Current Rank Info -->
+            <div class="heading-small mb20">
+              <i class="fa fa-trophy mr10"></i>Shop-AI Rank Information
+              <small class="text-muted">(User ID: {$data['user_id']})</small>
+            </div>
+            <div class="pl-md-4">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="card bg-light">
+                    <div class="card-body text-center">
+                      <h5>Current Rank</h5>
+                      <div class="mb-2">
+                        {if $data['shop_ai_rank']}
+                          <span class="badge badge-primary p-3 text-lg">
+                            {$data['shop_ai_rank']['rank_emoji']} {$data['shop_ai_rank']['rank_name']}
+                          </span>
+                          <br><small class="text-muted">Rank ID: {$data['shop_ai_rank']['current_rank_id']}</small>
+                        {else}
+                          <span class="badge badge-secondary p-3 text-lg">
+                            🥉 Bronze (Default)
+                          </span>
+                          <br><small class="text-muted">No rank data found</small>
+                        {/if}
+                      </div>
+                      <p class="text-muted mb-1">Check Price:</p>
+                      <h4 class="text-primary">
+                        {if $data['shop_ai_rank']}
+                          {number_format($data['shop_ai_rank']['check_price'], 0, ',', '.')} VNĐ
+                        {else}
+                          30,000 VNĐ
+                        {/if}
+                      </h4>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="card bg-light">
+                    <div class="card-body text-center">
+                      <h5>Spending Statistics</h5>
+                      <p class="text-muted mb-1">Recorded Spending:</p>
+                      <h4 class="text-success">
+                        {if $data['shop_ai_rank']}
+                          {number_format($data['shop_ai_rank']['total_spending'], 0, ',', '.')} VNĐ
+                        {else}
+                          0 VNĐ
+                        {/if}
+                      </h4>
+                      <p class="text-muted mb-1">Actual Spending:</p>
+                      <h4 class="text-warning">
+                        {if $data['actual_spending']}
+                          {number_format($data['actual_spending'], 0, ',', '.')} VNĐ
+                        {else}
+                          0 VNĐ
+                        {/if}
+                      </h4>
+                      
+                      {* Check for inconsistent data *}
+                      {if $data['shop_ai_rank']}
+                        {assign var="current_spending" value=$data['shop_ai_rank']['total_spending']}
+                        {assign var="required_min" value=$data['shop_ai_rank']['min_spending']}
+                        {if $current_spending < $required_min}
+                        <div class="mt-2">
+                          <div class="alert alert-warning p-2">
+                            <small><i class="fa fa-exclamation-triangle mr-1"></i>
+                            <strong>Data inconsistent:</strong> Spending ({number_format($current_spending, 0, ',', '.')} VNĐ) 
+                            &lt; Required ({number_format($required_min, 0, ',', '.')} VNĐ)
+                            </small>
+                          </div>
+                        </div>
+                        {/if}
+                      {/if}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- Update Rank -->
+            <div class="heading-small mb20">
+              Update User Rank
+            </div>
+            <div class="pl-md-4">
+              <div class="row form-group">
+                <label class="col-md-3 form-label">
+                  <i class="fa fa-trophy mr5"></i>Select Rank
+                </label>
+                <div class="col-md-9">
+                  <select class="form-select" name="shop_ai_rank_id" id="rankSelect">
+                    {if $available_ranks}
+                      {foreach $available_ranks as $rank}
+                        <option value="{$rank.rank_id}" 
+                                data-price="{$rank.check_price}"
+                                data-min-spending="{$rank.min_spending}"
+                                {if $data['shop_ai_rank'] && $data['shop_ai_rank']['current_rank_id'] == $rank.rank_id}selected{/if}>
+                          {$rank.rank_emoji} {$rank.rank_name} - {number_format($rank.check_price, 0, ',', '.')} VNĐ
+                          (Min: {number_format($rank.min_spending, 0, ',', '.')} VNĐ)
+                        </option>
+                      {/foreach}
+                    {else}
+                      <option value="1">🥉 Bronze - 30,000 VNĐ (Min: 0 VNĐ)</option>
+                      <option value="2">🥈 Silver - 27,000 VNĐ (Min: 1,000,000 VNĐ)</option>
+                      <option value="3">🥇 Gold - 23,000 VNĐ (Min: 5,000,000 VNĐ)</option>
+                      <option value="4">🏅 Platinum - 20,000 VNĐ (Min: 10,000,000 VNĐ)</option>
+                      <option value="5">💎 Diamond - 17,000 VNĐ (Min: 20,000,000 VNĐ)</option>
+                      <option value="6">❤️‍🔥 Ruby - 14,000 VNĐ (Min: 35,000,000 VNĐ)</option>
+                      <option value="7">🪐 Titan - 10,000 VNĐ (Min: 50,000,000 VNĐ)</option>
+                      <option value="8">👑 Legend - 5,000 VNĐ (Min: 55,000,000 VNĐ)</option>
+                    {/if}
+                  </select>
+                  <div class="form-text">
+                    Select the rank you want to assign to this user.
+                  </div>
+                </div>
+              </div>
+
+              <div class="row form-group">
+                <label class="col-md-3 form-label">
+                  <i class="fa fa-money-bill mr5"></i>Total Spending (VNĐ)
+                </label>
+                <div class="col-md-9">
+                  <input type="number" class="form-control" name="shop_ai_total_spending" 
+                         value="{if $data['shop_ai_rank']}{$data['shop_ai_rank']['total_spending']|string_format:"%.0f"}{else}0{/if}"
+                         min="0" step="1000" id="spendingInput">
+                  <small class="text-muted">
+                    Raw DB value: {if $data['shop_ai_rank']}{$data['shop_ai_rank']['total_spending']}{else}0{/if}
+                  </small>
+                  <div class="form-text">
+                    This amount will be recorded as the user's total spending for rank calculation.
+                  </div>
+                </div>
+              </div>
+
+              <!-- Preview -->
+              <div class="row form-group">
+                <label class="col-md-3 form-label">
+                  <i class="fa fa-eye mr5"></i>Preview
+                </label>
+                <div class="col-md-9">
+                  <div class="alert alert-info" id="rankPreview">
+                    <strong>New Rank:</strong> <span id="previewRank">🥉 Bronze</span><br>
+                    <strong>Check Price:</strong> <span id="previewPrice">30,000 VNĐ</span><br>
+                    <strong>Total Spending:</strong> <span id="previewSpending">0 VNĐ</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- success -->
+            <div class="alert alert-success mb0 mt20 x-hidden"></div>
+            <!-- success -->
+
+            <!-- error -->
+            <div class="alert alert-danger mb0 mt20 x-hidden"></div>
+            <!-- error -->
+
+            <div class="card-footer-fake text-end">
+              <button type="submit" class="btn btn-primary" id="updateRankBtn">
+                <i class="fa fa-save mr5"></i>Update Shop-AI Rank
+              </button>
+            </div>
+          </form>
+        </div>
+        <!-- shop-ai-rank tab -->
       </div>
       <!-- tabs content -->
     </div>
 
   {/if}
 </div>
+
+<script>
+// Shop-AI Rank Preview
+document.addEventListener('DOMContentLoaded', function() {
+  const rankSelect = document.getElementById('rankSelect');
+  const spendingInput = document.getElementById('spendingInput');
+  const previewRank = document.getElementById('previewRank');
+  const previewPrice = document.getElementById('previewPrice');
+  const previewSpending = document.getElementById('previewSpending');
+
+  function updatePreview() {
+    if (!rankSelect || !spendingInput) return;
+    
+    const selectedOption = rankSelect.options[rankSelect.selectedIndex];
+    const rankText = selectedOption.text.split(' - ')[0];
+    const price = selectedOption.getAttribute('data-price');
+    const spending = parseFloat(spendingInput.value) || 0;
+
+    if (previewRank) previewRank.textContent = rankText;
+    if (previewPrice) previewPrice.textContent = new Intl.NumberFormat('vi-VN').format(price) + ' VNĐ';
+    if (previewSpending) previewSpending.textContent = new Intl.NumberFormat('vi-VN').format(spending) + ' VNĐ';
+  }
+
+  if (rankSelect) {
+    rankSelect.addEventListener('change', function() {
+      // Auto-adjust spending when rank changes
+      const selectedOption = rankSelect.options[rankSelect.selectedIndex];
+      const minSpending = parseFloat(selectedOption.getAttribute('data-min-spending')) || 0;
+      const currentSpending = parseFloat(spendingInput.value) || 0;
+      
+      // Only auto-adjust if current spending is less than minimum
+      if (currentSpending < minSpending) {
+        spendingInput.value = minSpending;
+      }
+      
+      updatePreview();
+    });
+  }
+  
+  if (spendingInput) {
+    spendingInput.addEventListener('input', updatePreview);
+  }
+
+  // Initial preview update (without auto-adjustment)
+  updatePreview();
+});
+
+</script>
