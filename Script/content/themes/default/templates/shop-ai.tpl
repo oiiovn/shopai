@@ -82,12 +82,6 @@
               <div class="card-body">
                 <div class="row">
                   <div class="col-md-8 mx-auto">
-                    <div class="text-center mb-4">
-                      <i class="fa fa-credit-card fa-3x text-primary mb-3"></i>
-                      <h4>{__("Nạp tiền vào tài khoản")}</h4>
-                      <p class="text-muted">{__("Chọn số tiền bạn muốn nạp vào tài khoản")}</p>
-                    </div>
-                    
                     <!-- Số dư hiện tại -->
                     <div class="alert alert-info text-center">
                       <strong>{__("Số dư hiện tại")}: {number_format($current_balance, 0, ',', '.')} VNĐ</strong>
@@ -96,31 +90,37 @@
                     <!-- Form nạp tiền -->
                     <form method="post" action="{$system['system_url']}/shop-ai/recharge" id="rechargeForm">
                       <div class="row justify-content-center">
-                        <div class="col-md-6">
+                        <div class="col-md-8">
                           <div class="form-group">
-                            <label class="form-label">{__("Số tiền nạp")}</label>
                             <div class="input-group">
-                              <input type="number" 
+                              <input type="text" 
                                      class="form-control" 
                                      id="amountInput" 
                                      name="amount" 
                                      placeholder="Nhập số tiền" 
-                                     min="10000" 
-                                     max="50000000" 
-                                     step="1000"
-                                     oninput="updateAmountPreview(this.value)"
+                                     oninput="validateAndFormatAmount(this)"
                                      required>
-                              <span class="input-group-text">VNĐ</span>
+                              <button type="button" 
+                                      class="btn btn-primary" 
+                                      data-bs-toggle="modal" 
+                                      data-bs-target="#rechargeModal" 
+                                      onclick="openRechargeModal()"
+                                      id="rechargeBtn"
+                                      disabled>
+                                <i class="fa fa-qrcode mr5"></i>{__("Nạp tiền ngay")}
+                              </button>
                             </div>
                             <small class="form-text text-muted mt-2">
                               Số tiền tối thiểu: 10,000 VNĐ - Tối đa: 50,000,000 VNĐ
                             </small>
                             
                             <!-- Quick amount buttons -->
-                            <div class="mt-3">
+                            <div class="mt-4">
                               <label class="form-label small">{__("Chọn nhanh")}:</label>
-                              <div class="quick-select-container">
+                              <!-- Mobile: Single row scroll -->
+                              <div class="quick-select-container d-block d-md-none">
                                 <div class="quick-select-scroll">
+                                  <button type="button" class="btn btn-outline-primary quick-select-btn" onclick="setQuickAmount(30000)">30K</button>
                                   <button type="button" class="btn btn-outline-primary quick-select-btn" onclick="setQuickAmount(50000)">50K</button>
                                   <button type="button" class="btn btn-outline-primary quick-select-btn" onclick="setQuickAmount(100000)">100K</button>
                                   <button type="button" class="btn btn-outline-primary quick-select-btn" onclick="setQuickAmount(200000)">200K</button>
@@ -128,6 +128,38 @@
                                   <button type="button" class="btn btn-outline-primary quick-select-btn" onclick="setQuickAmount(1000000)">1M</button>
                                   <button type="button" class="btn btn-outline-primary quick-select-btn" onclick="setQuickAmount(2000000)">2M</button>
                                   <button type="button" class="btn btn-outline-primary quick-select-btn" onclick="setQuickAmount(5000000)">5M</button>
+                                </div>
+                              </div>
+                              <!-- Desktop: Grid layout -->
+                              <div class="quick-select-grid d-none d-md-block">
+                                <div class="row g-2">
+                                  <div class="col-6 col-lg-4">
+                                    <button type="button" class="btn btn-outline-primary w-100" onclick="setQuickAmount(30000)">30K</button>
+                                  </div>
+                                  <div class="col-6 col-lg-4">
+                                    <button type="button" class="btn btn-outline-primary w-100" onclick="setQuickAmount(50000)">50K</button>
+                                  </div>
+                                  <div class="col-6 col-lg-4">
+                                    <button type="button" class="btn btn-outline-primary w-100" onclick="setQuickAmount(100000)">100K</button>
+                                  </div>
+                                  <div class="col-6 col-lg-4">
+                                    <button type="button" class="btn btn-outline-primary w-100" onclick="setQuickAmount(200000)">200K</button>
+                                  </div>
+                                  <div class="col-6 col-lg-4">
+                                    <button type="button" class="btn btn-outline-primary w-100" onclick="setQuickAmount(500000)">500K</button>
+                                  </div>
+                                  <div class="col-6 col-lg-4">
+                                    <button type="button" class="btn btn-outline-primary w-100" onclick="setQuickAmount(1000000)">1M</button>
+                                  </div>
+                                  <div class="col-6 col-lg-4">
+                                    <button type="button" class="btn btn-outline-primary w-100" onclick="setQuickAmount(2000000)">2M</button>
+                                  </div>
+                                  <div class="col-6 col-lg-4">
+                                    <button type="button" class="btn btn-outline-primary w-100" onclick="setQuickAmount(5000000)">5M</button>
+                                  </div>
+                                  <div class="col-6 col-lg-4">
+                                    <button type="button" class="btn btn-outline-primary w-100" onclick="setQuickAmount(10000000)">10M</button>
+                                  </div>
                                 </div>
                               </div>
                             </div>
@@ -141,17 +173,6 @@
                           </div>
                         </div>
                       </div>
-                      
-                    <div class="text-center">
-                      <button type="button" 
-                              class="btn btn-primary btn-lg" 
-                              data-bs-toggle="modal" 
-                              data-bs-target="#rechargeModal" 
-                              onclick="openRechargeModal()"
-                              id="rechargeBtn">
-                        <i class="fa fa-qrcode mr5"></i>{__("Nạp tiền ngay")}
-                      </button>
-                    </div>
                     </form>
                     
                     <!-- QR Code Display -->
@@ -3523,6 +3544,20 @@
               transform: translateY(0);
             }
 
+            /* Desktop grid layout */
+            .quick-select-grid .btn {
+              font-size: 14px;
+              padding: 8px 12px;
+              border-radius: 6px;
+              font-weight: 500;
+              transition: all 0.2s ease;
+            }
+            
+            .quick-select-grid .btn:hover {
+              transform: translateY(-1px);
+              box-shadow: 0 2px 8px rgba(0,123,255,0.25);
+            }
+
             /* Desktop: show all buttons in a row */
             @media (min-width: 768px) {
               .quick-select-scroll {
@@ -3554,8 +3589,8 @@
 <script>
 // Function to open modal and auto-generate QR
 function openRechargeModal() {
-  // Get amount from input field
-  var amount = document.getElementById('amountInput').value;
+  // Get clean numeric amount from formatted input
+  var amount = getCleanAmount();
   
   // Validate amount
   if (!amount || amount < 10000) {
@@ -3684,23 +3719,67 @@ function generateVietQR(amount, content) {
             }
 
 
+            // Function to validate and format amount input
+            function validateAndFormatAmount(input) {
+              // Remove all non-digit characters
+              let value = input.value.replace(/\D/g, '');
+              
+              // Convert to number for validation
+              let numValue = parseInt(value) || 0;
+              
+              // Format with thousand separators
+              if (value) {
+                input.value = numValue.toLocaleString('vi-VN');
+              } else {
+                input.value = '';
+              }
+              
+              // Update preview and button state
+              updateAmountPreview(numValue);
+              updateRechargeButtonState(numValue);
+            }
+            
             // Function to update amount preview
             function updateAmountPreview(amount) {
               if (amount && amount >= 10000) {
-                document.getElementById('previewAmount').textContent = parseInt(amount).toLocaleString();
+                document.getElementById('previewAmount').textContent = amount.toLocaleString('vi-VN');
                 document.getElementById('amountPreview').style.display = 'block';
               } else {
                 document.getElementById('amountPreview').style.display = 'none';
               }
             }
             
+            // Function to update recharge button state
+            function updateRechargeButtonState(amount) {
+              const btn = document.getElementById('rechargeBtn');
+              const isValid = amount && amount >= 10000 && amount <= 50000000;
+              
+              if (isValid) {
+                btn.disabled = false;
+                btn.classList.remove('btn-secondary');
+                btn.classList.add('btn-primary');
+                btn.style.opacity = '1';
+              } else {
+                btn.disabled = true;
+                btn.classList.remove('btn-primary');
+                btn.classList.add('btn-secondary');
+                btn.style.opacity = '0.6';
+              }
+            }
+            
+            // Function to get clean numeric value from formatted input
+            function getCleanAmount() {
+              const input = document.getElementById('amountInput');
+              return parseInt(input.value.replace(/\D/g, '')) || 0;
+            }
+            
             // Function to set quick amount
             function setQuickAmount(amount) {
-              document.getElementById('amountInput').value = amount;
-              updateAmountPreview(amount);
+              const input = document.getElementById('amountInput');
+              input.value = amount.toLocaleString('vi-VN');
               
-              // Update button state
-              $('#rechargeBtn').prop('disabled', false);
+              updateAmountPreview(amount);
+              updateRechargeButtonState(amount);
               
               // Auto-generate QR if modal is open
               if ($('#rechargeModal').hasClass('show')) {
@@ -3719,20 +3798,16 @@ function generateVietQR(amount, content) {
                 $('#saveQRBtn').hide();
               });
               
+              // Initial button state - disabled with secondary style
+              updateRechargeButtonState(0);
+              
               // Auto-generate QR when amount changes (if modal is open)
               $('#amountInput').on('input', function() {
-                var amount = $(this).val();
+                var amount = getCleanAmount();
                 if (amount && amount >= 10000 && $('#rechargeModal').hasClass('show')) {
                   updateQRCode(amount);
                 }
-                
-                // Update button state
-                var isValid = amount && amount >= 10000 && amount <= 50000000;
-                $('#rechargeBtn').prop('disabled', !isValid);
               });
-              
-              // Initial button state
-              $('#rechargeBtn').prop('disabled', true);
             });
 
             // Function to save QR mapping via AJAX
