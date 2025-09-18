@@ -2927,41 +2927,45 @@
                 // Function to show insufficient balance alert
                 function showInsufficientBalanceAlert(message, requiredAmount, currentBalance) {
                   var alertHtml = 
-                    '<div class="alert alert-danger alert-dismissible fade show" role="alert">' +
-                      '<div class="d-flex align-items-center">' +
-                        '<i class="fa fa-exclamation-triangle fa-2x mr-3 text-danger"></i>' +
+                    '<div class="alert border-0 shadow-sm" style="background-color: #fbb6b6;" role="alert">' +
+                      '<div class="d-flex align-items-start">' +
+                        '<div class="alert-icon mr-3">' +
+                          '<i class="fa fa-exclamation-circle fa-2x" style="color: #1e252b;"></i>' +
+                        '</div>' +
                         '<div class="flex-grow-1">' +
-                          '<h5 class="alert-heading mb-2"><i class="fa fa-wallet mr-2"></i>Không đủ số dư!</h5>' +
-                          '<p class="mb-2">' + message + '</p>' +
-                          '<div class="row">' +
-                            '<div class="col-6">' +
-                              '<small class="text-muted">Số dư hiện tại:</small><br>' +
-                              '<strong class="text-danger">' + currentBalance.toLocaleString('vi-VN') + ' VNĐ</strong>' +
+                          '<h5 class="alert-title mb-2" style="margin-left: 20px;">Số dư không đủ!</h5>' +
+                          '<div class="balance-info mb-3">' +
+                            '<div class="d-flex justify-content-between align-items-center mb-1">' +
+                              '<span class="text-muted">Số dư hiện tại:</span>' +
+                              '<strong style="color: #1e252b;">' + currentBalance.toLocaleString('vi-VN') + ' VNĐ</strong>' +
                             '</div>' +
-                            '<div class="col-6">' +
-                              '<small class="text-muted">Cần thêm:</small><br>' +
-                              '<strong class="text-warning">' + (requiredAmount - currentBalance).toLocaleString('vi-VN') + ' VNĐ</strong>' +
+                            '<div class="d-flex justify-content-between align-items-center">' +
+                              '<span class="text-muted">Số tiền cần:</span>' +
+                              '<strong class="text-primary">' + requiredAmount.toLocaleString('vi-VN') + ' VNĐ</strong>' +
                             '</div>' +
                           '</div>' +
-                          '<hr class="my-2">' +
-                          '<div class="text-center">' +
-                            '<a href="{$system.system_url}/shop-ai/recharge" class="btn btn-success btn-sm">' +
-                              '<i class="fa fa-credit-card mr-1"></i>Nạp tiền ngay' +
+                          '<div class="text-center" style="margin-left: 10px;">' +
+                            '<a href="{$system.system_url}/shop-ai/recharge" class="btn btn-sm" style="background-color: #138a9c; color: white; border-color: #138a9c;">' +
+                              '<i class="fa fa-plus mr-1"></i>Nạp tiền ngay' +
                             '</a>' +
                           '</div>' +
                         '</div>' +
+                        '<button type="button" class="btn-close" onclick="this.closest(\'.alert\').parentElement.style.display=\'none\'">' +
+                          '<i class="fa fa-times"></i>' +
+                        '</button>' +
                       '</div>' +
-                      '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' +
                     '</div>';
                   
                   var alertContainer = document.getElementById('checkResultAlert');
                   alertContainer.innerHTML = alertHtml;
                   alertContainer.style.display = 'block';
                   
-                  // Auto hide after 10 seconds
+                  // Auto hide after 7 seconds
                   setTimeout(function() {
-                    alertContainer.style.display = 'none';
-                  }, 10000);
+                    if (alertContainer.style.display !== 'none') {
+                      alertContainer.style.display = 'none';
+                    }
+                  }, 7000);
                 }
                 
                 // Function to show result popup in center screen
@@ -2972,20 +2976,51 @@
                     alertContainer.style.display = 'none';
                   }
                   
-                  // Create modal HTML for center screen
-                  var alertClass = type === 'success' ? 'alert-success' : 
-                                  type === 'warning' ? 'alert-warning' : 'alert-danger';
+                  // Define colors and icons based on type
+                  var config = {
+                    'success': {
+                      bgColor: '#d4edda',
+                      borderColor: '#28a745',
+                      textColor: '#155724',
+                      icon: 'fa-check-circle',
+                      iconColor: '#28a745'
+                    },
+                    'warning': {
+                      bgColor: '#fff3cd', 
+                      borderColor: '#ffc107',
+                      textColor: '#856404',
+                      icon: 'fa-exclamation-triangle',
+                      iconColor: '#ffc107'
+                    },
+                    'danger': {
+                      bgColor: '#f8d7da',
+                      borderColor: '#dc3545', 
+                      textColor: '#721c24',
+                      icon: 'fa-times-circle',
+                      iconColor: '#dc3545'
+                    }
+                  };
+                  
+                  var typeConfig = config[type] || config['danger'];
                   
                   var modalHtml = 
                     '<div class="modal fade" id="checkResultModal" tabindex="-1" role="dialog">' +
-                      '<div class="modal-dialog modal-dialog-centered" role="document">' +
-                        '<div class="modal-content">' +
-                          '<div class="modal-body text-center p-4">' +
-                            '<div class="' + alertClass + ' border-0 mb-3">' +
-                              '<h5 class="mb-2">' + title + '</h5>' +
-                              '<div>' + message + '</div>' +
+                      '<div class="modal-dialog modal-dialog-centered modal-sm" role="document">' +
+                        '<div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">' +
+                          '<div class="modal-body text-center p-4" style="background: ' + typeConfig.bgColor + '; border-radius: 16px;">' +
+                            '<div class="result-icon mb-3">' +
+                              '<div class="icon-circle mx-auto" style="width: 80px; height: 80px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">' +
+                                '<i class="fa ' + typeConfig.icon + ' fa-3x" style="color: ' + typeConfig.iconColor + ';"></i>' +
+                              '</div>' +
                             '</div>' +
-                            '<small class="text-muted">Tự động đóng sau 3 giây...</small>' +
+                            '<h5 class="modal-title mb-2 font-weight-bold" style="color: ' + typeConfig.textColor + ';">' + title + '</h5>' +
+                            '<p class="modal-message mb-3" style="color: ' + typeConfig.textColor + '; opacity: 0.8;">' + message + '</p>' +
+                            '<div class="countdown-container">' +
+                              '<div class="progress mb-2" style="height: 4px; border-radius: 2px; background: rgba(255,255,255,0.5);">' +
+                                '<div class="progress-bar" id="countdownProgress" style="width: 100%; background: ' + typeConfig.borderColor + '; border-radius: 2px; transition: width 0.1s linear;"></div>' +
+                              '</div>' +
+                              '<small class="text-muted">Tự động đóng sau <span id="countdownTimer">3</span> giây...</small>' +
+                            '</div>' +
                           '</div>' +
                         '</div>' +
                       '</div>' +
@@ -2997,16 +3032,30 @@
                   // Add to body
                   $('body').append(modalHtml);
                   
-                  // Show modal
-                  $('#checkResultModal').modal('show');
+                  // Show modal with animation
+                  $('#checkResultModal').modal({
+                    backdrop: 'static',
+                    keyboard: false
+                  });
                   
-                  // Auto close and reload after 3 seconds
-                  setTimeout(function() {
-                    $('#checkResultModal').modal('hide');
-                    setTimeout(function() {
-                      window.location.reload();
-                    }, 300);
-                  }, 3000);
+                  // Countdown animation
+                  var countdown = 3;
+                  var interval = setInterval(function() {
+                    countdown--;
+                    var timer = document.getElementById('countdownTimer');
+                    var progress = document.getElementById('countdownProgress');
+                    
+                    if (timer) timer.textContent = countdown;
+                    if (progress) progress.style.width = (countdown / 3 * 100) + '%';
+                    
+                    if (countdown <= 0) {
+                      clearInterval(interval);
+                      $('#checkResultModal').modal('hide');
+                      setTimeout(function() {
+                        window.location.reload();
+                      }, 300);
+                    }
+                  }, 1000);
                 }
                 
                 function renderDesktopTable(historyItems) {
@@ -3611,6 +3660,87 @@
             .quick-select-grid .btn:hover {
               transform: translateY(-1px);
               box-shadow: 0 2px 8px rgba(0,123,255,0.25);
+            }
+
+            /* Alert styling đẹp và hiện đại */
+            #checkResultAlert .alert {
+              border-radius: 12px;
+              padding: 20px;
+              animation: slideInDown 0.3s ease-out;
+              background-color: #fbb6b6 !important;
+            }
+            
+            #checkResultAlert .alert-icon {
+              flex-shrink: 0;
+            }
+            
+            #checkResultAlert .alert-title {
+              font-weight: 600;
+              color: #1e252b;
+              margin-bottom: 8px;
+            }
+            
+            #checkResultAlert .balance-info {
+              background: rgba(0,0,0,0.03);
+              padding: 12px;
+              border-radius: 8px;
+              border-left: 4px solid #1e252b;
+            }
+            
+            #checkResultAlert .btn-close {
+              background: none;
+              border: none;
+              color: #6c757d;
+              font-size: 16px;
+              padding: 4px 8px;
+              border-radius: 4px;
+              transition: all 0.2s ease;
+            }
+            
+            #checkResultAlert .btn-close:hover {
+              background: rgba(0,0,0,0.1);
+              color: #1e252b;
+            }
+            
+            /* Dark mode support */
+            [data-bs-theme="dark"] #checkResultAlert .alert {
+              background-color: #8b4a4a !important;
+              border-color: rgba(30, 37, 43, 0.2);
+              color: #fff;
+            }
+            
+            [data-bs-theme="dark"] #checkResultAlert .alert-title {
+              color: #8a9ba8;
+            }
+            
+            [data-bs-theme="dark"] #checkResultAlert .balance-info {
+              background: rgba(255,255,255,0.05);
+              border-left-color: #8a9ba8;
+            }
+            
+            [data-bs-theme="dark"] #checkResultAlert .text-muted {
+              color: rgba(255, 255, 255, 0.7) !important;
+            }
+            
+            [data-bs-theme="dark"] #checkResultAlert .btn-close {
+              color: rgba(255, 255, 255, 0.8);
+            }
+            
+            [data-bs-theme="dark"] #checkResultAlert .btn-close:hover {
+              background: rgba(255,255,255,0.1);
+              color: #8a9ba8;
+            }
+            
+            /* Animation */
+            @keyframes slideInDown {
+              from {
+                transform: translate3d(0, -100%, 0);
+                opacity: 0;
+              }
+              to {
+                transform: translate3d(0, 0, 0);
+                opacity: 1;
+              }
             }
 
             /* Desktop: show all buttons in a row */
