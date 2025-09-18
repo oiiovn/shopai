@@ -2886,6 +2886,12 @@
                     var username = input.value.trim().toLowerCase();
                     if (username.length < 3) return;
                     
+                    // Check if username already exists in history
+                    if (isUsernameDuplicate(username)) {
+                      showDuplicateAlert(username);
+                      return;
+                    }
+                    
                     btn.disabled = true;
                     btn.innerHTML = '<i class="fa fa-spinner fa-spin mr-2"></i>Đang check...';
                     
@@ -2898,6 +2904,9 @@
                     .then(function(response) { return response.json(); })
                     .then(function(data) {
                       if (data.success) {
+                        // Add username to checked list
+                        addToCheckedList(username);
+                        
                         // Show success popup
                         if (data.phone) {
                           showResultPopup('success', 'Check thành công!', 
@@ -2906,6 +2915,9 @@
                           showResultPopup('warning', 'Kết quả', data.message);
                         }
                       } else {
+                        // Even if failed, add to checked list to prevent retry
+                        addToCheckedList(username);
+                        
                         // Check if it's insufficient balance error
                         if (data.required_amount && data.current_balance !== undefined) {
                           showInsufficientBalanceAlert(data.message, data.required_amount, data.current_balance);
@@ -2924,6 +2936,97 @@
                   });
                 }
                 
+                // Global variable to store checked usernames
+                var checkedUsernames = [];
+                
+                // Function to check if username is duplicate
+                function isUsernameDuplicate(username) {
+                  // Check in current session
+                  if (checkedUsernames.includes(username)) {
+                    return true;
+                  }
+                  
+                  // Check in history table (if available)
+                  var historyRows = document.querySelectorAll('#historyTableBody tr');
+                  for (var i = 0; i < historyRows.length; i++) {
+                    var usernameCell = historyRows[i].querySelector('td:nth-child(2)');
+                    if (usernameCell && usernameCell.textContent.trim().toLowerCase() === username) {
+                      return true;
+                    }
+                  }
+                  
+                  return false;
+                }
+                
+                // Function to add username to checked list
+                function addToCheckedList(username) {
+                  if (!checkedUsernames.includes(username)) {
+                    checkedUsernames.push(username);
+                  }
+                }
+                
+                // Function to show duplicate username alert
+                function showDuplicateAlert(username) {
+                  var alertHtml = 
+                    '<div class="alert border-0 shadow-sm" style="background-color: #fff3cd;" role="alert">' +
+                      '<div class="d-flex align-items-start">' +
+                        '<div class="alert-icon mr-3">' +
+                          '<i class="fa fa-exclamation-triangle fa-2x" style="color: #856404;"></i>' +
+                        '</div>' +
+                        '<div class="flex-grow-1">' +
+                          '<h5 class="alert-title mb-2" style="margin-left: 20px; color: #856404;">Username đã được check!</h5>' +
+                          '<div class="balance-info mb-3" style="background: rgba(255,193,7,0.1); border-left: 4px solid #856404;">' +
+                            '<div class="d-flex justify-content-between align-items-center mb-1">' +
+                              '<span class="text-muted">Username:</span>' +
+                              '<strong style="color: #856404;">' + username + '</strong>' +
+                            '</div>' +
+                            '<div class="d-flex justify-content-between align-items-center">' +
+                              '<span class="text-muted">Trạng thái:</span>' +
+                              '<span class="badge badge-warning">Đã check trước đó</span>' +
+                            '</div>' +
+                          '</div>' +
+                          '<div class="text-center" style="margin-left: 10px;">' +
+                            '<button type="button" class="btn btn-sm btn-secondary" onclick="clearUsernameInput()">' +
+                              '<i class="fa fa-eraser mr-1"></i>Xóa và nhập lại' +
+                            '</button>' +
+                          '</div>' +
+                        '</div>' +
+                        '<button type="button" class="btn-close" onclick="this.closest(\'.alert\').parentElement.style.display=\'none\'">' +
+                          '<i class="fa fa-times"></i>' +
+                        '</button>' +
+                      '</div>' +
+                    '</div>';
+                  
+                  var alertContainer = document.getElementById('checkResultAlert');
+                  alertContainer.innerHTML = alertHtml;
+                  alertContainer.style.display = 'block';
+                  
+                  // Auto hide after 5 seconds
+                  setTimeout(function() {
+                    if (alertContainer.style.display !== 'none') {
+                      alertContainer.style.display = 'none';
+                    }
+                  }, 5000);
+                }
+                
+                // Function to clear username input
+                function clearUsernameInput() {
+                  var input = document.getElementById('usernameInput');
+                  var btn = document.getElementById('checkBtn');
+                  if (input) {
+                    input.value = '';
+                    input.focus();
+                  }
+                  if (btn) {
+                    btn.disabled = true;
+                  }
+                  // Hide alert
+                  var alertContainer = document.getElementById('checkResultAlert');
+                  if (alertContainer) {
+                    alertContainer.style.display = 'none';
+                  }
+                }
+
                 // Function to show insufficient balance alert
                 function showInsufficientBalanceAlert(message, requiredAmount, currentBalance) {
                   var alertHtml = 
@@ -3741,6 +3844,31 @@
                 transform: translate3d(0, 0, 0);
                 opacity: 1;
               }
+            }
+            
+            /* Duplicate username alert styling */
+            #checkResultAlert .alert[style*="#fff3cd"] {
+              border: 1px solid #ffc107;
+            }
+            
+            #checkResultAlert .alert[style*="#fff3cd"] .balance-info {
+              background: rgba(255, 193, 7, 0.1) !important;
+              border-left: 4px solid #856404 !important;
+            }
+            
+            /* Dark mode for duplicate alert */
+            [data-bs-theme="dark"] #checkResultAlert .alert[style*="#fff3cd"] {
+              background-color: rgba(255, 193, 7, 0.15) !important;
+              color: #fff;
+            }
+            
+            [data-bs-theme="dark"] #checkResultAlert .alert[style*="#fff3cd"] .alert-title {
+              color: #ffc107 !important;
+            }
+            
+            [data-bs-theme="dark"] #checkResultAlert .alert[style*="#fff3cd"] .balance-info {
+              background: rgba(255, 193, 7, 0.1) !important;
+              border-left-color: #ffc107 !important;
             }
 
             /* Desktop: show all buttons in a row */
