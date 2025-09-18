@@ -625,7 +625,7 @@ function getShopAITransactions($user_id, $limit = 50) {
         $limit = intval($limit); // Sanitize
         $stmt = $pdo->prepare("
             SELECT * FROM users_wallets_transactions 
-            WHERE user_id = ? AND type = 'recharge' 
+            WHERE user_id = ? 
             ORDER BY time DESC 
             LIMIT $limit
         ");
@@ -648,7 +648,7 @@ function getShopAITransactionsPaginated($user_id, $limit = 10, $offset = 0) {
         $offset = intval($offset);
         $stmt = $pdo->prepare("
             SELECT * FROM users_wallets_transactions 
-            WHERE user_id = ? AND type = 'recharge' 
+            WHERE user_id = ? 
             ORDER BY time DESC 
             LIMIT $limit OFFSET $offset
         ");
@@ -668,7 +668,7 @@ function getTotalShopAITransactions($user_id) {
         
         $stmt = $pdo->prepare("
             SELECT COUNT(*) as total FROM users_wallets_transactions 
-            WHERE user_id = ? AND type = 'recharge'
+            WHERE user_id = ?
         ");
         $stmt->execute([$user_id]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);

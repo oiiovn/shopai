@@ -32,6 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Initialize app
   function init() {
     console.log('Initializing app...');
+    loadCheckInfo();
     loadHistory();
     setupEventListeners();
   }
@@ -88,33 +89,65 @@ document.addEventListener('DOMContentLoaded', function() {
     checkPhoneAPI(username);
   }
 
-  // Call API to check phone
+  // Call API to check phone and wait for real response
   function checkPhoneAPI(username) {
+    // Show loading state
+    checkBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Đang check...';
+    checkBtn.disabled = true;
+    
     fetch('includes/ajax/phone-check-history.php', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        action: 'check_phone',
+        action: 'check_phone_api',
         user_id: 1,
         username: username
       })
     })
     .then(response => response.json())
     .then(data => {
-      if (data.success) {
+      console.log('API Response:', data);
+      
+      if (data.success && data.status === 'success') {
+        // Success - show result with payment info
+        var message = '✅ Check thành công!\n' +
+                     'Số điện thoại: ' + data.phone + '\n' +
+                     'Username: ' + data.username + '\n' +
+                     'Phí check: ' + (data.check_price ? new Intl.NumberFormat('vi-VN').format(data.check_price) + ' VNĐ' : 'N/A') + '\n' +
+                     'Số dư mới: ' + (data.new_balance ? new Intl.NumberFormat('vi-VN').format(data.new_balance) + ' VNĐ' : 'N/A');
+        alert(message);
         // Reload history to show new result
         loadHistory();
-      } else {
-        alert('Lỗi: ' + data.message);
+      } else if (data.success === false) {
+        // Not found or error - check if it's balance issue
+        if (data.required_amount) {
+          // Insufficient balance
+          var balanceMessage = '❌ Số dư không đủ!\n' +
+                              'Cần: ' + new Intl.NumberFormat('vi-VN').format(data.required_amount) + ' VNĐ\n' +
+                              'Hiện có: ' + new Intl.NumberFormat('vi-VN').format(data.current_balance) + ' VNĐ\n\n' +
+                              'Vui lòng nạp tiền để tiếp tục check số.';
+          alert(balanceMessage);
+        } else {
+          // Check failed but refunded
+          var refundMessage = '❌ ' + data.message;
+          if (data.refund_amount) {
+            refundMessage += '\n\n💰 Đã hoàn tiền: ' + new Intl.NumberFormat('vi-VN').format(data.refund_amount) + ' VNĐ';
+          }
+          alert(refundMessage);
+        }
+        // Still reload history to show the attempt
+        loadHistory();
       }
     })
     .catch(error => {
       console.error('Error:', error);
-      alert('Có lỗi xảy ra khi check số');
+      alert('Có lỗi xảy ra khi check số: ' + error.message);
     })
     .finally(() => {
+      // Reset button state
+      checkBtn.innerHTML = '<i class="fa fa-search"></i> Check Số';
       checkBtn.disabled = false;
     });
   }
@@ -143,9 +176,9 @@ document.addEventListener('DOMContentLoaded', function() {
   function createStatusBadge(status, isLoading) {
     var badges = {
       pending: {
-        text: 'Đang check...',
+        text: 'Đang chờ API...',
         class: 'pending',
-        icon: isLoading ? '<div class="spinner"></div>' : '<i class="fa fa-clock"></i>'
+        icon: '<i class="fa fa-spinner fa-spin"></i>'
       },
       success: {
         text: 'Thành công',
@@ -158,7 +191,7 @@ document.addEventListener('DOMContentLoaded', function() {
         icon: '<i class="fa fa-user-times"></i>'
       },
       error: {
-        text: 'Lỗi',
+        text: 'Lỗi API',
         class: 'error',
         icon: '<i class="fa fa-exclamation-triangle"></i>'
       }

@@ -295,12 +295,14 @@
                             <tr>
                               <td>#{$transaction.transaction_id}</td>
                               <td>
-                                <strong class="text-success">
-                                  +{number_format($transaction.amount, 0, ',', '.')} VNĐ
+                                <strong class="{if $transaction.type == 'recharge'}text-success{else}text-danger{/if}">
+                                  {if $transaction.type == 'recharge'}+{else}-{/if}{number_format($transaction.amount, 0, ',', '.')} VNĐ
                                 </strong>
                               </td>
                               <td>
-                                <span class="badge bg-success">{__("Nạp Tiền")}</span>
+                                <span class="badge {if $transaction.type == 'recharge'}bg-success{else}bg-danger{/if}">
+                                  {if $transaction.type == 'recharge'}{__("Nạp Tiền")}{else}{__("Trừ tiền")}{/if}
+                                </span>
                               </td>
                               <td>
                                 <strong class="text-primary">
@@ -349,11 +351,13 @@
                             <div class="row align-items-center">
                               <div class="col-8">
                                 <div class="d-flex align-items-center mb-2">
-                                  <span class="badge bg-success mr10">Nạp Tiền</span>
+                                  <span class="badge {if $transaction.type == 'recharge'}bg-success{else}bg-danger{/if} mr10">
+                                    {if $transaction.type == 'recharge'}Nạp Tiền{else}Trừ tiền{/if}
+                                  </span>
                                   <small class="text-muted">#{$transaction.transaction_id}</small>
                                 </div>
-                                <h6 class="mb-1 text-success font-weight-bold">
-                                  +{number_format($transaction.amount, 0, ',', '.')} VNĐ
+                                <h6 class="mb-1 {if $transaction.type == 'recharge'}text-success{else}text-danger{/if} font-weight-bold">
+                                  {if $transaction.type == 'recharge'}+{else}-{/if}{number_format($transaction.amount, 0, ',', '.')} VNĐ
                                 </h6>
                                 <p class="text-muted small mb-1">
                                   {if $transaction.description}
@@ -565,8 +569,8 @@
                     
                     html += '<tr>';
                     html += '<td>' + transaction.created_at + '</td>';
-                    html += '<td><span class="badge badge-' + (transaction.type === 'credit' ? 'success' : 'danger') + '">' + 
-                           (transaction.type === 'credit' ? '{__("Nạp tiền")}' : '{__("Rút tiền")}') + '</span></td>';
+                    html += '<td><span class="badge badge-' + (transaction.type === 'recharge' ? 'success' : 'danger') + '">' + 
+                           (transaction.type === 'recharge' ? '{__("Nạp tiền")}' : '{__("Trừ tiền")}') + '</span></td>';
                     html += '<td class="text-right">' + formatMoney(transaction.amount) + ' VNĐ</td>';
                     html += '<td class="text-right"><strong>' + formatMoney(transaction.balance_after) + ' VNĐ</strong></td>';
                     html += '<td>' + transaction.description + '</td>';
@@ -588,10 +592,10 @@
                     var statusText = transaction.status === 'completed' ? '{__("Hoàn thành")}' :
                                    transaction.status === 'pending' ? '{__("Đang xử lý")}' : '{__("Thất bại")}';
                     
-                    var typeClass = transaction.type === 'credit' ? 'success' : 'danger';
-                    var typeText = transaction.type === 'credit' ? '{__("Nạp tiền")}' : '{__("Rút tiền")}';
-                    var amountClass = transaction.type === 'credit' ? 'text-success' : 'text-danger';
-                    var amountPrefix = transaction.type === 'credit' ? '+' : '-';
+                    var typeClass = transaction.type === 'recharge' ? 'success' : 'danger';
+                    var typeText = transaction.type === 'recharge' ? '{__("Nạp tiền")}' : '{__("Trừ tiền")}';
+                    var amountClass = transaction.type === 'recharge' ? 'text-success' : 'text-danger';
+                    var amountPrefix = transaction.type === 'recharge' ? '+' : '-';
                     
                     html += '<div class="card mb-3 transaction-card">';
                     html += '  <div class="card-body p-3">';

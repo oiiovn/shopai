@@ -42,6 +42,122 @@ try {
     exit();
 }
 
+// Functions for payment handling
+function checkUserBalance($user_id) {
+    global $pdo;
+    
+    try {
+        $stmt = $pdo->prepare("SELECT user_wallet_balance FROM users WHERE user_id = ?");
+        $stmt->execute([$user_id]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result ? floatval($result['user_wallet_balance']) : 0;
+    } catch (PDOException $e) {
+        return 0;
+    }
+}
+
+function getUserCheckPrice($user_id) {
+    global $pdo;
+    
+    try {
+        $stmt = $pdo->prepare("
+            SELECT sr.check_price 
+            FROM shop_ai_user_ranks sur 
+            LEFT JOIN shop_ai_ranks sr ON sur.current_rank_id = sr.rank_id 
+            WHERE sur.user_id = ?
+        ");
+        $stmt->execute([$user_id]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        // Default price if no rank found
+        return $result ? floatval($result['check_price']) : 30000;
+    } catch (PDOException $e) {
+        return 30000; // Default price
+    }
+}
+
+function deductWalletBalance($user_id, $amount, $description) {
+    global $pdo;
+    
+    try {
+        $pdo->beginTransaction();
+        
+        // Check current balance
+        $stmt = $pdo->prepare("SELECT user_wallet_balance FROM users WHERE user_id = ?");
+        $stmt->execute([$user_id]);
+        $current_balance = $stmt->fetch(PDO::FETCH_ASSOC)['user_wallet_balance'];
+        
+        if ($current_balance < $amount) {
+            $pdo->rollBack();
+            return [
+                'success' => false,
+                'message' => 'Số dư không đủ. Cần: ' . number_format($amount, 0, ',', '.') . ' VNĐ, Hiện có: ' . number_format($current_balance, 0, ',', '.') . ' VNĐ'
+            ];
+        }
+        
+        // Deduct balance
+        $stmt = $pdo->prepare("UPDATE users SET user_wallet_balance = user_wallet_balance - ? WHERE user_id = ?");
+        $stmt->execute([$amount, $user_id]);
+        
+        // Create transaction record in users_wallets_transactions (same as shop-ai)
+        $stmt = $pdo->prepare("
+            INSERT INTO users_wallets_transactions (user_id, amount, type, time, description) 
+            VALUES (?, ?, 'withdraw', NOW(), ?)
+        ");
+        $stmt->execute([$user_id, $amount, $description]);
+        
+        $pdo->commit();
+        
+        return [
+            'success' => true,
+            'message' => 'Đã trừ ' . number_format($amount, 0, ',', '.') . ' VNĐ',
+            'transaction_id' => $pdo->lastInsertId(),
+            'new_balance' => $current_balance - $amount
+        ];
+        
+    } catch (PDOException $e) {
+        $pdo->rollBack();
+        return [
+            'success' => false,
+            'message' => 'Lỗi khi trừ tiền: ' . $e->getMessage()
+        ];
+    }
+}
+
+function refundWalletBalance($user_id, $amount, $description) {
+    global $pdo;
+    
+    try {
+        $pdo->beginTransaction();
+        
+        // Add balance back
+        $stmt = $pdo->prepare("UPDATE users SET user_wallet_balance = user_wallet_balance + ? WHERE user_id = ?");
+        $stmt->execute([$amount, $user_id]);
+        
+        // Create refund transaction record in users_wallets_transactions (same as shop-ai)
+        $stmt = $pdo->prepare("
+            INSERT INTO users_wallets_transactions (user_id, amount, type, time, description) 
+            VALUES (?, ?, 'recharge', NOW(), ?)
+        ");
+        $stmt->execute([$user_id, $amount, $description]);
+        
+        $pdo->commit();
+        
+        return [
+            'success' => true,
+            'message' => 'Đã hoàn ' . number_format($amount, 0, ',', '.') . ' VNĐ',
+            'transaction_id' => $pdo->lastInsertId()
+        ];
+        
+    } catch (PDOException $e) {
+        $pdo->rollBack();
+        return [
+            'success' => false,
+            'message' => 'Lỗi khi hoàn tiền: ' . $e->getMessage()
+        ];
+    }
+}
+
 // Functions
 function getPhoneCheckHistory($checker_user_id, $limit = 5, $offset = 0, $status_filter = '', $search = '') {
     global $pdo;
@@ -122,45 +238,8 @@ function updatePhoneCheckHistory($id, $phone, $status, $result_message) {
     }
 }
 
-function simulatePhoneCheck($username) {
-    $random = rand(1, 100);
-    
-    if ($random <= 60) {
-        $phone = generateFakePhone();
-        return [
-            'success' => true,
-            'phone' => $phone,
-            'status' => 'success',
-            'message' => 'Đã tìm thấy số điện thoại'
-        ];
-    } elseif ($random <= 90) {
-        return [
-            'success' => false,
-            'phone' => null,
-            'status' => 'not_found',
-            'message' => 'Không tìm thấy số'
-        ];
-    } else {
-        return [
-            'success' => false,
-            'phone' => null,
-            'status' => 'error',
-            'message' => 'Rate limited / API error'
-        ];
-    }
-}
 
-function generateFakePhone() {
-    $prefixes = ['032', '033', '034', '035', '036', '037', '038', '039', 
-                '056', '058', '059', '070', '076', '077', '078', '079',
-                '081', '082', '083', '084', '085', '086', '087', '088', '089',
-                '090', '091', '092', '093', '094', '095', '096', '097', '098', '099'];
-    $prefix = $prefixes[array_rand($prefixes)];
-    $number = str_pad(rand(0, 9999999), 7, '0', STR_PAD_LEFT);
-    return $prefix . $number;
-}
-
-// Function to call checkso.pro API
+// Function to call checkso.pro API with real response waiting
 function callChecksoAPI($username, $phone = '99') {
     $api_token = '8d3b77d956264a950f28224928c7390941eedd0180f87de4a487edbaf80b3841';
     $endpoint = 'http://checkso.pro/search_users_advanced';
@@ -171,30 +250,48 @@ function callChecksoAPI($username, $phone = '99') {
         'phone' => $phone
     ];
     
+    // Initialize cURL with proper settings for real API waiting
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $endpoint);
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
     curl_setopt($ch, CURLOPT_HTTPHEADER, [
         'Content-Type: application/json',
-        'Content-Length: ' . strlen(json_encode($data))
+        'Content-Length: ' . strlen(json_encode($data)),
+        'User-Agent: Shop-AI/1.0'
     ]);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 300); // 5 minutes timeout - wait as long as needed
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30); // Connection timeout
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
     
+    // Execute the request and wait for real response
     $response = curl_exec($ch);
     $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curl_error = curl_error($ch);
     curl_close($ch);
     
-    if ($response === false || $http_code !== 200) {
+    // Handle cURL errors
+    if ($response === false || !empty($curl_error)) {
         return [
             'success' => false,
-            'message' => 'Lỗi kết nối API',
+            'message' => 'Lỗi kết nối API: ' . $curl_error,
             'data' => null
         ];
     }
     
+    // Handle HTTP errors
+    if ($http_code !== 200) {
+        return [
+            'success' => false,
+            'message' => 'API trả về lỗi HTTP: ' . $http_code,
+            'data' => null
+        ];
+    }
+    
+    // Parse JSON response
     $result = json_decode($response, true);
     
     if (!$result || !isset($result['status'])) {
@@ -205,6 +302,7 @@ function callChecksoAPI($username, $phone = '99') {
         ];
     }
     
+    // Return real API response
     return [
         'success' => $result['status'] == 1,
         'message' => $result['status'] == 1 ? 'Check thành công' : 'Không tìm thấy thông tin',
@@ -223,20 +321,42 @@ switch ($action) {
             exit();
         }
         
-        // Step 1: Save pending record first
+        // Step 1: Get user's check price based on rank
+        $check_price = getUserCheckPrice($user_id);
+        
+        // Step 2: Check user balance
+        $current_balance = checkUserBalance($user_id);
+        if ($current_balance < $check_price) {
+            echo json_encode([
+                'success' => false, 
+                'message' => 'Số dư không đủ! Cần: ' . number_format($check_price, 0, ',', '.') . ' VNĐ, Hiện có: ' . number_format($current_balance, 0, ',', '.') . ' VNĐ',
+                'required_amount' => $check_price,
+                'current_balance' => $current_balance
+            ]);
+            exit();
+        }
+        
+        // Step 3: Deduct money first
+        $deduct_result = deductWalletBalance($user_id, $check_price, 'Check số Shopee: ' . $username);
+        if (!$deduct_result['success']) {
+            echo json_encode($deduct_result);
+            exit();
+        }
+        
+        // Step 4: Save pending record
         $stmt = $pdo->prepare("INSERT INTO phone_check_history (checker_user_id, checked_username, checked_user_id, phone, status, result_message, created_at) VALUES (?, ?, ?, ?, ?, ?, NOW())");
-        $stmt->execute([$user_id, $username, null, null, 'pending', 'Đang gửi API...']);
+        $stmt->execute([$user_id, $username, null, null, 'pending', 'Đang chờ API response...']);
         $pending_id = $pdo->lastInsertId();
         
-        // Step 2: Call checkso.pro API
+        // Step 5: Call checkso.pro API and wait for real response
         $api_result = callChecksoAPI($username, '99');
         
+        // Step 6: Process API result
         if ($api_result['success'] && isset($api_result['data']['records']) && count($api_result['data']['records']) > 0) {
-            // Success - found phone number
+            // Success - found phone number (keep the deducted money)
             $phone_data = $api_result['data']['records'][0];
             $phone_number = $phone_data['result'];
             
-            // Step 3: Update the pending record with success result
             $stmt = $pdo->prepare("UPDATE phone_check_history SET phone = ?, status = ?, result_message = ?, updated_at = NOW() WHERE id = ?");
             $stmt->execute([$phone_number, 'success', 'Check thành công: ' . $phone_number, $pending_id]);
             
@@ -246,24 +366,54 @@ switch ($action) {
                 'phone' => $phone_number,
                 'username' => $username,
                 'api_balance' => $api_result['data']['new_balance'] ?? 'N/A',
-                'record_id' => $pending_id
+                'record_id' => $pending_id,
+                'status' => 'success',
+                'check_price' => $check_price,
+                'new_balance' => $deduct_result['new_balance']
             ]);
         } else {
-            // Not found
+            // Not found or API error - REFUND the money
             $error_message = $api_result['message'] ?? 'Không tìm thấy số điện thoại';
             
-            // Step 3: Update the pending record with not_found result
+            // Refund the money
+            $refund_result = refundWalletBalance($user_id, $check_price, 'Hoàn tiền check số thất bại: ' . $username);
+            
             $stmt = $pdo->prepare("UPDATE phone_check_history SET status = ?, result_message = ?, updated_at = NOW() WHERE id = ?");
-            $stmt->execute(['not_found', $error_message, $pending_id]);
+            $stmt->execute(['not_found', $error_message . ' (Đã hoàn tiền)', $pending_id]);
             
             echo json_encode([
                 'success' => false,
-                'message' => $error_message,
+                'message' => $error_message . ' - Đã hoàn tiền',
                 'username' => $username,
                 'api_balance' => $api_result['data']['new_balance'] ?? 'N/A',
-                'record_id' => $pending_id
+                'record_id' => $pending_id,
+                'status' => 'not_found',
+                'refund_amount' => $check_price,
+                'refund_success' => $refund_result['success']
             ]);
         }
+        break;
+        
+    case 'get_check_info':
+        $user_id = intval($input['user_id'] ?? 0);
+        
+        if (!$user_id) {
+            echo json_encode(['success' => false, 'message' => 'Thiếu user_id']);
+            exit();
+        }
+        
+        // Get user's current balance and check price
+        $current_balance = checkUserBalance($user_id);
+        $check_price = getUserCheckPrice($user_id);
+        
+        echo json_encode([
+            'success' => true,
+            'current_balance' => $current_balance,
+            'check_price' => $check_price,
+            'can_check' => $current_balance >= $check_price,
+            'formatted_balance' => number_format($current_balance, 0, ',', '.') . ' VNĐ',
+            'formatted_price' => number_format($check_price, 0, ',', '.') . ' VNĐ'
+        ]);
         break;
         
     case 'get_history':
@@ -300,23 +450,8 @@ switch ($action) {
             break;
         }
         
-        // Chỉ lưu trạng thái "pending" - admin sẽ cập nhật sau
-        $pending_id = savePhoneCheckHistory($user_id, $username, null, null, 'pending', 'Đang check...');
-        
-        if ($pending_id) {
-            echo json_encode([
-                'success' => true,
-                'message' => 'Check request saved successfully',
-                'data' => [
-                    'id' => $pending_id,
-                    'username' => $username,
-                    'status' => 'pending',
-                    'message' => 'Đang check...'
-                ]
-            ]);
-        } else {
-            echo json_encode(['success' => false, 'message' => 'Failed to save check request']);
-        }
+        // Redirect to check_phone_api for real API call
+        echo json_encode(['success' => false, 'message' => 'Use check_phone_api action instead']);
         break;
         
     default:

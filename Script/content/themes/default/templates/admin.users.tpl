@@ -1523,7 +1523,6 @@
                           <span class="badge badge-primary p-3 text-lg">
                             {$data['shop_ai_rank']['rank_emoji']} {$data['shop_ai_rank']['rank_name']}
                           </span>
-                          <br><small class="text-muted">Rank ID: {$data['shop_ai_rank']['current_rank_id']}</small>
                         {else}
                           <span class="badge badge-secondary p-3 text-lg">
                             🥉 Bronze (Default)
@@ -1568,14 +1567,6 @@
                         {assign var="current_spending" value=$data['shop_ai_rank']['total_spending']}
                         {assign var="required_min" value=$data['shop_ai_rank']['min_spending']}
                         {if $current_spending < $required_min}
-                        <div class="mt-2">
-                          <div class="alert alert-warning p-2">
-                            <small><i class="fa fa-exclamation-triangle mr-1"></i>
-                            <strong>Data inconsistent:</strong> Spending ({number_format($current_spending, 0, ',', '.')} VNĐ) 
-                            &lt; Required ({number_format($required_min, 0, ',', '.')} VNĐ)
-                            </small>
-                          </div>
-                        </div>
                         {/if}
                       {/if}
                     </div>
