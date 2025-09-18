@@ -12,25 +12,25 @@
           <ul class="main-side-nav">
             <li {if $view == "" || $view == "check"}class="active" {/if}>
               <a href="{$system['system_url']}/shop-ai">
-                <i class="fa fa-search main-icon mr10" style="width: 24px; height: 24px; font-size: 18px;"></i>
+                <i class="fa fa-search main-icon mr-2" style="width: 24px; height: 24px; font-size: 18px;"></i>
                 {__("Check số Shopee")}
               </a>
             </li>
             <li {if $view == "recharge"}class="active" {/if}>
               <a href="{$system['system_url']}/shop-ai/recharge">
-                <i class="fa fa-credit-card main-icon mr10" style="width: 24px; height: 24px; font-size: 18px;"></i>
+                <i class="fa fa-credit-card main-icon mr-2" style="width: 24px; height: 24px; font-size: 18px;"></i>
                 {__("Nạp tiền")}
               </a>
             </li>
             <li {if $view == "transactions"}class="active" {/if}>
               <a href="{$system['system_url']}/shop-ai/transactions">
-                <i class="fa fa-history main-icon mr10" style="width: 24px; height: 24px; font-size: 18px;"></i>
+                <i class="fa fa-history main-icon mr-2" style="width: 24px; height: 24px; font-size: 18px;"></i>
                 {__("Lịch sử giao dịch")}
               </a>
             </li>
             <li>
               <a href="{$system['system_url']}/shop-ai/pricing">
-                <i class="fa fa-list-alt main-icon mr10" style="width: 24px; height: 24px; font-size: 18px;"></i>
+                <i class="fa fa-list-alt main-icon mr-2" style="width: 24px; height: 24px; font-size: 18px;"></i>
                 {__("Bảng giá")}
               </a>
             </li>
@@ -1179,7 +1179,8 @@
               <div class="card-body">
                 <!-- Statistics Section -->
                 <div class="stats-section mb-4">
-                  <div class="row">
+                  <!-- Desktop: 4 columns -->
+                  <div class="row d-none d-md-flex">
                     <div class="col-md-3">
                       <div class="stat-card">
                         <div class="stat-icon">
@@ -1225,14 +1226,71 @@
                       </div>
                     </div>
                   </div>
+
+                  <!-- Mobile: 2 rows x 2 columns -->
+                  <div class="d-block d-md-none">
+                    <!-- Row 1: 2 blocks -->
+                    <div class="row mb-2">
+                      <div class="col-6">
+                        <div class="stat-card-mobile">
+                          <div class="stat-icon-mobile">
+                            <i class="fa fa-list"></i>
+                          </div>
+                          <div class="stat-info-mobile">
+                            <h5>{$stats.total}</h5>
+                            <small>Tổng số check</small>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="stat-card-mobile success">
+                          <div class="stat-icon-mobile">
+                            <i class="fa fa-check"></i>
+                          </div>
+                          <div class="stat-info-mobile">
+                            <h5>{$stats.success}</h5>
+                            <small>Thành công</small>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- Row 2: 2 blocks -->
+                    <div class="row">
+                      <div class="col-6">
+                        <div class="stat-card-mobile warning">
+                          <div class="stat-icon-mobile">
+                            <i class="fa fa-clock"></i>
+                          </div>
+                          <div class="stat-info-mobile">
+                            <h5>{$stats.pending}</h5>
+                            <small>Đang check</small>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="stat-card-mobile danger">
+                          <div class="stat-icon-mobile">
+                            <i class="fa fa-times"></i>
+                          </div>
+                          <div class="stat-info-mobile">
+                            <h5>{$stats.not_found + $stats.error}</h5>
+                            <small>Thất bại</small>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 <!-- Filters Section -->
                 <div class="filters-section mb-4">
                   <form method="GET" action="{$system['system_url']}/shop-ai" id="filterForm">
                     <input type="hidden" name="view" value="history">
-                    <div class="row">
-                      <div class="col-md-3">
+                    
+                    <!-- Desktop: Full filters -->
+                    <div class="row d-none d-md-flex">
+                      <div class="col-md-4">
                         <div class="form-group">
                           <label for="search" class="form-label">
                             <i class="fa fa-search mr-2"></i>Tìm kiếm username
@@ -1271,7 +1329,7 @@
                           <input type="date" class="form-control" id="date_to" name="date_to" value="{$filters.date_to}">
                         </div>
                       </div>
-                      <div class="col-md-1">
+                      <div class="col-md-2">
                         <div class="form-group">
                           <label for="limit" class="form-label">Số dòng</label>
                           <select class="form-control" id="limit" name="limit">
@@ -1286,10 +1344,75 @@
                         <div class="form-group">
                           <label class="form-label">&nbsp;</label>
                           <div class="btn-group w-100">
-                            <button type="submit" class="btn btn-primary">
-                              <i class="fa fa-search mr-2"></i>Lọc
+                            <button type="button" class="btn btn-secondary" id="resetFiltersBtn">
+                              <i class="fa fa-refresh mr-2"></i>Reset bộ lọc
                             </button>
                             <button type="button" class="btn btn-success" id="exportBtn">
+                              <i class="fa fa-download mr-2"></i>Excel
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Mobile: Compact filters -->
+                    <div class="d-block d-md-none">
+                      <div class="row">
+                        <div class="col-12 mb-2">
+                          <div class="form-group">
+                            <label for="search_mobile" class="form-label">
+                              <i class="fa fa-search mr-2"></i>Tìm kiếm
+                            </label>
+                            <input type="text" class="form-control form-control-sm" id="search_mobile" name="search" 
+                                   value="{$filters.search}" placeholder="Username...">
+                          </div>
+                        </div>
+                        <div class="col-6 mb-2">
+                          <div class="form-group">
+                            <label for="status_filter_mobile" class="form-label">
+                              <i class="fa fa-filter mr-2"></i>Trạng thái
+                            </label>
+                            <select class="form-control form-control-sm" id="status_filter_mobile" name="status_filter">
+                              <option value="">Tất cả</option>
+                              <option value="pending" {if $filters.status_filter == "pending"}selected{/if}>Đang check</option>
+                              <option value="success" {if $filters.status_filter == "success"}selected{/if}>Thành công</option>
+                              <option value="not_found" {if $filters.status_filter == "not_found"}selected{/if}>Không tìm thấy</option>
+                              <option value="error" {if $filters.status_filter == "error"}selected{/if}>Lỗi</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="col-6 mb-2">
+                          <div class="form-group">
+                            <label for="limit_mobile" class="form-label">Số dòng</label>
+                            <select class="form-control form-control-sm" id="limit_mobile" name="limit">
+                              <option value="10" {if $filters.limit == 10}selected{/if}>10</option>
+                              <option value="20" {if $filters.limit == 20}selected{/if}>20</option>
+                              <option value="50" {if $filters.limit == 50}selected{/if}>50</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="col-6">
+                          <div class="form-group">
+                            <label for="date_from_mobile" class="form-label">
+                              <i class="fa fa-calendar mr-2"></i>Từ ngày
+                            </label>
+                            <input type="date" class="form-control form-control-sm" id="date_from_mobile" name="date_from" value="{$filters.date_from}">
+                          </div>
+                        </div>
+                        <div class="col-6">
+                          <div class="form-group">
+                            <label for="date_to_mobile" class="form-label">
+                              <i class="fa fa-calendar mr-2"></i>Đến ngày
+                            </label>
+                            <input type="date" class="form-control form-control-sm" id="date_to_mobile" name="date_to" value="{$filters.date_to}">
+                          </div>
+                        </div>
+                        <div class="col-12 mt-2">
+                          <div class="btn-group w-100">
+                            <button type="button" class="btn btn-secondary btn-sm" id="resetFiltersBtnMobile">
+                              <i class="fa fa-refresh mr-2"></i>Reset
+                            </button>
+                            <button type="button" class="btn btn-success btn-sm" id="exportBtnMobile">
                               <i class="fa fa-download mr-2"></i>Excel
                             </button>
                           </div>
@@ -1301,16 +1424,16 @@
 
                 <!-- History Table -->
                 <div class="history-table-section">
-                  <div class="table-responsive">
+                  <!-- Desktop: History Table -->
+                  <div class="table-responsive d-none d-md-block">
                     <table class="table table-hover" id="historyTable">
                       <thead class="thead-dark">
                         <tr>
                           <th width="5%">#</th>
-                          <th width="15%">Thời gian</th>
-                          <th width="20%">Username</th>
-                          <th width="15%">Trạng thái</th>
-                          <th width="20%">Số điện thoại</th>
-                          <th width="25%">Ghi chú</th>
+                          <th width="20%">Thời gian</th>
+                          <th width="25%">Username</th>
+                          <th width="20%">Trạng thái</th>
+                          <th width="30%">Số điện thoại</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -1328,19 +1451,19 @@
                               <td>
                                 {if $item.status == "pending"}
                                   <span class="badge badge-info">
-                                    <i class="fa fa-spinner fa-spin mr-1"></i>Đang check...
+                                    <i class="fa fa-spinner fa-spin mr-2"></i>Đang check...
                                   </span>
                                 {elseif $item.status == "success"}
                                   <span class="badge badge-success">
-                                    <i class="fa fa-check mr-1"></i>Thành công
+                                    <i class="fa fa-check mr-2"></i>Thành công
                                   </span>
                                 {elseif $item.status == "not_found"}
                                   <span class="badge badge-secondary">
-                                    <i class="fa fa-user-times mr-1"></i>Không tìm thấy
+                                    <i class="fa fa-user-times mr-2"></i>Không tìm thấy
                                   </span>
                                 {else}
                                   <span class="badge badge-danger">
-                                    <i class="fa fa-exclamation-triangle mr-1"></i>Lỗi
+                                    <i class="fa fa-exclamation-triangle mr-2"></i>Lỗi
                                   </span>
                                 {/if}
                               </td>
@@ -1351,14 +1474,11 @@
                                   <span class="text-muted">-</span>
                                 {/if}
                               </td>
-                              <td>
-                                <span class="note-text">{$item.result_message}</span>
-                              </td>
                             </tr>
                           {/foreach}
                         {else}
                           <tr>
-                            <td colspan="6" class="text-center text-muted py-4">
+                            <td colspan="5" class="text-center text-muted py-4">
                               <i class="fa fa-search fa-2x mb-2"></i>
                               <br>Không tìm thấy dữ liệu phù hợp
                             </td>
@@ -1366,6 +1486,71 @@
                         {/if}
                       </tbody>
                     </table>
+                  </div>
+
+                  <!-- Mobile: History Cards -->
+                  <div class="d-block d-md-none">
+                    {if $history && count($history) > 0}
+                      {foreach $history as $index => $item}
+                        <div class="card mb-3" style="border-radius: 12px; border: 2px solid #e9ecef; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                          <div class="card-body p-3">
+                            <div class="row align-items-center">
+                              <div class="col-12">
+                                <div class="history-content">
+                                  <div class="row align-items-center mb-2">
+                                    <div class="col-7">
+                                      <h6 class="mb-1 font-weight-bold">{$item.checked_username}</h6>
+                                      <small class="text-muted">
+                                        <i class="fa fa-clock mr-1"></i>{$item.created_at|date_format:"%H:%M:%S"} - {$item.created_at|date_format:"%d/%m/%Y"}
+                                      </small>
+                                    </div>
+                                    <div class="col-5 text-right">
+                                      {if $item.status == "pending"}
+                                        <span class="badge badge-info">
+                                          <i class="fa fa-spinner fa-spin mr-2"></i>Đang check...
+                                        </span>
+                                      {elseif $item.status == "success"}
+                                        <span class="badge badge-success">
+                                          <i class="fa fa-check mr-2"></i>Thành công
+                                        </span>
+                                      {elseif $item.status == "not_found"}
+                                        <span class="badge badge-secondary">
+                                          <i class="fa fa-user-times mr-2"></i>Không tìm thấy
+                                        </span>
+                                      {else}
+                                        <span class="badge badge-danger">
+                                          <i class="fa fa-exclamation-triangle mr-2"></i>Lỗi
+                                        </span>
+                                      {/if}
+                                    </div>
+                                  </div>
+                                  <div class="row">
+                                    <div class="col-12">
+                                      <div class="phone-info">
+                                        <small class="text-muted">
+                                          <i class="fa fa-phone mr-2"></i>
+                                          {if $item.phone}
+                                            <span class="phone-number font-weight-bold">{$item.phone}</span>
+                                          {else}
+                                            <span class="text-muted">Chưa có số điện thoại</span>
+                                          {/if}
+                                        </small>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      {/foreach}
+                    {else}
+                      <div class="text-center py-5">
+                        <i class="fa fa-search fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">Không tìm thấy dữ liệu phù hợp</h5>
+                        <p class="text-muted">Thử thay đổi từ khóa tìm kiếm hoặc bộ lọc</p>
+                      </div>
+                    {/if}
                   </div>
 
                   <!-- Pagination -->
@@ -1528,6 +1713,89 @@
                 background-color: var(--card-dark-input) !important;
                 border-color: var(--card-dark-divider) !important;
                 color: var(--card-dark-input-color) !important;
+              }
+
+              /* Mobile Statistics */
+              .stat-card-mobile {
+                background: white;
+                padding: 12px;
+                border-radius: 8px;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                text-align: center;
+                border-left: 3px solid #007bff;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                min-height: 60px;
+              }
+
+              .stat-card-mobile.success {
+                border-left-color: #28a745;
+              }
+
+              .stat-card-mobile.warning {
+                border-left-color: #ffc107;
+              }
+
+              .stat-card-mobile.danger {
+                border-left-color: #dc3545;
+              }
+
+              .stat-icon-mobile {
+                font-size: 18px;
+                color: #007bff;
+                margin-right: 8px;
+              }
+
+              .stat-card-mobile.success .stat-icon-mobile {
+                color: #28a745;
+              }
+
+              .stat-card-mobile.warning .stat-icon-mobile {
+                color: #ffc107;
+              }
+
+              .stat-card-mobile.danger .stat-icon-mobile {
+                color: #dc3545;
+              }
+
+              .stat-info-mobile h5 {
+                font-size: 18px;
+                font-weight: bold;
+                margin: 0;
+                color: #495057;
+              }
+
+              .stat-info-mobile small {
+                margin: 0;
+                color: #6c757d;
+                font-size: 11px;
+              }
+
+              /* Mobile Filters */
+              .filters-section .form-control-sm {
+                font-size: 14px;
+                padding: 6px 10px;
+              }
+
+              .filters-section .btn-sm {
+                padding: 6px 12px;
+                font-size: 13px;
+              }
+
+              /* Dark mode for mobile stats */
+              body.night-mode .stat-card-mobile {
+                background: var(--card-dark-color) !important;
+                color: var(--body-color-dark) !important;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
+              }
+
+              body.night-mode .stat-info-mobile h5 {
+                color: var(--body-color-dark) !important;
+              }
+
+              body.night-mode .stat-info-mobile small {
+                color: #999 !important;
               }
 
               .filters-section .form-control:focus {
@@ -1744,6 +2012,22 @@
                   });
                 }
                 
+                // Reset filters functionality
+                var resetFiltersBtn = document.getElementById('resetFiltersBtn');
+                if (resetFiltersBtn) {
+                  resetFiltersBtn.addEventListener('click', function() {
+                    // Clear all filter inputs
+                    document.getElementById('search').value = '';
+                    document.getElementById('status_filter').value = '';
+                    document.getElementById('date_from').value = '';
+                    document.getElementById('date_to').value = '';
+                    document.getElementById('limit').value = '10';
+                    
+                    // Reset form to default state (view=history without filters)
+                    window.location.href = '{$system['system_url']}/shop-ai?view=history';
+                  });
+                }
+                
                 // Auto-submit form when filters change
                 var filterInputs = document.querySelectorAll('#filterForm input, #filterForm select');
                 filterInputs.forEach(function(input) {
@@ -1834,7 +2118,7 @@
                             </div>
                             <div class="col-4">
                               <button type="button" class="btn btn-primary btn-block" id="checkBtn" disabled>
-                                <i class="fa fa-search mr-1"></i><span class="btn-text-desktop">Check số</span><span class="btn-text-mobile">Gửi</span>
+                                <i class="fa fa-search mr-2"></i><span class="btn-text-desktop">Check số</span><span class="btn-text-mobile">Gửi</span>
                               </button>
                             </div>
                           </div>
@@ -1871,10 +2155,10 @@
                         <div class="form-group">
                           <div class="btn-group btn-group-justified w-100">
                             <button class="btn btn-info" id="refreshBtn" title="Làm mới dữ liệu">
-                              <i class="fa fa-refresh mr-1"></i>Làm mới
+                              <i class="fa fa-refresh mr-2"></i>Làm mới
                             </button>
                             <a href="{$system['system_url']}/shop-ai?view=history" class="btn btn-primary" title="Xem tất cả lịch sử check">
-                              <i class="fa fa-list mr-1"></i>Tất cả lịch sử
+                              <i class="fa fa-list mr-2"></i>Tất cả lịch sử
                             </a>
                           </div>
                         </div>
@@ -2578,7 +2862,7 @@
                     if (username.length < 3) return;
                     
                     btn.disabled = true;
-                    btn.innerHTML = '<i class="fa fa-spinner fa-spin mr-1"></i>Đang check...';
+                    btn.innerHTML = '<i class="fa fa-spinner fa-spin mr-2"></i>Đang check...';
                     
                     // Call checkso.pro API via AJAX
                     fetch('includes/ajax/phone-check-history.php', {
@@ -2605,7 +2889,7 @@
                     })
                     .finally(function() {
                       btn.disabled = false;
-                      btn.innerHTML = '<i class="fa fa-search mr-1"></i><span class="btn-text-desktop">Check số</span><span class="btn-text-mobile">Gửi</span>';
+                      btn.innerHTML = '<i class="fa fa-search mr-2"></i><span class="btn-text-desktop">Check số</span><span class="btn-text-mobile">Gửi</span>';
                     });
                   });
                 }
