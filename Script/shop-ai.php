@@ -16,6 +16,9 @@
 // fetch bootloader
 require('bootloader.php');
 
+// Include rank system
+require_once(__DIR__ . '/includes/class-rank.php');
+
 // Handle API requests
 if (isset($_GET['action']) || (isset($_SERVER['CONTENT_TYPE']) && strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== false)) {
     handleAPIRequest();
@@ -42,8 +45,13 @@ if (isset($_GET['test_user_id']) && is_numeric($_GET['test_user_id'])) {
         die("User ID {$test_user_id} không tồn tại!");
     }
 } else {
-    // Production mode - yêu cầu đăng nhập thật
-    user_access();
+    // Production mode - kiểm tra view có cần đăng nhập không
+    $view = $_GET['view'] ?? '';
+    $public_views = ['pricing']; // Các view không cần đăng nhập
+    
+    if (!in_array($view, $public_views)) {
+        user_access(); // Yêu cầu đăng nhập cho các view khác
+    }
 }
 
 // Function to generate VietQR using API
@@ -805,6 +813,37 @@ try {
         'date_to' => $date_to,
         'limit' => $limit
       ]);
+      break;
+
+    case 'pricing':
+      // page header
+      page_header(__("Bảng Giá Check Số Điện Thoại") . ' | ' . __($system['system_title']));
+      
+      // Initialize rank system
+      $rankSystem = new RankSystem();
+      
+      // Get all ranks for pricing table
+      $all_ranks = $rankSystem->getAllRanks();
+      
+      // Get user info if logged in
+      if ($user->_logged_in) {
+        $user_id = $user->_data['user_id'];
+        $current_balance = getUserBalance($user_id);
+        
+        // Get current user rank
+        $user_rank = $rankSystem->getUserRank($user_id);
+        
+        // Get rank progress
+        $rank_progress = $rankSystem->getRankProgress($user_id);
+        
+        // Assign user-specific variables
+        $smarty->assign('current_balance', $current_balance);
+        $smarty->assign('user_rank', $user_rank);
+        $smarty->assign('rank_progress', $rank_progress);
+      }
+      
+      // Assign common variables
+      $smarty->assign('all_ranks', $all_ranks);
       break;
 
     default:

@@ -5,46 +5,11 @@
 <div class="{if $system['fluid_design']}container-fluid{else}container{/if} mt20">
   <div class="row">
 
-    <!-- shop-ai sidebar (desktop only) -->
-    <div class="col-md-4 col-lg-3 sg-offcanvas-sidebar js_sticky-sidebar shop-ai-sidebar d-none d-md-block">
-      <div class="card main-side-nav-card">
-        <div class="card-body with-nav">
-          <ul class="main-side-nav">
-            <li {if $view == "" || $view == "check"}class="active" {/if}>
-              <a href="{$system['system_url']}/shop-ai">
-                <i class="fa fa-search main-icon mr10" style="width: 24px; height: 24px; font-size: 18px;"></i>
-                {__("Check số Shopee")}
-              </a>
-            </li>
-            <li {if $view == "recharge"}class="active" {/if}>
-              <a href="{$system['system_url']}/shop-ai/recharge">
-                <i class="fa fa-credit-card main-icon mr10" style="width: 24px; height: 24px; font-size: 18px;"></i>
-                {__("Nạp tiền")}
-              </a>
-            </li>
-            <li {if $view == "transactions"}class="active" {/if}>
-              <a href="{$system['system_url']}/shop-ai/transactions">
-                <i class="fa fa-history main-icon mr10" style="width: 24px; height: 24px; font-size: 18px;"></i>
-                {__("Lịch sử giao dịch")}
-              </a>
-            </li>
-            <li>
-              <a href="{$system['system_url']}/shop-ai/pricing" target="_blank">
-                <i class="fa fa-list-alt main-icon mr10" style="width: 24px; height: 24px; font-size: 18px;"></i>
-                {__("Bảng giá")}
-              </a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </div>
-    <!-- shop-ai sidebar -->
-
     <!-- content panel -->
-    <div class="col-12 col-md-8 col-lg-9 sg-offcanvas-mainbar shop-ai-mainbar">
+    <div class="col-12">
 
-      <!-- tabs (mobile only) -->
-      <div class="content-tabs rounded-sm shadow-sm clearfix d-block d-md-none">
+      <!-- tabs -->
+      <div class="content-tabs rounded-sm shadow-sm clearfix">
         <ul>
           <li {if $view == "" || $view == "check"}class="active" {/if}>
             <a href="{$system['system_url']}/shop-ai">
@@ -281,12 +246,12 @@
                       <table class="table table-striped table-bordered table-hover js_dataTable">
                         <thead>
                           <tr>
-                            <th width="15%">{__("ID")}</th>
-                            <th width="15%">{__("Số Tiền")}</th>
-                            <th width="15%">{__("Loại")}</th>
-                            <th width="15%">{__("Số Dư Sau")}</th>
-                            <th width="25%">{__("Mã QR")}</th>
-                            <th width="15%">{__("Thời Gian")}</th>
+                            <th>{__("ID")}</th>
+                            <th>{__("Số Tiền")}</th>
+                            <th>{__("Loại Giao Dịch")}</th>
+                            <th>{__("Số Dư Sau")}</th>
+                            <th>{__("Mô Tả")}</th>
+                            <th>{__("Thời Gian")}</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -295,12 +260,16 @@
                             <tr>
                               <td>#{$transaction.transaction_id}</td>
                               <td>
+                                <span class="badge rounded-pill badge-lg bg-success mr5">
+                                  <i class="far fa-arrow-alt-circle-up"></i>
+                                </span>
                                 <strong class="text-success">
                                   +{number_format($transaction.amount, 0, ',', '.')} VNĐ
                                 </strong>
                               </td>
                               <td>
-                                <span class="badge bg-success">{__("Nạp Tiền")}</span>
+                                <span class="badge rounded-pill badge-lg bg-success mr10">{__("Nạp Tiền")}</span>
+                                {__("Shop-AI")}
                               </td>
                               <td>
                                 <strong class="text-primary">
@@ -311,27 +280,14 @@
                               </td>
                               <td>
                                 <small class="text-muted">
-                                  {if $transaction.description}
-                                    {assign var="qr_code" value=""}
-                                    {if strpos($transaction.description, 'QR: ') !== false}
-                                      {assign var="qr_parts" value=explode('QR: ', $transaction.description)}
-                                      {if isset($qr_parts[1])}
-                                        {assign var="qr_code" value=trim($qr_parts[1])}
-                                      {/if}
-                                    {/if}
-                                    {if $qr_code}
-                                      <code>{$qr_code}</code>
-                                    {else}
-                                      {$transaction.description}
-                                    {/if}
-                                  {else}
-                                    -
-                                  {/if}
+                                  <i class="fa fa-qrcode mr5"></i>
+                                  {$transaction.description}
                                 </small>
                               </td>
                               <td>
                                 <small class="text-muted">
-                                  {date('d/m/Y H:i', strtotime($transaction.time))}
+                                  <i class="fa fa-calendar mr5"></i>
+                                  {date('d/m/Y', strtotime($transaction.time))}
                                 </small>
                               </td>
                             </tr>
@@ -349,32 +305,21 @@
                             <div class="row align-items-center">
                               <div class="col-8">
                                 <div class="d-flex align-items-center mb-2">
-                                  <span class="badge bg-success mr10">Nạp Tiền</span>
+                                  <span class="badge bg-success mr10">
+                                    <i class="fa fa-plus-circle"></i> Nạp Tiền
+                                  </span>
                                   <small class="text-muted">#{$transaction.transaction_id}</small>
                                 </div>
                                 <h6 class="mb-1 text-success font-weight-bold">
                                   +{number_format($transaction.amount, 0, ',', '.')} VNĐ
                                 </h6>
                                 <p class="text-muted small mb-1">
-                                  {if $transaction.description}
-                                    {assign var="qr_code" value=""}
-                                    {if strpos($transaction.description, 'QR: ') !== false}
-                                      {assign var="qr_parts" value=explode('QR: ', $transaction.description)}
-                                      {if isset($qr_parts[1])}
-                                        {assign var="qr_code" value=trim($qr_parts[1])}
-                                      {/if}
-                                    {/if}
-                                    {if $qr_code}
-                                      <code>{$qr_code}</code>
-                                    {else}
-                                      {$transaction.description}
-                                    {/if}
-                                  {else}
-                                    -
-                                  {/if}
+                                  <i class="fa fa-qrcode mr5"></i>
+                                  {$transaction.description}
                                 </p>
                                 <small class="text-muted">
-                                  {date('d/m/Y H:i', strtotime($transaction.time))}
+                                  <i class="fa fa-calendar mr5"></i>
+                                  {date('d/m/Y', strtotime($transaction.time))}
                                 </small>
                               </div>
                               <div class="col-4 text-right">
@@ -1692,7 +1637,6 @@
               body.night-mode #historyTable tbody td div:last-child {
                 color: #999 !important;
               }
-              
               </style>
 
               <!-- JavaScript for History Page -->
@@ -1743,7 +1687,7 @@
                 });
               });
               </script>
-            {elseif $view == "" || $view == "check"}
+            {else}
               <div class="card-header bg-transparent">
                 <strong>Shopee Phone Checker</strong>
               </div>
@@ -2675,146 +2619,6 @@
               });
               </script>
             {/if}
-            
-            {if $view == "pricing"}
-              <div class="card-header bg-transparent">
-                <strong>{__("Bảng Giá Check Số Điện Thoại Shopee")}</strong>
-              </div>
-              <div class="card-body">
-                <div class="row justify-content-center">
-                  <div class="col-lg-10">
-                    
-                    <!-- Pricing header -->
-                    <div class="text-center mb-5">
-                      <i class="fa fa-star fa-3x text-warning mb-3"></i>
-                      <h3>{__("Bảng Giá Theo Hệ Thống Rank")}</h3>
-                      <p class="text-muted">{__("Càng chi tiêu nhiều, giá check càng rẻ!")}</p>
-                    </div>
-                    
-                    <!-- Current user rank info -->
-                    {if isset($user_rank)}
-                    <div class="alert alert-info text-center mb-4">
-                      <h5 class="mb-2">
-                        <span class="me-2">{$user_rank.rank_emoji}</span>
-                        {__("Rank hiện tại")}: <strong>{$user_rank.rank_name}</strong>
-                      </h5>
-                      <p class="mb-2">
-                        {__("Giá check của bạn")}: <strong class="text-success">{number_format($user_rank.check_price, 0, ',', '.')} VNĐ</strong>
-                      </p>
-                      <small class="text-muted">
-                        {__("Tổng chi tiêu")}: {number_format($user_rank.user_total_spent, 0, ',', '.')} VNĐ
-                      </small>
-                      
-                      {if isset($rank_progress.next)}
-                      <div class="mt-3">
-                        <p class="mb-1 small">
-                          {__("Tiến độ lên rank")} <strong>{$rank_progress.next.rank_name}</strong> {$rank_progress.next.rank_emoji}:
-                        </p>
-                        <div class="progress mb-2" style="height: 8px;">
-                          <div class="progress-bar bg-warning" 
-                               style="width: {$rank_progress.progress_percent}%"></div>
-                        </div>
-                        <small class="text-muted">
-                          {__("Cần thêm")}: <strong>{number_format($rank_progress.remaining_amount, 0, ',', '.')} VNĐ</strong>
-                        </small>
-                      </div>
-                      {/if}
-                    </div>
-                    {/if}
-                    
-                    <!-- Pricing table -->
-                    <div class="table-responsive">
-                      <table class="table table-bordered table-hover">
-                        <thead class="table-dark">
-                          <tr>
-                            <th class="text-center" width="15%">{__("Rank")}</th>
-                            <th class="text-center" width="25%">{__("Tên Rank")}</th>
-                            <th class="text-center" width="25%">{__("Chi tiêu tối thiểu")}</th>
-                            <th class="text-center" width="20%">{__("Giá/1 lần check")}</th>
-                            <th class="text-center" width="15%">{__("Tiết kiệm")}</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {if isset($all_ranks)}
-                            {foreach $all_ranks as $rank}
-                            <tr {if isset($user_rank) && $user_rank.rank_id == $rank.rank_id}class="table-warning"{/if}>
-                              <td class="text-center">
-                                <span style="font-size: 2rem;">{$rank.rank_emoji}</span>
-                              </td>
-                              <td class="text-center">
-                                <strong>{$rank.rank_name}</strong>
-                                {if isset($user_rank) && $user_rank.rank_id == $rank.rank_id}
-                                  <br><small class="badge bg-warning">Rank hiện tại</small>
-                                {/if}
-                              </td>
-                              <td class="text-center">
-                                <strong>{number_format($rank.min_spending, 0, ',', '.')} VNĐ</strong>
-                                {if $rank.max_spending > 0}
-                                  <br><small class="text-muted">- {number_format($rank.max_spending, 0, ',', '.')} VNĐ</small>
-                                {/if}
-                              </td>
-                              <td class="text-center">
-                                <strong class="text-success">{number_format($rank.check_price, 0, ',', '.')} VNĐ</strong>
-                              </td>
-                              <td class="text-center">
-                                {if $rank@first}
-                                  <span class="text-muted">-</span>
-                                {else}
-                                  {assign var="bronze_price" value=$all_ranks[0].check_price}
-                                  {assign var="discount" value=(($bronze_price - $rank.check_price) / $bronze_price * 100)}
-                                  <span class="badge bg-success">{$discount|round}%</span>
-                                {/if}
-                              </td>
-                            </tr>
-                            {/foreach}
-                          {/if}
-                        </tbody>
-                      </table>
-                    </div>
-                    
-                    <!-- Features section -->
-                    <div class="row mt-5">
-                      <div class="col-md-6">
-                        <div class="card h-100">
-                          <div class="card-header bg-primary text-white">
-                            <h6 class="mb-0"><i class="fa fa-trophy"></i> {__("Cách thăng rank")}</h6>
-                          </div>
-                          <div class="card-body">
-                            <ul class="list-unstyled">
-                              <li class="mb-2"><i class="fa fa-check text-success"></i> Chi tiêu check số điện thoại</li>
-                              <li class="mb-2"><i class="fa fa-check text-success"></i> Nạp tiền vào tài khoản</li>
-                              <li class="mb-2"><i class="fa fa-check text-success"></i> Sử dụng các dịch vụ khác</li>
-                              <li class="mb-2"><i class="fa fa-check text-success"></i> Rank tự động cập nhật</li>
-                              <li class="mb-2"><i class="fa fa-check text-success"></i> Ưu đãi ngay lập tức</li>
-                            </ul>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="col-md-6">
-                        <div class="card h-100">
-                          <div class="card-header bg-success text-white">
-                            <h6 class="mb-0"><i class="fa fa-gift"></i> {__("Ưu đãi VIP")}</h6>
-                          </div>
-                          <div class="card-body">
-                            <ul class="list-unstyled">
-                              <li class="mb-2"><i class="fa fa-crown text-warning"></i> Giá check giảm đến 83%</li>
-                              <li class="mb-2"><i class="fa fa-flash text-warning"></i> Ưu tiên xử lý nhanh</li>
-                              <li class="mb-2"><i class="fa fa-headphones text-warning"></i> Support 24/7 riêng</li>
-                              <li class="mb-2"><i class="fa fa-api text-warning"></i> API rate limit cao hơn</li>
-                              <li class="mb-2"><i class="fa fa-gift text-warning"></i> Quà tặng đặc biệt</li>
-                            </ul>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    
-                  
-                    
-                  </div>
-                </div>
-              </div>
-            {/if}
-            
           </div>
         </div>
         <!-- main content -->
@@ -3323,7 +3127,6 @@ function generateVietQR(amount, content) {
                 }
               });
             }
-            
 </script>
 
 {include file='_footer.tpl'}

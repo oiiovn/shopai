@@ -180,9 +180,11 @@ RewriteRule ^people/sent_requests/?$ people.php?view=sent_requests [L,QSA]
 
 # Shop AI
 RewriteRule ^shop-ai/?$ shop-ai.php [L,QSA]
-RewriteRule ^shop-ai/check/?$ shop-ai.php?view=check [L,QSA]
 RewriteRule ^shop-ai/recharge/?$ shop-ai.php?view=recharge [L,QSA]
 RewriteRule ^shop-ai/transactions/?$ shop-ai.php?view=transactions [L,QSA]
+RewriteRule ^shop-ai/pricing/?$ shop-ai.php?view=pricing [L,QSA]
+RewriteRule ^shop-ai/history/?$ shop-ai.php?view=history [L,QSA]
+RewriteRule ^shop-ai/rank-check/?$ shop-ai.php?view=rank-check [L,QSA]
 
 # Pages
 RewriteRule ^pages/?$ pages.php [L,QSA]
