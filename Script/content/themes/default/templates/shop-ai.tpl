@@ -29,7 +29,7 @@
               </a>
             </li>
             <li>
-              <a href="{$system['system_url']}/shop-ai/pricing" target="_blank">
+              <a href="{$system['system_url']}/shop-ai/pricing">
                 <i class="fa fa-list-alt main-icon mr10" style="width: 24px; height: 24px; font-size: 18px;"></i>
                 {__("Bảng giá")}
               </a>
@@ -59,6 +59,11 @@
           <li {if $view == "transactions"}class="active" {/if}>
             <a href="{$system['system_url']}/shop-ai/transactions">
               {__("Giao dịch")}
+            </a>
+          </li>
+          <li>
+            <a href="{$system['system_url']}/shop-ai/pricing">
+              {__("Bảng giá")}
             </a>
           </li>
         </ul>
@@ -292,6 +297,14 @@
                         <tbody>
                           {assign var="running_balance" value=$current_balance}
                           {foreach $shop_ai_transactions as $transaction}
+                            {* Calculate balance after this transaction *}
+                            {if $transaction.type == 'recharge'}
+                              {assign var="balance_after" value=$running_balance}
+                              {assign var="running_balance" value=$running_balance-$transaction.amount}
+                            {else}
+                              {assign var="balance_after" value=$running_balance}
+                              {assign var="running_balance" value=$running_balance+$transaction.amount}
+                            {/if}
                             <tr>
                               <td>#{$transaction.transaction_id}</td>
                               <td>
@@ -306,10 +319,8 @@
                               </td>
                               <td>
                                 <strong class="text-primary">
-                                  {assign var="balance_after" value=$running_balance}
                                   {number_format($balance_after, 0, ',', '.')} VNĐ
                                 </strong>
-                                {assign var="running_balance" value=$running_balance-$transaction.amount}
                               </td>
                               <td>
                                 <small class="text-muted">
@@ -346,6 +357,14 @@
                     <div class="d-block d-md-none">
                       {assign var="running_balance_mobile" value=$current_balance}
                       {foreach $shop_ai_transactions as $transaction}
+                        {* Calculate balance after this transaction *}
+                        {if $transaction.type == 'recharge'}
+                          {assign var="balance_after_mobile" value=$running_balance_mobile}
+                          {assign var="running_balance_mobile" value=$running_balance_mobile-$transaction.amount}
+                        {else}
+                          {assign var="balance_after_mobile" value=$running_balance_mobile}
+                          {assign var="running_balance_mobile" value=$running_balance_mobile+$transaction.amount}
+                        {/if}
                         <div class="card mb-3">
                           <div class="card-body">
                             <div class="row align-items-center">
@@ -385,10 +404,8 @@
                                 <div class="text-center">
                                   <small class="text-muted d-block">Số dư sau</small>
                                   <strong class="text-primary">
-                                    {assign var="balance_after_mobile" value=$running_balance_mobile}
                                     {number_format($balance_after_mobile, 0, ',', '.')} VNĐ
                                   </strong>
-                                  {assign var="running_balance_mobile" value=$running_balance_mobile-$transaction.amount}
                                 </div>
                               </div>
                             </div>
@@ -1871,7 +1888,7 @@
                   <div class="history-header mb-3">
                     <div class="row align-items-center">
                       <div class="col-md-6">
-                        <h5 class="mb-0">
+                        <h5 class="mb-0 text-primary font-weight-bold">
                           <i class="fa fa-history mr-2"></i>Lịch sử check
                         </h5>
                       </div>
@@ -1886,11 +1903,10 @@
                     <table class="table table-hover">
                       <thead class="thead-light">
                         <tr>
-                          <th width="15%">Thời gian</th>
-                          <th width="20%">Username</th>
-                          <th width="15%">Trạng thái</th>
-                          <th width="20%">Số điện thoại</th>
-                          <th width="30%">Ghi chú</th>
+                          <th width="20%" class="text-dark font-weight-bold">Thời gian</th>
+                          <th width="25%" class="text-dark font-weight-bold">Username</th>
+                          <th width="20%" class="text-dark font-weight-bold">Trạng thái</th>
+                          <th width="35%" class="text-dark font-weight-bold">Số điện thoại</th>
                         </tr>
                       </thead>
                       <tbody id="historyTableBody">
@@ -2652,7 +2668,7 @@
                     var statusBadge = createStatusBadge(item.status);
                     var phoneDisplay = item.phone ? '<span class="phone-number">' + item.phone + '</span>' : '-';
                     
-                    row.innerHTML = '<td><div><div style="font-weight: 600;">' + timeStr + '</div><div style="font-size: 12px; color: #6c757d;">' + dateStr + '</div></div></td><td><strong>' + item.checked_username + '</strong></td><td>' + statusBadge + '</td><td>' + phoneDisplay + '</td><td><span class="note-text">' + item.result_message + '</span></td>';
+                    row.innerHTML = '<td><div><div style="font-weight: 600;">' + timeStr + '</div><div style="font-size: 12px; color: #6c757d;">' + dateStr + '</div></div></td><td><strong>' + item.checked_username + '</strong></td><td>' + statusBadge + '</td><td>' + phoneDisplay + '</td>';
                     tbody.appendChild(row);
                   });
                 }
@@ -2686,7 +2702,6 @@
                       '<div class="history-card-body">' +
                         '<div class="history-card-status">' + statusBadge + '</div>' +
                         '<div class="history-card-phone">' + phoneDisplay + '</div>' +
-                        '<div class="history-card-note">' + item.result_message + '</div>' +
                       '</div>';
                     
                     cardsList.appendChild(card);
@@ -2813,8 +2828,8 @@
                     </div>
                     {/if}
                     
-                    <!-- Pricing table -->
-                    <div class="table-responsive">
+                    <!-- Desktop: Pricing table -->
+                    <div class="table-responsive d-none d-md-block">
                       <table class="table table-bordered table-hover">
                         <thead class="table-dark">
                           <tr>
@@ -2861,6 +2876,54 @@
                           {/if}
                         </tbody>
                       </table>
+                    </div>
+                    
+                    <!-- Mobile: Pricing cards -->
+                    <div class="d-block d-md-none">
+                      {if isset($all_ranks)}
+                        {foreach $all_ranks as $rank}
+                        <div class="card mb-4 {if isset($user_rank) && $user_rank.rank_id == $rank.rank_id}border-warning shadow-lg{else}shadow-sm{/if}" style="border-radius: 12px; border: 2px solid {if isset($user_rank) && $user_rank.rank_id == $rank.rank_id}#ffc107{else}#e9ecef{/if};">
+                          <div class="card-body p-4">
+                            <div class="row align-items-center">
+                              <div class="col-3 text-center">
+                                <div class="rank-emoji mb-2" style="font-size: 3rem;">{$rank.rank_emoji}</div>
+                              </div>
+                              <div class="col-9">
+                                <h5 class="card-title mb-2">
+                                  <strong>{$rank.rank_name}</strong>
+                                  {if isset($user_rank) && $user_rank.rank_id == $rank.rank_id}
+                                    <br><small class="badge bg-warning">Rank hiện tại</small>
+                                  {/if}
+                                </h5>
+                                <div class="mb-2">
+                                  <small class="text-muted">Chi tiêu tối thiểu:</small><br>
+                                  <strong>{number_format($rank.min_spending, 0, ',', '.')} VNĐ</strong>
+                                  {if $rank.max_spending > 0}
+                                    <br><small class="text-muted">- {number_format($rank.max_spending, 0, ',', '.')} VNĐ</small>
+                                  {/if}
+                                </div>
+                                <div class="row">
+                                  <div class="col-6">
+                                    <small class="text-muted">Giá check:</small><br>
+                                    <strong class="text-success">{number_format($rank.check_price, 0, ',', '.')} VNĐ</strong>
+                                  </div>
+                                  <div class="col-6 text-end">
+                                    {if $rank@first}
+                                      <span class="text-muted">-</span>
+                                    {else}
+                                      {assign var="bronze_price" value=$all_ranks[0].check_price}
+                                      {assign var="discount" value=(($bronze_price - $rank.check_price) / $bronze_price * 100)}
+                                      <small class="text-muted">Tiết kiệm:</small><br>
+                                      <span class="badge bg-success">{$discount|round}%</span>
+                                    {/if}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        {/foreach}
+                      {/if}
                     </div>
                     
                     <!-- Features section -->
