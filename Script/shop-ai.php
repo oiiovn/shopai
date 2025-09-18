@@ -7,11 +7,10 @@
  * @author Zamblek
  */
 
-// Error reporting disabled for production
-// error_reporting(E_ALL);
-// ini_set('display_errors', 1);
-// ini_set('log_errors', 1);
-// ini_set('error_log', '/Applications/XAMPP/xamppfiles/logs/php_error.log');
+// Error reporting enabled for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('log_errors', 1);
 
 // fetch bootloader
 require('bootloader.php');
@@ -172,6 +171,58 @@ function checkUserPhoneByUsername($username) {
             'user_id' => null
         ];
     }
+}
+
+// Function to call checkso.pro API
+function callChecksoAPI($username, $phone = '99') {
+    $api_token = '8d3b77d956264a950f28224928c7390941eedd0180f87de4a487edbaf80b3841';
+    $endpoint = 'http://checkso.pro/search_users_advanced';
+    
+    $data = [
+        'api' => $api_token,
+        'username' => $username,
+        'phone' => $phone
+    ];
+    
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $endpoint);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Content-Type: application/json',
+        'Content-Length: ' . strlen(json_encode($data))
+    ]);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+    
+    $response = curl_exec($ch);
+    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    
+    if ($response === false || $http_code !== 200) {
+        return [
+            'success' => false,
+            'message' => 'Lỗi kết nối API',
+            'data' => null
+        ];
+    }
+    
+    $result = json_decode($response, true);
+    
+    if (!$result || !isset($result['status'])) {
+        return [
+            'success' => false,
+            'message' => 'Phản hồi API không hợp lệ',
+            'data' => null
+        ];
+    }
+    
+    return [
+        'success' => $result['status'] == 1,
+        'message' => $result['status'] == 1 ? 'Check thành công' : 'Không tìm thấy thông tin',
+        'data' => $result
+    ];
 }
 
 // Function to save phone check history
@@ -651,7 +702,7 @@ function getBankTransactions($user_id, $limit = 50) {
 }
 
 try {
-
+  
   // get view content
   switch ($_GET['view']) {
     case '':
@@ -671,21 +722,51 @@ try {
       if (isset($_POST['check_phone']) && !empty($_POST['username'])) {
         $username_to_check = trim($_POST['username']);
         
-        // Chỉ lưu trạng thái "pending" - admin sẽ cập nhật sau
-        $pending_id = savePhoneCheckHistory(
-          $user_id, 
-          $username_to_check, 
-          null, 
-          null, 
-          'pending', 
-          'Đang check...'
-        );
+        // Call checkso.pro API with default phone hint "99"
+        $api_result = callChecksoAPI($username_to_check, '99');
         
-        if ($pending_id) {
+        if ($api_result['success'] && isset($api_result['data']['records']) && count($api_result['data']['records']) > 0) {
+          // Success - found phone number
+          $phone_data = $api_result['data']['records'][0];
+          $phone_number = $phone_data['result'];
+          
+          $history_id = savePhoneCheckHistory(
+            $user_id,
+            $username_to_check,
+            null,
+            $phone_number,
+            'success',
+            'Check thành công: ' . $phone_number
+          );
+          
           $check_result = [
             'success' => true,
-            'message' => 'Yêu cầu check đã được lưu, admin sẽ xử lý sớm nhất có thể',
-            'id' => $pending_id
+            'message' => 'Check thành công!',
+            'phone' => $phone_number,
+            'username' => $username_to_check,
+            'history_id' => $history_id,
+            'api_balance' => $api_result['data']['new_balance'] ?? 'N/A'
+          ];
+          
+        } else {
+          // Not found or API error
+          $error_message = $api_result['message'] ?? 'Không tìm thấy số điện thoại';
+          
+          $history_id = savePhoneCheckHistory(
+            $user_id,
+            $username_to_check,
+            null,
+            null,
+            'not_found',
+            $error_message
+          );
+          
+          $check_result = [
+            'success' => false,
+            'message' => $error_message,
+            'username' => $username_to_check,
+            'history_id' => $history_id,
+            'api_balance' => $api_result['data']['new_balance'] ?? 'N/A'
           ];
         }
         
@@ -853,23 +934,13 @@ try {
   /* assign variables */
   $smarty->assign('view', $_GET['view']);
 
-  // get total friend requests sent
-  if ($user->_logged_in) {
-    $user->_data['friend_requests_sent_total'] = $user->get_friend_requests_sent_total();
-  } else {
-    $user->_data['friend_requests_sent_total'] = 0;
-  }
+  // get total friend requests sent (simplified for test mode)
+  $user->_data['friend_requests_sent_total'] = 0;
 
-  // get ads campaigns (only if user is logged in)
-  if ($user->_logged_in) {
-    $smarty->assign('ads_campaigns', $user->ads_campaigns());
-    $smarty->assign('ads', $user->ads('people'));
-    $smarty->assign('widgets', $user->widgets('people'));
-  } else {
-    $smarty->assign('ads_campaigns', array());
-    $smarty->assign('ads', array());
-    $smarty->assign('widgets', array());
-  }
+  // get ads campaigns (simplified for test mode)
+  $smarty->assign('ads_campaigns', array());
+  $smarty->assign('ads', array());
+  $smarty->assign('widgets', array());
 } catch (Exception $e) {
   _error(__("Error"), $e->getMessage());
 }

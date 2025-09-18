@@ -160,8 +160,112 @@ function generateFakePhone() {
     return $prefix . $number;
 }
 
+// Function to call checkso.pro API
+function callChecksoAPI($username, $phone = '99') {
+    $api_token = '8d3b77d956264a950f28224928c7390941eedd0180f87de4a487edbaf80b3841';
+    $endpoint = 'http://checkso.pro/search_users_advanced';
+    
+    $data = [
+        'api' => $api_token,
+        'username' => $username,
+        'phone' => $phone
+    ];
+    
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $endpoint);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Content-Type: application/json',
+        'Content-Length: ' . strlen(json_encode($data))
+    ]);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+    
+    $response = curl_exec($ch);
+    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    
+    if ($response === false || $http_code !== 200) {
+        return [
+            'success' => false,
+            'message' => 'Lỗi kết nối API',
+            'data' => null
+        ];
+    }
+    
+    $result = json_decode($response, true);
+    
+    if (!$result || !isset($result['status'])) {
+        return [
+            'success' => false,
+            'message' => 'Phản hồi API không hợp lệ',
+            'data' => null
+        ];
+    }
+    
+    return [
+        'success' => $result['status'] == 1,
+        'message' => $result['status'] == 1 ? 'Check thành công' : 'Không tìm thấy thông tin',
+        'data' => $result
+    ];
+}
+
 // Handle different actions
 switch ($action) {
+    case 'check_phone_api':
+        $user_id = intval($input['user_id'] ?? 0);
+        $username = trim($input['username'] ?? '');
+        
+        if (!$user_id || !$username) {
+            echo json_encode(['success' => false, 'message' => 'Thiếu thông tin']);
+            exit();
+        }
+        
+        // Step 1: Save pending record first
+        $stmt = $pdo->prepare("INSERT INTO phone_check_history (checker_user_id, checked_username, checked_user_id, phone, status, result_message, created_at) VALUES (?, ?, ?, ?, ?, ?, NOW())");
+        $stmt->execute([$user_id, $username, null, null, 'pending', 'Đang gửi API...']);
+        $pending_id = $pdo->lastInsertId();
+        
+        // Step 2: Call checkso.pro API
+        $api_result = callChecksoAPI($username, '99');
+        
+        if ($api_result['success'] && isset($api_result['data']['records']) && count($api_result['data']['records']) > 0) {
+            // Success - found phone number
+            $phone_data = $api_result['data']['records'][0];
+            $phone_number = $phone_data['result'];
+            
+            // Step 3: Update the pending record with success result
+            $stmt = $pdo->prepare("UPDATE phone_check_history SET phone = ?, status = ?, result_message = ?, updated_at = NOW() WHERE id = ?");
+            $stmt->execute([$phone_number, 'success', 'Check thành công: ' . $phone_number, $pending_id]);
+            
+            echo json_encode([
+                'success' => true,
+                'message' => 'Check thành công!',
+                'phone' => $phone_number,
+                'username' => $username,
+                'api_balance' => $api_result['data']['new_balance'] ?? 'N/A',
+                'record_id' => $pending_id
+            ]);
+        } else {
+            // Not found
+            $error_message = $api_result['message'] ?? 'Không tìm thấy số điện thoại';
+            
+            // Step 3: Update the pending record with not_found result
+            $stmt = $pdo->prepare("UPDATE phone_check_history SET status = ?, result_message = ?, updated_at = NOW() WHERE id = ?");
+            $stmt->execute(['not_found', $error_message, $pending_id]);
+            
+            echo json_encode([
+                'success' => false,
+                'message' => $error_message,
+                'username' => $username,
+                'api_balance' => $api_result['data']['new_balance'] ?? 'N/A',
+                'record_id' => $pending_id
+            ]);
+        }
+        break;
+        
     case 'get_history':
         $user_id = $input['user_id'] ?? 1;
         $page = intval($input['page'] ?? 1);

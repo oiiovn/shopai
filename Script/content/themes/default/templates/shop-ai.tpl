@@ -2518,28 +2518,75 @@
                     if (username.length < 3) return;
                     
                     btn.disabled = true;
+                    btn.innerHTML = '<i class="fa fa-spinner fa-spin mr-1"></i>Đang check...';
                     
+                    // Call checkso.pro API via AJAX
                     fetch('includes/ajax/phone-check-history.php', {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ action: 'check_phone', user_id: {$user->_data.user_id}, username: username })
+                      body: JSON.stringify({ action: 'check_phone_api', user_id: {$user->_data.user_id}, username: username })
                     })
                     .then(function(response) { return response.json(); })
                     .then(function(data) {
                       if (data.success) {
-                        input.value = '';
-                        loadHistory(1); // Reload history instead of page reload
+                        // Show success popup
+                        if (data.phone) {
+                          showResultPopup('success', 'Check thành công!', 
+                            '📱 Số điện thoại: ' + data.phone);
+                        } else {
+                          showResultPopup('warning', 'Kết quả', data.message);
+                        }
                       } else {
-                        alert('Lỗi: ' + data.message);
+                        showResultPopup('danger', 'Không tìm thấy', 'Username không tồn tại');
                       }
                     })
                     .catch(function(error) {
-                      alert('Có lỗi xảy ra');
+                      alert('Có lỗi xảy ra: ' + error.message);
                     })
                     .finally(function() {
                       btn.disabled = false;
+                      btn.innerHTML = '<i class="fa fa-search mr-1"></i><span class="btn-text-desktop">Check số</span><span class="btn-text-mobile">Gửi</span>';
                     });
                   });
+                }
+                
+                // Function to show result popup in center screen
+                function showResultPopup(type, title, message) {
+                  // Create modal HTML for center screen
+                  var alertClass = type === 'success' ? 'alert-success' : 
+                                  type === 'warning' ? 'alert-warning' : 'alert-danger';
+                  
+                  var modalHtml = 
+                    '<div class="modal fade" id="checkResultModal" tabindex="-1" role="dialog">' +
+                      '<div class="modal-dialog modal-dialog-centered" role="document">' +
+                        '<div class="modal-content">' +
+                          '<div class="modal-body text-center p-4">' +
+                            '<div class="' + alertClass + ' border-0 mb-3">' +
+                              '<h5 class="mb-2">' + title + '</h5>' +
+                              '<div>' + message + '</div>' +
+                            '</div>' +
+                            '<small class="text-muted">Tự động đóng sau 3 giây...</small>' +
+                          '</div>' +
+                        '</div>' +
+                      '</div>' +
+                    '</div>';
+                  
+                  // Remove existing modal if any
+                  $('#checkResultModal').remove();
+                  
+                  // Add to body
+                  $('body').append(modalHtml);
+                  
+                  // Show modal
+                  $('#checkResultModal').modal('show');
+                  
+                  // Auto close and reload after 3 seconds
+                  setTimeout(function() {
+                    $('#checkResultModal').modal('hide');
+                    setTimeout(function() {
+                      window.location.reload();
+                    }, 300);
+                  }, 3000);
                 }
                 
                 function renderDesktopTable(historyItems) {
@@ -3325,6 +3372,7 @@ function generateVietQR(amount, content) {
             }
             
 </script>
+
 
 {include file='_footer.tpl'}
 
