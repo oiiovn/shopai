@@ -2143,7 +2143,11 @@
                               </button>
                             </div>
                           </div>
-
+                        </div>
+                        
+                        <!-- Thông báo kết quả check -->
+                        <div id="checkResultAlert" style="display: none;" class="mt-3">
+                          <!-- Result will be shown here -->
                         </div>
                       </div>
                     </div>
@@ -2902,7 +2906,12 @@
                           showResultPopup('warning', 'Kết quả', data.message);
                         }
                       } else {
-                        showResultPopup('danger', 'Không tìm thấy', 'Username không tồn tại');
+                        // Check if it's insufficient balance error
+                        if (data.required_amount && data.current_balance !== undefined) {
+                          showInsufficientBalanceAlert(data.message, data.required_amount, data.current_balance);
+                        } else {
+                          showResultPopup('danger', 'Không tìm thấy', data.message || 'Username không tồn tại');
+                        }
                       }
                     })
                     .catch(function(error) {
@@ -2915,8 +2924,54 @@
                   });
                 }
                 
+                // Function to show insufficient balance alert
+                function showInsufficientBalanceAlert(message, requiredAmount, currentBalance) {
+                  var alertHtml = 
+                    '<div class="alert alert-danger alert-dismissible fade show" role="alert">' +
+                      '<div class="d-flex align-items-center">' +
+                        '<i class="fa fa-exclamation-triangle fa-2x mr-3 text-danger"></i>' +
+                        '<div class="flex-grow-1">' +
+                          '<h5 class="alert-heading mb-2"><i class="fa fa-wallet mr-2"></i>Không đủ số dư!</h5>' +
+                          '<p class="mb-2">' + message + '</p>' +
+                          '<div class="row">' +
+                            '<div class="col-6">' +
+                              '<small class="text-muted">Số dư hiện tại:</small><br>' +
+                              '<strong class="text-danger">' + currentBalance.toLocaleString('vi-VN') + ' VNĐ</strong>' +
+                            '</div>' +
+                            '<div class="col-6">' +
+                              '<small class="text-muted">Cần thêm:</small><br>' +
+                              '<strong class="text-warning">' + (requiredAmount - currentBalance).toLocaleString('vi-VN') + ' VNĐ</strong>' +
+                            '</div>' +
+                          '</div>' +
+                          '<hr class="my-2">' +
+                          '<div class="text-center">' +
+                            '<a href="{$system.system_url}/shop-ai/recharge" class="btn btn-success btn-sm">' +
+                              '<i class="fa fa-credit-card mr-1"></i>Nạp tiền ngay' +
+                            '</a>' +
+                          '</div>' +
+                        '</div>' +
+                      '</div>' +
+                      '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' +
+                    '</div>';
+                  
+                  var alertContainer = document.getElementById('checkResultAlert');
+                  alertContainer.innerHTML = alertHtml;
+                  alertContainer.style.display = 'block';
+                  
+                  // Auto hide after 10 seconds
+                  setTimeout(function() {
+                    alertContainer.style.display = 'none';
+                  }, 10000);
+                }
+                
                 // Function to show result popup in center screen
                 function showResultPopup(type, title, message) {
+                  // Hide any existing alerts
+                  var alertContainer = document.getElementById('checkResultAlert');
+                  if (alertContainer) {
+                    alertContainer.style.display = 'none';
+                  }
+                  
                   // Create modal HTML for center screen
                   var alertClass = type === 'success' ? 'alert-success' : 
                                   type === 'warning' ? 'alert-warning' : 'alert-danger';

@@ -768,53 +768,69 @@ try {
       if (isset($_POST['check_phone']) && !empty($_POST['username'])) {
         $username_to_check = trim($_POST['username']);
         
-        // Call checkso.pro API with default phone hint "99"
-        $api_result = callChecksoAPI($username_to_check, '99');
+        // Check if user has enough balance
+        $check_price = $user_rank['check_price'] ?? 30000; // Default price if no rank
         
-        if ($api_result['success'] && isset($api_result['data']['records']) && count($api_result['data']['records']) > 0) {
-          // Success - found phone number
-          $phone_data = $api_result['data']['records'][0];
-          $phone_number = $phone_data['result'];
-          
-          $history_id = savePhoneCheckHistory(
-            $user_id,
-            $username_to_check,
-            null,
-            $phone_number,
-            'success',
-            'Check thành công: ' . $phone_number
-          );
-          
-          $check_result = [
-            'success' => true,
-            'message' => 'Check thành công!',
-            'phone' => $phone_number,
-            'username' => $username_to_check,
-            'history_id' => $history_id,
-            'api_balance' => $api_result['data']['new_balance'] ?? 'N/A'
-          ];
-          
-        } else {
-          // Not found or API error
-          $error_message = $api_result['message'] ?? 'Không tìm thấy số điện thoại';
-          
-          $history_id = savePhoneCheckHistory(
-            $user_id,
-            $username_to_check,
-            null,
-            null,
-            'not_found',
-            $error_message
-          );
-          
+        if ($current_balance < $check_price) {
+          // Not enough balance
           $check_result = [
             'success' => false,
-            'message' => $error_message,
+            'message' => 'Không đủ số dư để thực hiện check. Số dư hiện tại: ' . number_format($current_balance, 0, ',', '.') . ' VNĐ. Cần: ' . number_format($check_price, 0, ',', '.') . ' VNĐ.',
             'username' => $username_to_check,
-            'history_id' => $history_id,
-            'api_balance' => $api_result['data']['new_balance'] ?? 'N/A'
+            'insufficient_balance' => true,
+            'current_balance' => $current_balance,
+            'required_amount' => $check_price
           ];
-        }
+        } else {
+          // Sufficient balance - proceed with API call
+          // Call checkso.pro API with default phone hint "99"
+          $api_result = callChecksoAPI($username_to_check, '99');
+        
+          if ($api_result['success'] && isset($api_result['data']['records']) && count($api_result['data']['records']) > 0) {
+            // Success - found phone number
+            $phone_data = $api_result['data']['records'][0];
+            $phone_number = $phone_data['result'];
+            
+            $history_id = savePhoneCheckHistory(
+              $user_id,
+              $username_to_check,
+              null,
+              $phone_number,
+              'success',
+              'Check thành công: ' . $phone_number
+            );
+            
+            $check_result = [
+              'success' => true,
+              'message' => 'Check thành công!',
+              'phone' => $phone_number,
+              'username' => $username_to_check,
+              'history_id' => $history_id,
+              'api_balance' => $api_result['data']['new_balance'] ?? 'N/A'
+            ];
+            
+          } else {
+            // Not found or API error
+            $error_message = $api_result['message'] ?? 'Không tìm thấy số điện thoại';
+            
+            $history_id = savePhoneCheckHistory(
+              $user_id,
+              $username_to_check,
+              null,
+              null,
+              'not_found',
+              $error_message
+            );
+            
+            $check_result = [
+              'success' => false,
+              'message' => $error_message,
+              'username' => $username_to_check,
+              'history_id' => $history_id,
+              'api_balance' => $api_result['data']['new_balance'] ?? 'N/A'
+            ];
+          }
+        } // End of balance check else
         
         // Refresh history after new check
         $check_history = getPhoneCheckHistory($user_id, 5);
