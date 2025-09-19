@@ -2927,7 +2927,7 @@
                       }
                     })
                     .catch(function(error) {
-                      alert('Có lỗi xảy ra: ' + error.message);
+                      alert(translations['error_occurred'] + error.message);
                     })
                     .finally(function() {
                       btn.disabled = false;
@@ -2974,20 +2974,20 @@
                           '<i class="fa fa-exclamation-triangle fa-2x" style="color: #856404;"></i>' +
                         '</div>' +
                         '<div class="flex-grow-1">' +
-                          '<h5 class="alert-title mb-2" style="margin-left: 20px; color: #856404;">Username đã được check!</h5>' +
+                          '<h5 class="alert-title mb-2" style="margin-left: 20px; color: #856404;">' + translations['username_duplicate'] + '</h5>' +
                           '<div class="balance-info mb-3" style="background: rgba(255,193,7,0.1); border-left: 4px solid #856404;">' +
                             '<div class="d-flex justify-content-between align-items-center mb-1">' +
-                              '<span class="text-muted">Username:</span>' +
+                              '<span class="text-muted">' + translations['username_status'] + '</span>' +
                               '<strong style="color: #856404;">' + username + '</strong>' +
                             '</div>' +
                             '<div class="d-flex justify-content-between align-items-center">' +
-                              '<span class="text-muted">Trạng thái:</span>' +
-                              '<span class="badge badge-warning">Đã check trước đó</span>' +
+                              '<span class="text-muted">' + translations['check_status'] + '</span>' +
+                              '<span class="badge badge-warning">' + translations['already_checked'] + '</span>' +
                             '</div>' +
                           '</div>' +
                           '<div class="text-center" style="margin-left: 10px;">' +
                             '<button type="button" class="btn btn-sm btn-secondary clear-username-btn">' +
-                              '<i class="fa fa-eraser mr-1"></i>Xóa và nhập lại' +
+                              '<i class="fa fa-eraser mr-1"></i>' + translations['clear_and_reenter'] +
                             '</button>' +
                           '</div>' +
                         '</div>' +
@@ -3044,20 +3044,20 @@
                           '<i class="fa fa-exclamation-circle fa-2x" style="color: #1e252b;"></i>' +
                         '</div>' +
                         '<div class="flex-grow-1">' +
-                          '<h5 class="alert-title mb-2" style="margin-left: 20px;">Số dư không đủ!</h5>' +
+                          '<h5 class="alert-title mb-2" style="margin-left: 20px;">' + translations['insufficient_balance_title'] + '</h5>' +
                           '<div class="balance-info mb-3">' +
                             '<div class="d-flex justify-content-between align-items-center mb-1">' +
-                              '<span class="text-muted">Số dư hiện tại:</span>' +
+                              '<span class="text-muted">' + translations['current_balance'] + '</span>' +
                               '<strong style="color: #1e252b;">' + currentBalance.toLocaleString('vi-VN') + ' VNĐ</strong>' +
                             '</div>' +
                             '<div class="d-flex justify-content-between align-items-center">' +
-                              '<span class="text-muted">Số tiền cần:</span>' +
+                              '<span class="text-muted">' + translations['required_amount'] + '</span>' +
                               '<strong class="text-primary">' + requiredAmount.toLocaleString('vi-VN') + ' VNĐ</strong>' +
                             '</div>' +
                           '</div>' +
                           '<div class="text-center" style="margin-left: 10px;">' +
                             '<a href="{$system.system_url}/shop-ai/recharge" class="btn btn-sm" style="background-color: #138a9c; color: white; border-color: #138a9c;">' +
-                              '<i class="fa fa-plus mr-1"></i>Nạp tiền ngay' +
+                              '<i class="fa fa-plus mr-1"></i>' + translations['recharge_now'] +
                             '</a>' +
                           '</div>' +
                         '</div>' +
@@ -3908,6 +3908,29 @@
 </style>
 
 <script>
+// Vietnamese translations for JavaScript
+var translations = {
+  'error_occurred': 'Có lỗi xảy ra: ',
+  'min_amount_required': 'Vui lòng nhập số tiền tối thiểu 10,000 VNĐ',
+  'max_amount_exceeded': 'Số tiền tối đa là 50,000,000 VNĐ',
+  'qr_save_error': 'Lỗi lưu QR mapping. Vui lòng thử lại.',
+  'username_duplicate': 'Username đã được check!',
+  'clear_and_reenter': 'Xóa và nhập lại',
+  'username_status': 'Username:',
+  'check_status': 'Trạng thái:',
+  'already_checked': 'Đã check trước đó',
+  'insufficient_balance_title': 'Số dư không đủ!',
+  'current_balance': 'Số dư hiện tại:',
+  'required_amount': 'Số tiền cần:',
+  'recharge_now': 'Nạp tiền ngay',
+  'not_found_title': 'Không tìm thấy',
+  'not_found_message': 'Không tìm thấy thông tin cho username này',
+  'found_title': 'Tìm thấy',
+  'found_message': 'Đã tìm thấy thông tin cho username này',
+  'error_title': 'Lỗi',
+  'error_message': 'Có lỗi xảy ra khi check username'
+};
+
 // Function to open modal and auto-generate QR
 function openRechargeModal() {
   // Get clean numeric amount from formatted input
@@ -3915,13 +3938,13 @@ function openRechargeModal() {
   
   // Validate amount
   if (!amount || amount < 10000) {
-    alert('Vui lòng nhập số tiền tối thiểu 10,000 VNĐ');
+    alert(translations['min_amount_required']);
     document.getElementById('amountInput').focus();
     return;
   }
   
   if (amount > 50000000) {
-    alert('Số tiền tối đa là 50,000,000 VNĐ');
+    alert(translations['max_amount_exceeded']);
     document.getElementById('amountInput').focus();
     return;
   }
@@ -3958,7 +3981,7 @@ function updateQRCode(amount) {
       // Generate QR using VietQR API after saving successfully
       generateVietQR(amount, qr_content);
     } else {
-      alert('Lỗi lưu QR mapping. Vui lòng thử lại.');
+      alert(translations['qr_save_error']);
     }
   });
 }

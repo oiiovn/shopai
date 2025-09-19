@@ -19332,3 +19332,139 @@ msgstr "Giao dịch thành công"
 
 msgid "We hope you are enjoying your evening"
 msgstr "Chúng tôi hy vọng bạn đang tận hưởng buổi tối của mình"
+
+# Shop-AI Translations - Only new entries not already in the file
+msgid "Check số Shopee"
+msgstr "Check số Shopee"
+
+msgid "Check số"
+msgstr "Check số"
+
+msgid "Số dư hiện tại"
+msgstr "Số dư hiện tại"
+
+msgid "Nạp tiền ngay"
+msgstr "Nạp tiền ngay"
+
+msgid "Chọn nhanh"
+msgstr "Chọn nhanh"
+
+msgid "Thông tin chuyển khoản"
+msgstr "Thông tin chuyển khoản"
+
+msgid "STK"
+msgstr "STK"
+
+msgid "Lưu QR Code"
+msgstr "Lưu QR Code"
+
+msgid "Giao dịch sẽ được xử lý trong vòng 5-10 phút"
+msgstr "Giao dịch sẽ được xử lý trong vòng 5-10 phút"
+
+msgid "Liên hệ hỗ trợ nếu có vấn đề"
+msgstr "Liên hệ hỗ trợ nếu có vấn đề"
+
+msgid "Số tiền tối thiểu: 10,000 VNĐ"
+msgstr "Số tiền tối thiểu: 10,000 VNĐ"
+
+msgid "Lịch Sử Giao Dịch Shop-AI"
+msgstr "Lịch Sử Giao Dịch Shop-AI"
+
+msgid "Số Tiền"
+msgstr "Số Tiền"
+
+msgid "Loại"
+msgstr "Loại"
+
+msgid "Số Dư Sau"
+msgstr "Số Dư Sau"
+
+msgid "Mã QR"
+msgstr "Mã QR"
+
+msgid "Thời Gian"
+msgstr "Thời Gian"
+
+msgid "Nạp Tiền"
+msgstr "Nạp Tiền"
+
+msgid "Trừ tiền"
+msgstr "Trừ tiền"
+
+msgid "Trước"
+msgstr "Trước"
+
+msgid "Tiếp"
+msgstr "Tiếp"
+
+msgid "Hiển thị"
+msgstr "Hiển thị"
+
+msgid "trong tổng số"
+msgstr "trong tổng số"
+
+msgid "giao dịch"
+msgstr "giao dịch"
+
+msgid "Hoàn thành"
+msgstr "Hoàn thành"
+
+msgid "Đang xử lý"
+msgstr "Đang xử lý"
+
+msgid "Thất bại"
+msgstr "Thất bại"
+
+msgid "Không có giao dịch nào"
+msgstr "Không có giao dịch nào"
+
+msgid "Lịch sử Check Số Điện Thoại"
+msgstr "Lịch sử Check Số Điện Thoại"
+
+msgid "Bảng Giá Check Số Điện Thoại Shopee"
+msgstr "Bảng Giá Check Số Điện Thoại Shopee"
+
+msgid "Bảng Giá Theo Hệ Thống Rank"
+msgstr "Bảng Giá Theo Hệ Thống Rank"
+
+msgid "Càng chi tiêu nhiều, giá check càng rẻ!"
+msgstr "Càng chi tiêu nhiều, giá check càng rẻ!"
+
+msgid "Rank hiện tại"
+msgstr "Rank hiện tại"
+
+msgid "Giá check của bạn"
+msgstr "Giá check của bạn"
+
+msgid "Tổng chi tiêu"
+msgstr "Tổng chi tiêu"
+
+msgid "Tiến độ lên rank"
+msgstr "Tiến độ lên rank"
+
+msgid "Cần thêm"
+msgstr "Cần thêm"
+
+msgid "Rank"
+msgstr "Rank"
+
+msgid "Tên Rank"
+msgstr "Tên Rank"
+
+msgid "Chi tiêu tối thiểu"
+msgstr "Chi tiêu tối thiểu"
+
+msgid "Giá/1 lần check"
+msgstr "Giá/1 lần check"
+
+msgid "Tiết kiệm"
+msgstr "Tiết kiệm"
+
+msgid "Cách thăng rank"
+msgstr "Cách thăng rank"
+
+msgid "Ưu đãi VIP"
+msgstr "Ưu đãi VIP"
+
+msgid "Lưu QR"
+msgstr "Lưu QR"
