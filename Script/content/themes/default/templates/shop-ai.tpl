@@ -2986,7 +2986,7 @@
                             '</div>' +
                           '</div>' +
                           '<div class="text-center" style="margin-left: 10px;">' +
-                            '<button type="button" class="btn btn-sm btn-secondary" onclick="clearUsernameInput()">' +
+                            '<button type="button" class="btn btn-sm btn-secondary clear-username-btn">' +
                               '<i class="fa fa-eraser mr-1"></i>Xóa và nhập lại' +
                             '</button>' +
                           '</div>' +
@@ -3000,6 +3000,14 @@
                   var alertContainer = document.getElementById('checkResultAlert');
                   alertContainer.innerHTML = alertHtml;
                   alertContainer.style.display = 'block';
+                  
+                  // Add event listener for clear button
+                  var clearBtn = alertContainer.querySelector('.clear-username-btn');
+                  if (clearBtn) {
+                    clearBtn.addEventListener('click', function() {
+                      clearUsernameInput();
+                    });
+                  }
                   
                   // Auto hide after 5 seconds
                   setTimeout(function() {
