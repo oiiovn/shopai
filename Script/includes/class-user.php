@@ -10824,8 +10824,19 @@ class User
         $verification_type = $args['page_verification_type'] ?? null;
         $verification_date = $args['page_verification_date'] ?? null;
         
+        // Handle empty datetime values - convert empty string to NULL
+        if (empty($verification_date) || $verification_date === '') {
+          $verification_date = null;
+        }
+        if (empty($verification_type) || $verification_type === '') {
+          $verification_type = null;
+        }
+        
         /* update page */
-        $db->query(sprintf("UPDATE pages SET page_category = %s, page_name = %s, page_title = %s, page_tips_enabled = %s, page_verified = %s, page_verification_type = %s, page_verification_date = %s WHERE page_id = %s", secure($args['category'], 'int'), secure($args['username']), secure($args['title']), secure($args['page_tips_enabled']), secure($args['page_verified']), secure($verification_type), secure($verification_date), secure($page_id, 'int'))) or _error('SQL_ERROR_THROWEN');
+        $verification_type_sql = ($verification_type === null) ? 'NULL' : secure($verification_type);
+        $verification_date_sql = ($verification_date === null) ? 'NULL' : secure($verification_date);
+        
+        $db->query(sprintf("UPDATE pages SET page_category = %s, page_name = %s, page_title = %s, page_tips_enabled = %s, page_verified = %s, page_verification_type = %s, page_verification_date = %s WHERE page_id = %s", secure($args['category'], 'int'), secure($args['username']), secure($args['title']), secure($args['page_tips_enabled']), secure($args['page_verified']), $verification_type_sql, $verification_date_sql, secure($page_id, 'int'))) or _error('SQL_ERROR_THROWEN');
         break;
 
       case 'info':
