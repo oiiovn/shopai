@@ -67,9 +67,13 @@
           <span class="name js_user-popover" data-uid="{$_page['page_id']}" data-type="page">
             <a href="{$system['system_url']}/pages/{$_page['page_name']}{if $_search}?ref=qs{/if}">{$_page['page_title']}</a>
           </span>
-          {if $_page['page_verified']}
+          {if $_page['page_verified'] == '1'}
             <span class="verified-badge" data-bs-toggle="tooltip" title='{__("Verified Page")}'>
               {include file='__svg_icons.tpl' icon="verified_badge" width="20px" height="20px"}
+            </span>
+          {elseif $_page['page_verified'] == '2'}
+            <span class="verified-badge-gray" data-bs-toggle="tooltip" title='{__("Business Verified")}'>
+              {include file='__svg_icons.tpl' icon="verified_badge_gray" width="20px" height="20px"}
             </span>
           {/if}
           <div>{$_page['page_likes']} {__("Likes")}</div>
