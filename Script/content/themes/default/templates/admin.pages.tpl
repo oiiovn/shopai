@@ -1,39 +1,81 @@
 <div class="card">
-  <div class="card-header with-icon">
-    {if $sub_view == "find"}
-      <div class="float-end">
-        <a href="{$system['system_url']}/{$control_panel['url']}/pages" class="btn btn-md btn-light">
-          <i class="fa fa-arrow-circle-left mr5"></i>{__("Go Back")}
-        </a>
-      </div>
-    {elseif $sub_view == "edit_page"}
-      <div class="float-end">
-        <a href="{$system['system_url']}/{$control_panel['url']}/pages" class="btn btn-md btn-light">
-          <i class="fa fa-arrow-circle-left"></i><span class="ml5 d-none d-lg-inline-block">{__("Go Back")}</span>
-        </a>
-        <a target="_blank" href="{$system['system_url']}/pages/{$data['page_name']}" class="btn btn-md btn-info">
-          <i class="fa fa-eye"></i><span class="ml5 d-none d-lg-inline-block">{__("View Page")}</span>
-        </a>
-      </div>
-    {elseif $sub_view == "categories"}
-      <div class="float-end">
-        <a href="{$system['system_url']}/{$control_panel['url']}/pages/add_category" class="btn btn-md btn-primary">
-          <i class="fa fa-plus"></i><span class="ml5 d-none d-lg-inline-block">{__("Add New Category")}</span>
-        </a>
-      </div>
-    {elseif $sub_view == "add_category" || $sub_view == "edit_category"}
-      <div class="float-end">
-        <a href="{$system['system_url']}/{$control_panel['url']}/pages/categories" class="btn btn-md btn-light">
-          <i class="fa fa-arrow-circle-left"></i><span class="ml5 d-none d-lg-inline-block">{__("Go Back")}</span>
-        </a>
-      </div>
+  <div class="card-header with-icon with-nav">
+    <!-- panel title -->
+    <div class="mb20">
+      {if $sub_view == "find"}
+        <div class="float-end">
+          <a href="{$system['system_url']}/{$control_panel['url']}/pages" class="btn btn-md btn-light">
+            <i class="fa fa-arrow-circle-left mr5"></i>{__("Go Back")}
+          </a>
+        </div>
+      {elseif $sub_view == "edit_page"}
+        <div class="float-end">
+          <a href="{$system['system_url']}/{$control_panel['url']}/pages" class="btn btn-md btn-light">
+            <i class="fa fa-arrow-circle-left"></i><span class="ml5 d-none d-lg-inline-block">{__("Go Back")}</span>
+          </a>
+          <a target="_blank" href="{$system['system_url']}/pages/{$data['page_name']}" class="btn btn-md btn-info">
+            <i class="fa fa-eye"></i><span class="ml5 d-none d-lg-inline-block">{__("View Page")}</span>
+          </a>
+        </div>
+      {elseif $sub_view == "categories"}
+        <div class="float-end">
+          <a href="{$system['system_url']}/{$control_panel['url']}/pages/add_category" class="btn btn-md btn-primary">
+            <i class="fa fa-plus"></i><span class="ml5 d-none d-lg-inline-block">{__("Add New Category")}</span>
+          </a>
+        </div>
+      {elseif $sub_view == "add_category" || $sub_view == "edit_category"}
+        <div class="float-end">
+          <a href="{$system['system_url']}/{$control_panel['url']}/pages/categories" class="btn btn-md btn-light">
+            <i class="fa fa-arrow-circle-left"></i><span class="ml5 d-none d-lg-inline-block">{__("Go Back")}</span>
+          </a>
+        </div>
+      {elseif $sub_view == "business_types"}
+        <div class="float-end">
+          <a href="{$system['system_url']}/{$control_panel['url']}/pages/add_business_type" class="btn btn-md btn-primary">
+            <i class="fa fa-plus"></i><span class="ml5 d-none d-lg-inline-block">Thêm loại hình</span>
+          </a>
+        </div>
+      {elseif $sub_view == "add_business_type" || $sub_view == "edit_business_type"}
+        <div class="float-end">
+          <a href="{$system['system_url']}/{$control_panel['url']}/pages/business_types" class="btn btn-md btn-light">
+            <i class="fa fa-arrow-circle-left"></i><span class="ml5 d-none d-lg-inline-block">Quay lại</span>
+          </a>
+        </div>
+      {/if}
+      
+      <i class="fa fa-flag mr10"></i>{__("Pages")}
+      {if $sub_view == "find"} &rsaquo; {__("Find")}{/if}
+      {if $sub_view == "edit_page"} &rsaquo; {$data['page_title']}{/if}
+      {if $sub_view == "categories"} &rsaquo; {__("Categories")}{/if}
+      {if $sub_view == "add_category"} &rsaquo; {__("Categories")} &rsaquo; {__("Add New Category")}{/if}
+      {if $sub_view == "edit_category"} &rsaquo; {__("Categories")} &rsaquo; {$data['category_name']}{/if}
+      {if $sub_view == "business_types"} &rsaquo; Loại hình kinh doanh{/if}
+      {if $sub_view == "add_business_type"} &rsaquo; Loại hình kinh doanh &rsaquo; Thêm mới{/if}
+      {if $sub_view == "edit_business_type"} &rsaquo; Loại hình kinh doanh &rsaquo; {$data['type_name']}{/if}
+    </div>
+    <!-- panel title -->
+
+    <!-- panel nav -->
+    {if $sub_view == "" || $sub_view == "find" || $sub_view == "categories" || $sub_view == "business_types"}
+      <ul class="nav nav-tabs">
+        <li class="nav-item">
+          <a class="nav-link {if $sub_view == "" || $sub_view == "find"}active{/if}" href="{$system['system_url']}/{$control_panel['url']}/pages">
+            <i class="fa fa-list fa-fw mr5"></i><strong>{__("List Pages")}</strong>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {if $sub_view == "categories"}active{/if}" href="{$system['system_url']}/{$control_panel['url']}/pages/categories">
+            <i class="fa fa-folder fa-fw mr5"></i><strong>{__("Categories")}</strong>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {if $sub_view == "business_types"}active{/if}" href="{$system['system_url']}/{$control_panel['url']}/pages/business_types">
+            <i class="fa fa-store fa-fw mr5"></i><strong>{__("Business Types")}</strong>
+          </a>
+        </li>
+      </ul>
     {/if}
-    <i class="fa fa-flag mr10"></i>{__("Pages")}
-    {if $sub_view == "find"} &rsaquo; {__("Find")}{/if}
-    {if $sub_view == "edit_page"} &rsaquo; {$data['page_title']}{/if}
-    {if $sub_view == "categories"} &rsaquo; {__("Categories")}{/if}
-    {if $sub_view == "add_category"} &rsaquo; {__("Categories")} &rsaquo; {__("Add New Category")}{/if}
-    {if $sub_view == "edit_category"} &rsaquo; {__("Categories")} &rsaquo; {$data['category_name']}{/if}
+    <!-- panel nav -->
   </div>
 
   {if $sub_view == "" || $sub_view == "find"}
@@ -233,6 +275,39 @@
                 </select>
                 <div class="form-text">
                   {__("Set the verification level for this page")}
+                </div>
+              </div>
+            </div>
+
+            <div class="row form-group">
+              <label class="col-md-3 form-label">
+                Loại hình kinh doanh
+              </label>
+              <div class="col-md-9">
+                <select class="form-select" name="page_business_type_id" id="page_business_type_id">
+                  <option value="">Chọn loại hình kinh doanh</option>
+                  {if $business_types}
+                    {foreach $business_types as $type}
+                      <option value="{$type.business_type_id}" 
+                              {if $data['page_business_type_id'] == $type.business_type_id}selected{/if}
+                              data-icon="{$type.type_icon}" 
+                              data-color="{$type.type_color}">
+                        {$type.type_name}
+                      </option>
+                    {/foreach}
+                  {/if}
+                </select>
+                <div class="form-text">
+                  Chọn loại hình kinh doanh cho page này. Điều này sẽ quyết định các tính năng có sẵn.
+                  {if $data['page_business_type_id']}
+                    <br><small class="text-info">
+                      <i class="fa fa-info-circle"></i> 
+                      Loại hiện tại: <strong>{$data['current_business_type_name']}</strong>
+                      {if $data['business_type_approved_at']}
+                        <br>Được phê duyệt vào: {$data['business_type_approved_at']|date_format:"%d/%m/%Y %H:%M"}
+                      {/if}
+                    </small>
+                  {/if}
                 </div>
               </div>
             </div>
@@ -595,5 +670,248 @@
       </div>
     </form>
 
+  {elseif $sub_view == "business_types"}
+
+    <div class="card-body">
+      <div class="row">
+        <div class="col-sm-9">
+          <h3>Quản lý loại hình kinh doanh</h3>
+          <p class="text-muted">Tạo và quản lý các loại hình kinh doanh khác nhau cho pages, mỗi loại sẽ có bộ tính năng riêng</p>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-striped table-bordered table-hover">
+          <thead>
+            <tr>
+              <th>Icon</th>
+              <th>Loại hình kinh doanh</th>
+              <th>Slug</th>
+              <th>Số pages</th>
+              <th>Tính năng</th>
+              <th>Trạng thái</th>
+              <th>Hành động</th>
+            </tr>
+          </thead>
+          <tbody>
+            {if $business_types}
+              {foreach $business_types as $type}
+                <tr>
+                  <td class="text-center">
+                    <i class="{$type.type_icon}" style="color: {$type.type_color}; font-size: 24px;"></i>
+                  </td>
+                  <td>
+                    <div>
+                      <strong>{$type.type_name}</strong>
+                      <br><small class="text-muted">{$type.type_name_en}</small>
+                    </div>
+                    {if $type.type_description}
+                      <small class="text-muted d-block mt5">{$type.type_description|truncate:100}</small>
+                    {/if}
+                  </td>
+                  <td>
+                    <code>{$type.type_slug}</code>
+                  </td>
+                  <td class="text-center">
+                    <span class="badge bg-success fs-6">{$type.pages_count}</span>
+                    {if $type.pages_count > 0}
+                      <br><a href="{$system['system_url']}/{$control_panel['url']}/pages?business_type={$type.business_type_id}" class="btn btn-xs btn-outline-info mt5">
+                        Xem pages
+                      </a>
+                    {/if}
+                  </td>
+                  <td class="text-center">
+                    <span class="badge bg-info fs-6">{$type.features_count}</span>
+                    <br><button class="btn btn-xs btn-outline-primary mt5" data-toggle="modal" data-url="#manage-features" data-id="{$type.business_type_id}">
+                      Quản lý
+                    </button>
+                  </td>
+                  <td class="text-center">
+                    {if $type.is_active == '1'}
+                      <span class="badge bg-success">Hoạt động</span>
+                    {else}
+                      <span class="badge bg-secondary">Tạm dừng</span>
+                    {/if}
+                  </td>
+                  <td class="text-center">
+                    <div class="btn-group" role="group">
+                      <a href="{$system['system_url']}/{$control_panel['url']}/pages/edit_business_type/{$type.business_type_id}" class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" title="Chỉnh sửa">
+                        <i class="fa fa-edit"></i>
+                      </a>
+                      <button class="btn btn-sm btn-outline-info" onclick="manage_features({$type.business_type_id})" data-bs-toggle="tooltip" title="Tính năng">
+                        <i class="fa fa-cogs"></i>
+                      </button>
+                      {if $type.pages_count == 0}
+                        <button class="btn btn-sm btn-outline-danger js_admin-deleter" data-handle="business-type" data-id="{$type.business_type_id}" data-bs-toggle="tooltip" title="Xóa">
+                          <i class="fa fa-trash"></i>
+                        </button>
+                      {/if}
+                    </div>
+                  </td>
+                </tr>
+              {/foreach}
+            {else}
+              <tr>
+                <td colspan="7" class="text-center">
+                  <div class="py-4">
+                    <i class="fa fa-store fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">Chưa có loại hình kinh doanh nào</h5>
+                    <p class="text-muted">Bắt đầu bằng cách thêm loại hình kinh doanh đầu tiên</p>
+                    <a href="{$system['system_url']}/{$control_panel['url']}/pages/add_business_type" class="btn btn-primary">
+                      <i class="fa fa-plus mr5"></i>Thêm loại hình kinh doanh
+                    </a>
+                  </div>
+                </td>
+              </tr>
+            {/if}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  {elseif $sub_view == "add_business_type"}
+
+    <div class="card-body">
+      <form class="js_ajax-forms" data-url="admin/pages.php?do=add_business_type">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label class="form-label">Tên loại hình (Tiếng Việt)</label>
+              <input type="text" class="form-control" name="type_name" required placeholder="Ẩm thực & Đồ uống">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label class="form-label">Tên loại hình (Tiếng Anh)</label>
+              <input type="text" class="form-control" name="type_name_en" required placeholder="Food & Beverage">
+            </div>
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label class="form-label">Slug</label>
+              <input type="text" class="form-control" name="type_slug" required placeholder="am-thuc-do-uong">
+              <small class="form-text text-muted">Định danh thân thiện với URL</small>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label class="form-label">Icon</label>
+              <input type="text" class="form-control" name="type_icon" placeholder="fa-utensils" value="fa-store">
+              <small class="form-text text-muted">Class icon FontAwesome</small>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label class="form-label">Màu sắc</label>
+              <input type="color" class="form-control" name="type_color" value="#007bff">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Mô tả</label>
+          <textarea class="form-control" name="type_description" rows="3" placeholder="Mô tả về loại hình kinh doanh này..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Thứ tự hiển thị</label>
+          <input type="number" class="form-control" name="display_order" value="1" min="1">
+        </div>
+
+        <!-- success -->
+        <div class="alert alert-success mt15 mb0 x-hidden"></div>
+        <!-- success -->
+
+        <!-- error -->
+        <div class="alert alert-danger mt15 mb0 x-hidden"></div>
+        <!-- error -->
+      </div>
+      <div class="card-footer text-end">
+        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+      </div>
+    </form>
+
+  {elseif $sub_view == "edit_business_type"}
+
+    <div class="card-body">
+      <form class="js_ajax-forms" data-url="admin/pages.php?do=edit_business_type&id={$data['business_type_id']}">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label class="form-label">Tên loại hình (Tiếng Việt)</label>
+              <input type="text" class="form-control" name="type_name" required value="{$data['type_name']}">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label class="form-label">Tên loại hình (Tiếng Anh)</label>
+              <input type="text" class="form-control" name="type_name_en" required value="{$data['type_name_en']}">
+            </div>
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label class="form-label">Slug</label>
+              <input type="text" class="form-control" name="type_slug" required value="{$data['type_slug']}">
+              <small class="form-text text-muted">Định danh thân thiện với URL</small>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label class="form-label">Icon</label>
+              <input type="text" class="form-control" name="type_icon" value="{$data['type_icon']}">
+              <small class="form-text text-muted">Class icon FontAwesome</small>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label class="form-label">Màu sắc</label>
+              <input type="color" class="form-control" name="type_color" value="{$data['type_color']}">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Mô tả</label>
+          <textarea class="form-control" name="type_description" rows="3">{$data['type_description']}</textarea>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label class="form-label">Thứ tự hiển thị</label>
+              <input type="number" class="form-control" name="display_order" value="{$data['display_order']}" min="1">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label class="form-label">Trạng thái</label>
+              <select class="form-select" name="is_active">
+                <option value="1" {if $data['is_active'] == '1'}selected{/if}>Hoạt động</option>
+                <option value="0" {if $data['is_active'] == '0'}selected{/if}>Tạm dừng</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- success -->
+        <div class="alert alert-success mt15 mb0 x-hidden"></div>
+        <!-- success -->
+
+        <!-- error -->
+        <div class="alert alert-danger mt15 mb0 x-hidden"></div>
+        <!-- error -->
+      </div>
+      <div class="card-footer text-end">
+        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+      </div>
+    </form>
+
   {/if}
+
 </div>

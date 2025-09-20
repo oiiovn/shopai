@@ -1114,8 +1114,8 @@ try {
             _error(404);
           }
 
-          // get data
-          $get_data = $db->query(sprintf("SELECT pages.*, users.* FROM pages INNER JOIN users ON pages.page_admin = users.user_id WHERE pages.page_id = %s", secure($_GET['id'], 'int'))) or _error('SQL_ERROR');
+          // get data with business type info
+          $get_data = $db->query(sprintf("SELECT pages.*, users.*, pbt.type_name as current_business_type_name, pbt.type_icon as current_business_type_icon, pbt.type_color as current_business_type_color FROM pages INNER JOIN users ON pages.page_admin = users.user_id LEFT JOIN page_business_types pbt ON pages.page_business_type_id = pbt.business_type_id WHERE pages.page_id = %s", secure($_GET['id'], 'int'))) or _error('SQL_ERROR');
           if ($get_data->num_rows == 0) {
             _error(404);
           }
@@ -1126,6 +1126,17 @@ try {
           $data['categories'] = $user->get_categories("pages_categories");
           /* get countries */
           $data['countries'] = (!$countries) ? $user->get_countries() : $countries;
+          
+          // get all business types for admin selection
+          $get_business_types = $db->query("SELECT * FROM page_business_types WHERE is_active = '1' ORDER BY display_order ASC");
+          $business_types = [];
+          if ($get_business_types->num_rows > 0) {
+            while ($type = $get_business_types->fetch_assoc()) {
+              $business_types[] = $type;
+            }
+          }
+          $smarty->assign('business_types', $business_types);
+          
           /* get custom fields */
           $smarty->assign('custom_fields', $user->get_custom_fields(array("for" => "page", "get" => "settings", "node_id" => $_GET['id'])));
           /* prepare monetization */
@@ -1140,6 +1151,47 @@ try {
 
           // page header
           page_header($control_panel['title'] . " &rsaquo; " . __("Pages") . " &rsaquo; " . $data['page_title']);
+          break;
+
+        case 'business_types':
+          // page header
+          page_header($control_panel['title'] . " &rsaquo; " . __("Pages") . " &rsaquo; " . "Loại hình kinh doanh");
+
+          // get all business types with stats
+          $get_types = $db->query("SELECT pbt.*, COUNT(DISTINCT p.page_id) as pages_count, COUNT(DISTINCT pbtf.feature_id) as features_count FROM page_business_types pbt LEFT JOIN pages p ON pbt.business_type_id = p.page_business_type_id LEFT JOIN page_business_type_features pbtf ON pbt.business_type_id = pbtf.business_type_id GROUP BY pbt.business_type_id ORDER BY pbt.display_order ASC") or _error('SQL_ERROR');
+          
+          $business_types = [];
+          if ($get_types->num_rows > 0) {
+            while ($type = $get_types->fetch_assoc()) {
+              $business_types[] = $type;
+            }
+          }
+          $smarty->assign('business_types', $business_types);
+          break;
+
+        case 'add_business_type':
+          // page header
+          page_header($control_panel['title'] . " &rsaquo; " . __("Pages") . " &rsaquo; " . "Loại hình kinh doanh" . " &rsaquo; " . "Thêm mới");
+          break;
+
+        case 'edit_business_type':
+          // valid inputs
+          if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
+            _error(404);
+          }
+
+          // get data
+          $get_data = $db->query(sprintf("SELECT * FROM page_business_types WHERE business_type_id = %s", secure($_GET['id'], 'int'))) or _error('SQL_ERROR');
+          if ($get_data->num_rows == 0) {
+            _error(404);
+          }
+          $data = $get_data->fetch_assoc();
+
+          // assign variables
+          $smarty->assign('data', $data);
+
+          // page header
+          page_header($control_panel['title'] . " &rsaquo; " . __("Pages") . " &rsaquo; " . "Loại hình kinh doanh" . " &rsaquo; " . $data['type_name']);
           break;
 
         case 'categories':
