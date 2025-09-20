@@ -372,7 +372,7 @@ function init_system(&$system)
     /* get GET for web app */
     if (array_key_exists($_GET['lang'], $system['languages'])) {
       $system['language'] = $system['languages'][$_GET['lang']];
-      if ($system['language']['code'] != DEFAULT_LOCALE) {
+      if ($system['language']['code'] != DEFAULT_LOCALE || $system['language']['code'] == 'vi_vn') {
         $gettextTranslator->loadTranslations(Gettext\Translations::fromPoFile(ABSPATH . 'content/languages/locale/' . $system['language']['code'] . '/LC_MESSAGES/messages.po'));
       }
       $system['current_language'] = $system['language']['code'];
@@ -383,7 +383,7 @@ function init_system(&$system)
     /* get cookie for web app */
     if (array_key_exists($_COOKIE['s_lang'], $system['languages'])) {
       $system['language'] = $system['languages'][$_COOKIE['s_lang']];
-      if ($system['language']['code'] != DEFAULT_LOCALE) {
+      if ($system['language']['code'] != DEFAULT_LOCALE || $system['language']['code'] == 'vi_vn') {
         $gettextTranslator->loadTranslations(Gettext\Translations::fromPoFile(ABSPATH . 'content/languages/locale/' . $system['language']['code'] . '/LC_MESSAGES/messages.po'));
       }
       $system['current_language'] = $system['language']['code'];
@@ -392,7 +392,7 @@ function init_system(&$system)
     /* get header for web app */
     if (array_key_exists(_getallheaders()["x-lang"], $system['languages'])) {
       $system['language'] = $system['languages'][_getallheaders()["x-lang"]];
-      if ($system['language']['code'] != DEFAULT_LOCALE) {
+      if ($system['language']['code'] != DEFAULT_LOCALE || $system['language']['code'] == 'vi_vn') {
         $gettextTranslator->loadTranslations(Gettext\Translations::fromPoFile(ABSPATH . 'content/languages/locale/' . $system['language']['code'] . '/LC_MESSAGES/messages.po'));
       }
       $system['current_language'] = $system['language']['code'];
@@ -400,7 +400,7 @@ function init_system(&$system)
   } else {
     if (isset($system['default_language'])) {
       $system['language'] = $system['default_language'];
-      if ($system['default_language']['code'] != DEFAULT_LOCALE) {
+      if ($system['default_language']['code'] != DEFAULT_LOCALE || $system['default_language']['code'] == 'vi_vn') {
         $gettextTranslator->loadTranslations(Gettext\Translations::fromPoFile(ABSPATH . 'content/languages/locale/' . $system['default_language']['code'] . '/LC_MESSAGES/messages.po'));
       }
       $system['current_language'] = $system['default_language']['code'];

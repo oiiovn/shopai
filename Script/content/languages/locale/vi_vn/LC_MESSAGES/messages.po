@@ -23455,6 +23455,10 @@ msgid "Happy holidays"
 msgstr "Kỳ nghỉ vui vẻ"
 
 
+msgid "Business Verified"
+msgstr "Xác minh doanh nghiệp"
+
+
 msgid "EXPLORE"
 msgstr "KHÁM PHÁ"
 
