@@ -4463,7 +4463,7 @@ body.night-mode .post-memory-header {
   min-width: 60px;
   min-height: 60px;
   display: block;
-  border-radius: 20px;
+  border-radius: 50%;
 }
 
 .post-avatar-picture.small {
