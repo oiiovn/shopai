@@ -23454,3 +23454,7 @@ msgstr "Giáng sinh vui vẻ"
 msgid "Happy holidays"
 msgstr "Kỳ nghỉ vui vẻ"
 
+
+msgid "EXPLORE"
+msgstr "KHÁM PHÁ"
+
