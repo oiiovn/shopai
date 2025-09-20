@@ -35,9 +35,13 @@
             <span class="js_user-popover" data-type="{$_comment['user_type']}" data-uid="{$_comment['user_id']}">
               <a href="{$_comment['author_url']}">{$_comment['author_name']}</a>
             </span>
-            {if $_comment['author_verified']}
-              <span class="verified-badge" data-bs-toggle="tooltip" title='{__("Verified User")}'>
+            {if $_comment['author_verified'] == '1'}
+              <span class="verified-badge" data-bs-toggle="tooltip" title='{if $_comment['author_type'] == "user"}{__("Verified User")}{else}{__("Verified Page")}{/if}'>
                 {include file='__svg_icons.tpl' icon="verified_badge" width="20px" height="20px"}
+              </span>
+            {elseif $_comment['author_verified'] == '2'}
+              <span class="verified-badge-gray" data-bs-toggle="tooltip" title='{if $_comment['author_type'] == "user"}{__("Verified Business")}{else}{__("Business Verified")}{/if}'>
+                {include file='__svg_icons.tpl' icon="verified_badge_gray" width="20px" height="20px"}
               </span>
             {/if}
             {if $_comment['user_subscribed']}

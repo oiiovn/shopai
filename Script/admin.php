@@ -167,6 +167,7 @@ try {
           $smarty->assign('max_upload_size', $max_upload_size);
           break;
 
+
         case 'payments':
           // page header
           page_header($control_panel['title'] . " &rsaquo; " . __("Payments Settings"));
@@ -3354,8 +3355,8 @@ try {
           // page header
           page_header($control_panel['title'] . " &rsaquo; " . __("Verification") . " &rsaquo; " . __("Requests"));
 
-          // get data
-          $get_rows = $db->query("SELECT verification_requests.*, users.user_name, users.user_firstname, users.user_lastname, users.user_gender, users.user_picture, pages.page_name, pages.page_title, pages.page_picture FROM verification_requests LEFT JOIN users ON verification_requests.node_type = 'user' AND verification_requests.node_id = users.user_id LEFT JOIN pages ON verification_requests.node_type = 'page' AND verification_requests.node_id = pages.page_id WHERE status = '0'") or _error('SQL_ERROR');
+          // get data with verification level support
+          $get_rows = $db->query("SELECT verification_requests.*, users.user_name, users.user_firstname, users.user_lastname, users.user_gender, users.user_picture, pages.page_name, pages.page_title, pages.page_picture, pages.page_verified as current_verification FROM verification_requests LEFT JOIN users ON verification_requests.node_type = 'user' AND verification_requests.node_id = users.user_id LEFT JOIN pages ON verification_requests.node_type = 'page' AND verification_requests.node_id = pages.page_id WHERE status = '0' ORDER BY verification_requests.verification_level ASC, verification_requests.time DESC") or _error('SQL_ERROR');
           if ($get_rows->num_rows > 0) {
             while ($row = $get_rows->fetch_assoc()) {
               /* get node */
@@ -3395,8 +3396,8 @@ try {
           // page header
           page_header($control_panel['title'] . " &rsaquo; " . __("Verification") . " &rsaquo; " . __("Verified Pages"));
 
-          // get data
-          $get_rows = $db->query("SELECT * FROM pages WHERE page_verified = '1'") or _error('SQL_ERROR');
+          // get data - include both Gray and Blue verified pages
+          $get_rows = $db->query("SELECT * FROM pages WHERE page_verified IN ('1', '2') ORDER BY page_verified ASC, page_date DESC") or _error('SQL_ERROR');
           if ($get_rows->num_rows > 0) {
             while ($row = $get_rows->fetch_assoc()) {
               $row['page_picture'] = get_picture($row['page_picture'], 'page');

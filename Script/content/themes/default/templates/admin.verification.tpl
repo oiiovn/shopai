@@ -16,6 +16,8 @@
               <th>{__("ID")}</th>
               <th>{__("User/Page")}</th>
               <th>{__("Type")}</th>
+              <th>{__("Level")}</th>
+              <th>{__("Current")}</th>
               <th>{__("Time")}</th>
               <th>{__("Actions")}</th>
             </tr>
@@ -40,14 +42,61 @@
                 <td>
                   <span class="badge rounded-pill badge-lg bg-{$row['color']}">{$row['node_type']|capitalize}</span>
                 </td>
+                <td>
+                  {if $row['verification_level'] == 'gray'}
+                    <span class="badge rounded-pill badge-lg bg-secondary">
+                      <i class="fa fa-shield-alt mr5"></i>Gray Badge
+                    </span>
+                  {else}
+                    <span class="badge rounded-pill badge-lg bg-info">
+                      <i class="fa fa-certificate mr5"></i>Blue Badge
+                    </span>
+                  {/if}
+                </td>
+                <td>
+                  {if $row['current_verification'] == '0'}
+                    <span class="badge rounded-pill badge-sm bg-light text-dark">None</span>
+                  {elseif $row['current_verification'] == '2'}
+                    <span class="badge rounded-pill badge-sm bg-secondary">Gray</span>
+                  {elseif $row['current_verification'] == '1'}
+                    <span class="badge rounded-pill badge-sm bg-info">Blue</span>
+                  {/if}
+                </td>
                 <td>{$row['time']|date_format:"%e %B %Y"}</td>
                 <td>
                   <button data-bs-toggle="tooltip" title='{__("View Verification Documents")}' class="btn btn-sm btn-icon btn-rounded btn-info js_admin-verification-documents" data-photo="{$system['system_uploads']}/{$row['photo']}" data-passport="{$system['system_uploads']}/{$row['passport']}" data-message="{$row['message']}" {if $row['node_type'] == 'page'} data-business-website="{$row['business_website']}" data-business-address="{$row['business_address']}" {/if} data-handle="{$row['node_type']}" data-node-id="{$row['node_id']}" data-request-id="{$row['request_id']}">
                     <i class="fa fa-paperclip"></i>
                   </button>
-                  <button data-bs-toggle="tooltip" title='{__("Verify")}' class="btn btn-sm btn-icon btn-rounded btn-success js_admin-verify" data-handle="{$row['node_type']}" data-id="{$row['node_id']}">
-                    <i class="fa fa-check"></i>
-                  </button>
+                  
+                  {if $row['node_type'] == 'page'}
+                    {* Page verification with level options *}
+                    {if $row['verification_level'] == 'gray'}
+                      <button data-bs-toggle="tooltip" title='{__("Approve Gray Badge")}' class="btn btn-sm btn-icon btn-rounded btn-secondary js_admin-verify-gray" data-handle="{$row['node_type']}" data-id="{$row['node_id']}" data-level="gray" data-request-id="{$row['request_id']}">
+                        <i class="fa fa-shield-alt"></i>
+                      </button>
+                    {else}
+                      <button data-bs-toggle="tooltip" title='{__("Approve Blue Badge")}' class="btn btn-sm btn-icon btn-rounded btn-info js_admin-verify-blue" data-handle="{$row['node_type']}" data-id="{$row['node_id']}" data-level="blue" data-request-id="{$row['request_id']}">
+                        <i class="fa fa-certificate"></i>
+                      </button>
+                    {/if}
+                    
+                    {* Option to approve different level *}
+                    {if $row['verification_level'] == 'blue'}
+                      <button data-bs-toggle="tooltip" title='{__("Approve as Gray Badge Instead")}' class="btn btn-sm btn-icon btn-rounded btn-secondary js_admin-verify-gray" data-handle="{$row['node_type']}" data-id="{$row['node_id']}" data-level="gray" data-request-id="{$row['request_id']}">
+                        <i class="fa fa-shield-alt"></i>
+                      </button>
+                    {elseif $row['verification_level'] == 'gray'}
+                      <button data-bs-toggle="tooltip" title='{__("Upgrade to Blue Badge")}' class="btn btn-sm btn-icon btn-rounded btn-info js_admin-verify-blue" data-handle="{$row['node_type']}" data-id="{$row['node_id']}" data-level="blue" data-request-id="{$row['request_id']}">
+                        <i class="fa fa-certificate"></i>
+                      </button>
+                    {/if}
+                  {else}
+                    {* User verification (unchanged) *}
+                    <button data-bs-toggle="tooltip" title='{__("Verify")}' class="btn btn-sm btn-icon btn-rounded btn-success js_admin-verify" data-handle="{$row['node_type']}" data-id="{$row['node_id']}">
+                      <i class="fa fa-check"></i>
+                    </button>
+                  {/if}
+                  
                   <button data-bs-toggle="tooltip" title='{__("Decline")}' class="btn btn-sm btn-icon btn-rounded btn-danger js_admin-unverify" data-id="{$row['request_id']}">
                     <i class="fa fa-times"></i>
                   </button>

@@ -37,7 +37,23 @@ try {
       }
       /* prepare */
       if ($_GET['edit'] == "settings") {
-        $_POST['page_verified'] = (isset($_POST['page_verified'])) ? '1' : '0';
+        // Handle new verification level dropdown
+        if (isset($_POST['page_verification_level'])) {
+          $_POST['page_verified'] = $_POST['page_verification_level'];
+          
+          // Set verification metadata
+          if ($_POST['page_verification_level'] == '1') {
+            $_POST['page_verification_type'] = 'manual_blue';
+          } elseif ($_POST['page_verification_level'] == '2') {
+            $_POST['page_verification_type'] = 'manual_gray';
+          } else {
+            $_POST['page_verification_type'] = null;
+          }
+          $_POST['page_verification_date'] = ($_POST['page_verification_level'] != '0') ? date('Y-m-d H:i:s') : null;
+        } else {
+          // Fallback for old checkbox (backward compatibility)
+          $_POST['page_verified'] = (isset($_POST['page_verified'])) ? '1' : '0';
+        }
       }
       /* update */
       $user->edit_page($_GET['id'], $_GET['edit'], $_POST);

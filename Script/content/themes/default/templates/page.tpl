@@ -133,9 +133,13 @@
         <!-- profile-name -->
         <div class="profile-name-wrapper">
           <a href="{$system['system_url']}/pages/{$spage['page_name']}">{$spage['page_title']}</a>
-          {if $spage['page_verified']}
+          {if $spage['page_verified'] == '1'}
             <span class="verified-badge" data-bs-toggle="tooltip" title='{__("Verified Page")}'>
               {include file='__svg_icons.tpl' icon="verified_badge" width="30px" height="30px"}
+            </span>
+          {elseif $spage['page_verified'] == '2'}
+            <span class="verified-badge-gray" data-bs-toggle="tooltip" title='{__("Business Verified")}'>
+              {include file='__svg_icons.tpl' icon="verified_badge_gray" width="30px" height="30px"}
             </span>
           {/if}
         </div>
@@ -1442,24 +1446,93 @@
                 {if $case == "verified"}
                   <div class="card-body">
                     <div class="text-center">
-                      {include file='__svg_icons.tpl' icon="verification" class="main-icon mb10" width="60px" height="60px"}
-                      <h4>{__("Congratulations")}</h4>
-                      <p class="mt20">{__("This page is verified")}</p>
+                      {if $spage['page_verified'] == '1'}
+                        {include file='__svg_icons.tpl' icon="verified_badge" class="main-icon mb10" width="60px" height="60px"}
+                        <h4 class="text-info">{__("Premium Verified")}</h4>
+                        <p class="mt20">{__("This page has blue verification badge")}</p>
+                      {elseif $spage['page_verified'] == '2'}
+                        {include file='__svg_icons.tpl' icon="verified_badge_gray" class="main-icon mb10" width="60px" height="60px"}
+                        <h4 class="text-secondary">{__("Business Verified")}</h4>
+                        <p class="mt20">{__("This page has gray verification badge")}</p>
+                        
+                        {* Upgrade to Blue Option *}
+                        <div class="alert alert-info mt-3">
+                          <h6><i class="fa fa-arrow-up mr5"></i>{__("Upgrade to Premium Verification")}</h6>
+                          <p class="mb-3">{__("Get the blue verification badge for enhanced credibility")}</p>
+                          <button class="btn btn-primary verification-upgrade-btn" data-bs-toggle="modal" data-bs-target="#upgrade-verification-modal">
+                            <i class="fa fa-certificate mr5"></i>{__("Request Blue Badge")}
+                          </button>
+                        </div>
+                      {/if}
                     </div>
                   </div>
                 {elseif $case == "request"}
-                  <form class="js_ajax-forms" data-url="users/verify.php?node=page&node_id={$spage['page_id']}">
-                    <div class="card-body">
-                      <div class="form-group row">
-                        <label class="col-md-3 form-label">
-                          {__("Verification Documents")}
-                        </label>
-                        <div class="col-md-9">
-                          <div class="row">
-                            <div class="col-sm-6">
-                              <div class="section-title mb20">
-                                {__("Company Incorporation File")}
-                              </div>
+                  {* Verification Level Selection *}
+                  <div class="card-body">
+                    <div class="text-center mb-4">
+                      <h5>{__("Choose Verification Level")}</h5>
+                      <p class="text-muted">{__("Select the type of verification you want to apply for")}</p>
+                    </div>
+                    
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="card verification-option" onclick="selectVerificationLevel('gray')">
+                          <div class="card-body text-center">
+                            {include file='__svg_icons.tpl' icon="verified_badge_gray" width="48px" height="48px"}
+                            <h6 class="mt-2">{__("Gray Badge")}</h6>
+                            <p class="text-muted small">{__("Basic business verification")}</p>
+                            <ul class="list-unstyled small text-start">
+                              <li><i class="fa fa-check text-success mr-2"></i>{__("Faster approval")}</li>
+                              <li><i class="fa fa-check text-success mr-2"></i>{__("Basic documents")}</li>
+                              <li><i class="fa fa-check text-success mr-2"></i>{__("Business credibility")}</li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="card verification-option" onclick="selectVerificationLevel('blue')">
+                          <div class="card-body text-center">
+                            {include file='__svg_icons.tpl' icon="verified_badge" width="48px" height="48px"}
+                            <h6 class="mt-2">{__("Blue Badge")}</h6>
+                            <p class="text-muted small">{__("Premium verification")}</p>
+                            <ul class="list-unstyled small text-start">
+                              <li><i class="fa fa-check text-info mr-2"></i>{__("Maximum credibility")}</li>
+                              <li><i class="fa fa-check text-info mr-2"></i>{__("Enhanced visibility")}</li>
+                              <li><i class="fa fa-check text-info mr-2"></i>{__("Detailed verification")}</li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {* Gray Verification Form *}
+                  <div id="gray-verification-form" class="verification-form" style="display: none;">
+                    <form class="js_ajax-forms" data-url="users/verify.php?node=page&node_id={$spage['page_id']}&level=gray">
+                      <div class="card-body">
+                        <div class="alert alert-info">
+                          <h6><i class="fa fa-shield-alt mr-2"></i>{__("Gray Badge Verification")}</h6>
+                          <p class="mb-0">{__("Basic business verification with minimal documentation required")}</p>
+                        </div>
+
+                        <div class="form-group row">
+                          <label class="col-md-3 form-label">
+                            {__("Business Information")}
+                          </label>
+                          <div class="col-md-9">
+                            <textarea class="form-control" name="message" rows="4" placeholder="{__('Tell us about your business and why you need verification...')}"></textarea>
+                            <div class="form-text">
+                              {__("Describe your business and explain why your page should be verified")}
+                            </div>
+                          </div>
+                        </div>
+
+                        {if $system['verification_docs_required']}
+                          <div class="form-group row">
+                            <label class="col-md-3 form-label">
+                              {__("Business Document")}
+                            </label>
+                            <div class="col-md-9">
                               <div class="x-image full">
                                 <button type="button" class="btn-close x-hidden js_x-image-remover" title='{__("Remove")}'></button>
                                 <div class="x-image-loader">
@@ -1470,81 +1543,134 @@
                                 <i class="fa fa-camera fa-2x js_x-uploader" data-handle="x-image"></i>
                                 <input type="hidden" class="js_x-image-input" name="photo" value="">
                               </div>
-                            </div>
-                            <div class="col-sm-6">
-                              <div class="section-title mb20">
-                                {__("Company Tax File")}
+                              <div class="form-text">
+                                {__("Upload business registration or any official document (optional)")}
                               </div>
-                              <div class="x-image full">
-                                <button type="button" class="btn-close x-hidden js_x-image-remover" title='{__("Remove")}'>
+                            </div>
+                          </div>
+                        {/if}
+                      </div>
+                      <div class="card-footer">
+                        <div class="row">
+                          <div class="col-md-6">
+                            <button type="button" class="btn btn-light" onclick="backToSelection()">
+                              <i class="fa fa-arrow-left mr-2"></i>{__("Back")}
+                            </button>
+                          </div>
+                          <div class="col-md-6 text-end">
+                            <button type="submit" class="btn btn-secondary">
+                              <i class="fa fa-shield-alt mr-2"></i>{__("Request Gray Badge")}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
 
-                                </button>
-                                <div class="x-image-loader">
-                                  <div class="progress x-progress">
-                                    <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
-                                  </div>
+                  {* Blue Verification Form *}
+                  <div id="blue-verification-form" class="verification-form" style="display: none;">
+                    <form class="js_ajax-forms" data-url="users/verify.php?node=page&node_id={$spage['page_id']}&level=blue">
+                      <div class="card-body">
+                        <div class="alert alert-primary">
+                          <h6><i class="fa fa-certificate mr-2"></i>{__("Blue Badge Verification")}</h6>
+                          <p class="mb-0">{__("Premium verification with comprehensive documentation required")}</p>
+                        </div>
+
+                        <div class="form-group row">
+                          <label class="col-md-3 form-label">
+                            {__("Verification Documents")}
+                          </label>
+                          <div class="col-md-9">
+                            <div class="row">
+                              <div class="col-sm-6">
+                                <div class="section-title mb20">
+                                  {__("Company Incorporation File")}
                                 </div>
-                                <i class="fa fa-camera fa-2x js_x-uploader" data-handle="x-image"></i>
-                                <input type="hidden" class="js_x-image-input" name="passport" value="">
+                                <div class="x-image full">
+                                  <button type="button" class="btn-close x-hidden js_x-image-remover" title='{__("Remove")}'></button>
+                                  <div class="x-image-loader">
+                                    <div class="progress x-progress">
+                                      <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                  </div>
+                                  <i class="fa fa-camera fa-2x js_x-uploader" data-handle="x-image"></i>
+                                  <input type="hidden" class="js_x-image-input" name="photo" value="">
+                                </div>
+                              </div>
+                              <div class="col-sm-6">
+                                <div class="section-title mb20">
+                                  {__("Company Tax File")}
+                                </div>
+                                <div class="x-image full">
+                                  <button type="button" class="btn-close x-hidden js_x-image-remover" title='{__("Remove")}'></button>
+                                  <div class="x-image-loader">
+                                    <div class="progress x-progress">
+                                      <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                  </div>
+                                  <i class="fa fa-camera fa-2x js_x-uploader" data-handle="x-image"></i>
+                                  <input type="hidden" class="js_x-image-input" name="passport" value="">
+                                </div>
                               </div>
                             </div>
+                            <div class="form-text">
+                              {__("Upload your company incorporation file and tax file")}
+                            </div>
                           </div>
-                          <div class="form-text">
-                            {__("Upload your company incorporation file and tax file")}
+                        </div>
+
+                        <div class="form-group row">
+                          <label class="col-md-3 form-label">
+                            {__("Business Website")}
+                          </label>
+                          <div class="col-md-9">
+                            <input type="text" class="form-control" name="business_website">
+                            <div class="form-text">
+                              {__("Enter your business website")}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="form-group row">
+                          <label class="col-md-3 form-label">
+                            {__("Business Address")}
+                          </label>
+                          <div class="col-md-9">
+                            <textarea class="form-control" name="business_address"></textarea>
+                            <div class="form-text">
+                              {__("Enter your business address")}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="form-group row">
+                          <label class="col-md-3 form-label">
+                            {__("Additional Information")}
+                          </label>
+                          <div class="col-md-9">
+                            <textarea class="form-control" name="message"></textarea>
+                            <div class="form-text">
+                              {__("Please share why your page deserves premium verification")}
+                            </div>
                           </div>
                         </div>
                       </div>
-
-                      <div class="form-group row">
-                        <label class="col-md-3 form-label">
-                          {__("Business Website")}
-                        </label>
-                        <div class="col-md-9">
-                          <input type="text" class="form-control" name="business_website">
-                          <div class="form-text">
-                            {__("Enter your business website")}
+                      <div class="card-footer">
+                        <div class="row">
+                          <div class="col-md-6">
+                            <button type="button" class="btn btn-light" onclick="backToSelection()">
+                              <i class="fa fa-arrow-left mr-2"></i>{__("Back")}
+                            </button>
+                          </div>
+                          <div class="col-md-6 text-end">
+                            <button type="submit" class="btn btn-primary">
+                              <i class="fa fa-certificate mr-2"></i>{__("Request Blue Badge")}
+                            </button>
                           </div>
                         </div>
                       </div>
-
-                      <div class="form-group row">
-                        <label class="col-md-3 form-label">
-                          {__("Business Address")}
-                        </label>
-                        <div class="col-md-9">
-                          <textarea class="form-control" name="business_address"></textarea>
-                          <div class="form-text">
-                            {__("Enter your business address")}
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="form-group row">
-                        <label class="col-md-3 form-label">
-                          {__("Additional Information")}
-                        </label>
-                        <div class="col-md-9">
-                          <textarea class="form-control" name="message"></textarea>
-                          <div class="form-text">
-                            {__("Please share why your account should be verified")}
-                          </div>
-                        </div>
-                      </div>
-
-                      <!-- success -->
-                      <div class="alert alert-success mt15 mb0 x-hidden"></div>
-                      <!-- success -->
-
-                      <!-- error -->
-                      <div class="alert alert-danger mt15 mb0 x-hidden"></div>
-                      <!-- error -->
-                    </div>
-                    <div class="card-footer text-end">
-                      <button type="submit" class="btn btn-primary">
-                        {__("Send")}
-                      </button>
-                    </div>
-                  </form>
+                    </form>
+                  </div>
                 {elseif $case == "pending"}
                   <div class="card-body">
                     <div class="text-center">
@@ -1561,6 +1687,68 @@
                       <p class="mt20">{__("Your verification request has been declined by the admin")}</p>
                     </div>
                   </div>
+                  
+                  {* Upgrade Modal for Gray → Blue *}
+                  {if $spage['page_verified'] == '2'}
+                    <div class="modal fade" id="upgrade-verification-modal">
+                      <div class="modal-dialog">
+                        <div class="modal-content">
+                          <form class="js_ajax-forms" data-url="users/verify.php?node=page&node_id={$spage['page_id']}&upgrade=true">
+                            <div class="modal-header">
+                              <h6 class="modal-title">
+                                <i class="fa fa-certificate mr10"></i>{__("Upgrade to Blue Verification")}
+                              </h6>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                              <div class="alert alert-warning">
+                                <i class="fa fa-info-circle mr5"></i>
+                                {__("Blue verification requires additional documentation and manual review")}
+                              </div>
+                              
+                              <div class="form-group">
+                                <label class="form-label">{__("Business Registration Document")}</label>
+                                <div class="x-image full">
+                                  <button type="button" class="btn-close x-hidden js_x-image-remover" title='{__("Remove")}'></button>
+                                  <div class="x-image-loader">
+                                    <div class="progress x-progress">
+                                      <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                  </div>
+                                  <i class="fa fa-camera fa-lg js_x-uploader" data-handle="x-image"></i>
+                                  <input type="hidden" class="js_x-image-input" name="business_registration" value="">
+                                </div>
+                              </div>
+
+                              <div class="form-group">
+                                <label class="form-label">{__("Tax Registration Document")}</label>
+                                <div class="x-image full">
+                                  <button type="button" class="btn-close x-hidden js_x-image-remover" title='{__("Remove")}'></button>
+                                  <div class="x-image-loader">
+                                    <div class="progress x-progress">
+                                      <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                  </div>
+                                  <i class="fa fa-camera fa-lg js_x-uploader" data-handle="x-image"></i>
+                                  <input type="hidden" class="js_x-image-input" name="tax_document" value="">
+                                </div>
+                              </div>
+
+                              <div class="form-group">
+                                <label class="form-label">{__("Reason for Blue Verification")}</label>
+                                <textarea class="form-control" name="upgrade_message" rows="4" placeholder="{__('Explain why your page deserves blue verification...')}"></textarea>
+                              </div>
+                            </div>
+                            <div class="modal-footer">
+                              <button type="submit" class="btn btn-primary verification-upgrade-btn">
+                                <i class="fa fa-paper-plane mr5"></i>{__("Submit Upgrade Request")}
+                              </button>
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  {/if}
                 {/if}
 
               {elseif $sub_view == "delete"}

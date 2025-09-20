@@ -284,9 +284,13 @@
       <span class="js_user-popover" data-type="{$_post['user_type']}" data-uid="{$_post['user_id']}">
         <a class="post-author" href="{$_post['post_author_url']}">{$_post['post_author_name']}</a>
       </span>
-      {if $_post['post_author_verified']}
+      {if $_post['post_author_verified'] == '1'}
         <span class="verified-badge" data-bs-toggle="tooltip" title='{if $_post['user_type'] == "user"}{__("Verified User")}{else}{__("Verified Page")}{/if}'>
           {include file='__svg_icons.tpl' icon="verified_badge" width="20px" height="20px"}
+        </span>
+      {elseif $_post['post_author_verified'] == '2'}
+        <span class="verified-badge-gray" data-bs-toggle="tooltip" title='{if $_post['user_type'] == "user"}{__("Verified Business")}{else}{__("Business Verified")}{/if}'>
+          {include file='__svg_icons.tpl' icon="verified_badge_gray" width="20px" height="20px"}
         </span>
       {/if}
       {if $_post['user_subscribed']}

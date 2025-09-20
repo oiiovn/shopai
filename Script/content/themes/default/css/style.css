@@ -3347,7 +3347,67 @@ body.night-mode .x-image {
 
 /* badges */
 .verified-badge {
-  color: #55acee;
+  color: #2196f3;
+}
+
+/* gray verified badge */
+.verified-badge-gray {
+  color: #6c757d;
+}
+
+/* verification badge common styles */
+.verified-badge,
+.verified-badge-gray {
+  display: inline-block;
+  margin-left: 3px;
+  vertical-align: middle;
+}
+
+.verified-badge svg,
+.verified-badge-gray svg {
+  vertical-align: middle;
+}
+
+/* verification badge tooltips */
+.verified-badge[data-bs-toggle="tooltip"],
+.verified-badge-gray[data-bs-toggle="tooltip"] {
+  cursor: pointer;
+}
+
+/* verification status indicators */
+.verification-status-blue {
+  color: #2196f3;
+  background-color: rgba(33, 150, 243, 0.1);
+  border: 1px solid rgba(33, 150, 243, 0.2);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.verification-status-gray {
+  color: #6c757d;
+  background-color: rgba(108, 117, 125, 0.1);
+  border: 1px solid rgba(108, 117, 125, 0.2);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* verification upgrade button */
+.verification-upgrade-btn {
+  background: linear-gradient(45deg, #6c757d, #2196f3);
+  border: none;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.verification-upgrade-btn:hover {
+  background: linear-gradient(45deg, #5a6268, #1976d2);
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
 .pro-badge {
@@ -8474,9 +8534,11 @@ body.night-mode .profile-header {
   border-radius: 0 0 16px 16px;
 }
 
+
 body.night-mode .profile-cover-wrapper {
   background: #151a1f;
 }
+
 
 @media (min-width: 576px) {
   .profile-cover-wrapper {
@@ -8810,7 +8872,8 @@ body.night-mode .profile-name-wrapper {
     padding-bottom: 0;
     text-align: left;
     font-size: 1.9em;
-    text-shadow: 0 0 3px rgba(0, 0, 0, 0.9);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+    z-index: 3;
   }
 
   .no-avatar .profile-name-wrapper {
@@ -8839,6 +8902,7 @@ body.night-mode .profile-name-wrapper a {
   .profile-name-wrapper a.badge {
     font-size: 14px;
   }
+
 }
 
 /* -- */

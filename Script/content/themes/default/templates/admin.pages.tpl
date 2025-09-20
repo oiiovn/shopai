@@ -217,13 +217,23 @@
 
             <div class="row form-group">
               <label class="col-md-3 form-label">
-                {__("Verified Page")}
+                {__("Verification Status")}
               </label>
               <div class="col-md-9">
-                <label class="switch" for="page_verified">
-                  <input type="checkbox" name="page_verified" id="page_verified" {if $data['page_verified']}checked{/if}>
-                  <span class="slider round"></span>
-                </label>
+                <select class="form-select" name="page_verification_level">
+                  <option value="0" {if $data['page_verified'] == '0'}selected{/if}>
+                    <i class="fa fa-circle-o mr-2"></i>{__("No Verification")}
+                  </option>
+                  <option value="2" {if $data['page_verified'] == '2'}selected{/if}>
+                    <i class="fa fa-shield-alt mr-2"></i>{__("Gray Badge - Business Verified")}
+                  </option>
+                  <option value="1" {if $data['page_verified'] == '1'}selected{/if}>
+                    <i class="fa fa-certificate mr-2"></i>{__("Blue Badge - Premium Verified")}
+                  </option>
+                </select>
+                <div class="form-text">
+                  {__("Set the verification level for this page")}
+                </div>
               </div>
             </div>
 

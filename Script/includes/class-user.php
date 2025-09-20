@@ -10820,8 +10820,12 @@ class User
         $args['page_tips_enabled'] = (isset($args['page_tips_enabled'])) ? '1' : '0';
         /* edit from admin panel */
         $args['page_verified'] = ($this->_data['user_group'] == 1 && isset($args['page_verified'])) ? $args['page_verified'] : $page['page_verified'];
+        /* prepare verification metadata */
+        $verification_type = $args['page_verification_type'] ?? null;
+        $verification_date = $args['page_verification_date'] ?? null;
+        
         /* update page */
-        $db->query(sprintf("UPDATE pages SET page_category = %s, page_name = %s, page_title = %s, page_tips_enabled = %s, page_verified = %s WHERE page_id = %s", secure($args['category'], 'int'), secure($args['username']), secure($args['title']), secure($args['page_tips_enabled']), secure($args['page_verified']), secure($page_id, 'int'))) or _error('SQL_ERROR_THROWEN');
+        $db->query(sprintf("UPDATE pages SET page_category = %s, page_name = %s, page_title = %s, page_tips_enabled = %s, page_verified = %s, page_verification_type = %s, page_verification_date = %s WHERE page_id = %s", secure($args['category'], 'int'), secure($args['username']), secure($args['title']), secure($args['page_tips_enabled']), secure($args['page_verified']), secure($verification_type), secure($verification_date), secure($page_id, 'int'))) or _error('SQL_ERROR_THROWEN');
         break;
 
       case 'info':

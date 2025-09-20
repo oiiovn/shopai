@@ -119,9 +119,13 @@
       </div>
       <div class="user-card-info">
         <a class="name" href="{$system['system_url']}/pages/{$profile['page_name']}">{$profile['page_title']}</a>
-        {if $profile['page_verified']}
+        {if $profile['page_verified'] == '1'}
           <span class="verified-badge" data-bs-toggle="tooltip" title='{__("Verified Page")}'>
             {include file='__svg_icons.tpl' icon="verified_badge" width="20px" height="20px"}
+          </span>
+        {elseif $profile['page_verified'] == '2'}
+          <span class="verified-badge-gray" data-bs-toggle="tooltip" title='{__("Business Verified")}'>
+            {include file='__svg_icons.tpl' icon="verified_badge_gray" width="20px" height="20px"}
           </span>
         {/if}
         <div class="info">{$profile['page_likes']} {__("Likes")}</div>

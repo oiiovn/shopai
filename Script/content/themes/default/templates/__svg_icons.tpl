@@ -820,6 +820,10 @@
 
     {include file='../images/svg/verified_badge.svg'}
 
+  {elseif $icon == "verified_badge_gray"}
+
+    {include file='../images/svg/verified_badge_gray.svg'}
+
   {elseif $icon == "pro_badge"}
 
     {include file='../images/svg/pro_badge.svg'}

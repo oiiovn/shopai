@@ -41,10 +41,25 @@ try {
       break;
 
     case 'page':
+      /* get verification level and request info */
+      $verification_level = $_POST['level'] ?? 'blue'; // Default blue for backward compatibility
+      $request_id = $_POST['request_id'] ?? null;
+      
+      if ($verification_level == 'gray') {
+        /* approve gray verification */
+        $db->query(sprintf("UPDATE pages SET page_verified = '2', page_verification_type = 'manual_gray', page_verification_date = NOW() WHERE page_id = %s", secure($_POST['id'], 'int'))) or _error('SQL_ERROR_THROWEN');
+      } else {
+        /* approve blue verification (existing logic) */
+        $db->query(sprintf("UPDATE pages SET page_verified = '1', page_verification_type = 'manual_blue', page_verification_date = NOW() WHERE page_id = %s", secure($_POST['id'], 'int'))) or _error('SQL_ERROR_THROWEN');
+      }
+      
       /* approve request */
-      $db->query(sprintf("UPDATE verification_requests SET status = '1' WHERE node_type = 'page' AND node_id = %s", secure($_POST['id'], 'int'))) or _error('SQL_ERROR_THROWEN');
-      /* update page */
-      $db->query(sprintf("UPDATE pages SET page_verified = '1' WHERE page_id = %s", secure($_POST['id'], 'int'))) or _error('SQL_ERROR_THROWEN');
+      if ($request_id) {
+        $db->query(sprintf("UPDATE verification_requests SET status = '1' WHERE request_id = %s", secure($request_id, 'int'))) or _error('SQL_ERROR_THROWEN');
+      } else {
+        // Fallback for old requests
+        $db->query(sprintf("UPDATE verification_requests SET status = '1' WHERE node_type = 'page' AND node_id = %s", secure($_POST['id'], 'int'))) or _error('SQL_ERROR_THROWEN');
+      }
       break;
 
     case 'decline':

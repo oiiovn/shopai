@@ -148,6 +148,58 @@ $(function () {
         });
     });
   });
+
+  // Gray Badge verification
+  $('body').on('click', '.js_admin-verify-gray', function () {
+    var handle = $(this).data('handle');
+    var id = $(this).data('id');
+    var level = $(this).data('level');
+    var requestId = $(this).data('request-id');
+    
+    confirm('Approve Gray Badge', 'Are you sure you want to approve this page for Gray Badge verification?', function () {
+      $.post(api['admin/verify'], { 
+        'handle': handle, 
+        'id': id, 
+        'level': level,
+        'request_id': requestId 
+      }, function (response) {
+        if (response.callback) {
+          eval(response.callback);
+        } else {
+          window.location.reload();
+        }
+      }, 'json')
+        .fail(function () {
+          modal('#modal-message', { title: __['Error'], message: __['There is something that went wrong!'] });
+        });
+    });
+  });
+
+  // Blue Badge verification  
+  $('body').on('click', '.js_admin-verify-blue', function () {
+    var handle = $(this).data('handle');
+    var id = $(this).data('id');
+    var level = $(this).data('level');
+    var requestId = $(this).data('request-id');
+    
+    confirm('Approve Blue Badge', 'Are you sure you want to approve this page for Blue Badge verification?', function () {
+      $.post(api['admin/verify'], { 
+        'handle': handle, 
+        'id': id, 
+        'level': level,
+        'request_id': requestId 
+      }, function (response) {
+        if (response.callback) {
+          eval(response.callback);
+        } else {
+          window.location.reload();
+        }
+      }, 'json')
+        .fail(function () {
+          modal('#modal-message', { title: __['Error'], message: __['There is something that went wrong!'] });
+        });
+    });
+  });
   $('body').on('click', '.js_admin-unverify', function () {
     var id = $(this).data('id');
     confirm(__['Decline'], __['Are you sure you want to decline this request?'], function () {
