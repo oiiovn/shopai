@@ -192,7 +192,7 @@ waitForJQuery(function() {
             dataType: 'json',
             success: function(response) {
                 console.log('Edit response:', response);
-                if (response.success || response.callback) {
+                if (response && (response.success || response.callback)) {
                     // Show toast notification
                     showNotification('Đã lưu thay đổi thành công!', 'success');
                     $('#editItemModal').modal('hide');
@@ -201,13 +201,30 @@ waitForJQuery(function() {
                         location.reload(true); // Force reload from server
                     }, 500);
                 } else {
-                    showNotification('Có lỗi xảy ra: ' + (response.message || 'Unknown error'), 'error');
+                    var errorMsg = 'Có lỗi xảy ra';
+                    if (response && response.message) {
+                        errorMsg += ': ' + response.message;
+                    } else if (response && response.error) {
+                        errorMsg += ': ' + response.error;
+                    }
+                    showNotification(errorMsg, 'error');
                     $submitBtn.html(originalText).prop('disabled', false);
                 }
             },
             error: function(xhr, status, error) {
-                console.log('Edit error:', xhr.responseText);
-                showNotification('Có lỗi kết nối xảy ra: ' + error, 'error');
+                console.log('AJAX Error - Status:', status);
+                console.log('AJAX Error - Response:', xhr.responseText);
+                
+                var errorMsg = 'Có lỗi kết nối xảy ra';
+                if (xhr.status === 401 || xhr.responseText.includes('user_access')) {
+                    errorMsg = 'Bạn cần đăng nhập với tài khoản admin của page này';
+                } else if (xhr.status === 403) {
+                    errorMsg = 'Bạn không có quyền thực hiện chức năng này';
+                } else if (xhr.status === 404) {
+                    errorMsg = 'Không tìm thấy trang xử lý';
+                }
+                
+                showNotification(errorMsg, 'error');
                 $submitBtn.html(originalText).prop('disabled', false);
             }
         });
@@ -247,7 +264,7 @@ waitForJQuery(function() {
             dataType: 'json',
             success: function(response) {
                 console.log('Add response:', response);
-                if (response.success || response.callback) {
+                if (response && (response.success || response.callback)) {
                     showNotification('Đã thêm món thành công!', 'success');
                     $('#addItemModal').modal('hide');
                     // Reset form
@@ -257,13 +274,46 @@ waitForJQuery(function() {
                         window.location.reload();
                     }, 500);
                 } else {
-                    showNotification('Có lỗi xảy ra: ' + (response.message || 'Unknown error'), 'error');
+                    var errorMsg = 'Có lỗi xảy ra';
+                    if (response && response.message) {
+                        errorMsg += ': ' + response.message;
+                    } else if (response && response.error) {
+                        errorMsg += ': ' + response.error;
+                    }
+                    console.log('Error details:', response);
+                    showNotification(errorMsg, 'error');
                     $submitBtn.html(originalText).prop('disabled', false);
                 }
             },
             error: function(xhr, status, error) {
-                console.log('Add error:', xhr.responseText);
-                showNotification('Có lỗi kết nối xảy ra: ' + error, 'error');
+                console.log('AJAX Error - Status:', status);
+                console.log('AJAX Error - Error:', error);
+                console.log('AJAX Error - Response:', xhr.responseText);
+                
+                var errorMsg = 'Có lỗi kết nối xảy ra';
+                
+                // Try to parse JSON error response
+                try {
+                    var errorResponse = JSON.parse(xhr.responseText);
+                    if (errorResponse.message) {
+                        errorMsg += ': ' + errorResponse.message;
+                    } else if (errorResponse.error) {
+                        errorMsg += ': ' + errorResponse.error;
+                    }
+                } catch(e) {
+                    // If not JSON, check for common errors
+                    if (xhr.status === 401) {
+                        errorMsg = 'Bạn cần đăng nhập để thực hiện chức năng này';
+                    } else if (xhr.status === 403) {
+                        errorMsg = 'Bạn không có quyền thực hiện chức năng này';
+                    } else if (xhr.status === 404) {
+                        errorMsg = 'Không tìm thấy trang xử lý. Vui lòng kiểm tra lại';
+                    } else if (xhr.responseText.includes('user_access')) {
+                        errorMsg = 'Bạn cần đăng nhập với tài khoản admin của page này';
+                    }
+                }
+                
+                showNotification(errorMsg, 'error');
                 $submitBtn.html(originalText).prop('disabled', false);
             }
         });
