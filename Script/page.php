@@ -199,6 +199,68 @@ try {
       $spage['invites'] = $user->get_page_invites($spage['page_id']);
       break;
 
+    case 'menu':
+      /* check if the viewer is the admin */
+      if (!$spage['i_admin']) {
+        _error(404);
+      }
+      
+      /* check if page has menu feature */
+      if (!in_array($spage['page_business_type_id'], [1, 13])) {
+        _error(404);
+      }
+      
+      $check_menu_feature = $db->query(sprintf("
+        SELECT 1 FROM page_enabled_features pef 
+        INNER JOIN page_features pf ON pef.feature_id = pf.feature_id 
+        WHERE pef.page_id = %s AND pf.feature_slug = 'menu-truc-tuyen' AND pef.is_active = '1'
+      ", secure($spage['page_id'], 'int')));
+      
+      if (!$check_menu_feature || $check_menu_feature->num_rows == 0) {
+        _error(404);
+      }
+
+      // get menu view
+      $menu_view = $_GET['menu_view'] ?? '';
+      
+      // get menu categories with items count
+      $get_categories = $db->query(sprintf("
+        SELECT mc.*, COUNT(mi.item_id) as items_count
+        FROM page_menu_categories mc
+        LEFT JOIN page_menu_items mi ON mc.category_id = mi.category_id
+        WHERE mc.page_id = %s AND mc.is_active = '1'
+        GROUP BY mc.category_id
+        ORDER BY mc.display_order ASC
+      ", secure($spage['page_id'], 'int')));
+      
+      $menu_categories = [];
+      if ($get_categories && $get_categories->num_rows > 0) {
+        while ($category = $get_categories->fetch_assoc()) {
+          // get items for this category
+          if ($menu_view == "" || $menu_view == "items") {
+            $get_items = $db->query(sprintf("
+              SELECT * FROM page_menu_items 
+              WHERE category_id = %s 
+              ORDER BY display_order ASC, item_name ASC
+            ", secure($category['category_id'], 'int')));
+            
+            $items = [];
+            if ($get_items && $get_items->num_rows > 0) {
+              while ($item = $get_items->fetch_assoc()) {
+                $items[] = $item;
+              }
+            }
+            $category['items'] = $items;
+          }
+          $menu_categories[] = $category;
+        }
+      }
+      
+      $smarty->assign('menu_categories', $menu_categories);
+      $smarty->assign('menu_view', $menu_view);
+      $smarty->assign('sub_view', 'menu');
+      break;
+
     case 'settings':
       /* check if the viewer is the admin */
       if (!$spage['i_admin']) {
@@ -287,6 +349,7 @@ try {
           }
           break;
 
+
         default:
           _error(404);
           break;
@@ -311,6 +374,41 @@ try {
 
 // page header
 page_header($spage['page_title'], $spage['page_description'], $spage['page_picture']);
+
+// Load menu data nếu page là loại ẩm thực và không phải trang settings
+if (in_array($spage['page_business_type_id'], [1, 13]) && ($_GET['view'] ?? '') == '') {
+  // Kiểm tra page có tính năng menu không
+  $check_menu_feature = $db->query(sprintf("SELECT 1 FROM page_enabled_features pef INNER JOIN page_features pf ON pef.feature_id = pf.feature_id WHERE pef.page_id = %s AND pf.feature_slug = 'menu-truc-tuyen' AND pef.is_active = '1'", secure($spage['page_id'], 'int')));
+  
+  if ($check_menu_feature && $check_menu_feature->num_rows > 0) {
+    // Lấy danh mục menu
+    $get_menu_categories = $db->query(sprintf("SELECT * FROM page_menu_categories WHERE page_id = %s AND is_active = '1' ORDER BY display_order ASC", secure($spage['page_id'], 'int')));
+    
+    $page_menu_categories = [];
+    if ($get_menu_categories && $get_menu_categories->num_rows > 0) {
+      while ($category = $get_menu_categories->fetch_assoc()) {
+        // Lấy món ăn trong danh mục
+        $get_items = $db->query(sprintf("SELECT * FROM page_menu_items WHERE page_id = %s AND category_id = %s ORDER BY display_order ASC, item_name ASC", secure($spage['page_id'], 'int'), secure($category['category_id'], 'int')));
+        
+        $items = [];
+        if ($get_items && $get_items->num_rows > 0) {
+          while ($item = $get_items->fetch_assoc()) {
+            // Format image URL
+            if ($item['item_image'] && strpos($item['item_image'], 'http') !== 0) {
+              $item['item_image'] = $system['system_url'] . '/' . $item['item_image'];
+            }
+            $items[] = $item;
+          }
+        }
+        $category['items'] = $items;
+        $page_menu_categories[] = $category;
+      }
+    }
+    
+    $smarty->assign('page_menu_categories', $page_menu_categories);
+    $smarty->assign('page_menu', true);
+  }
+}
 
 // assign variables
 $smarty->assign('spage', $spage);

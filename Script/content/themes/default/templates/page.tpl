@@ -919,6 +919,15 @@
                       {__("Admins")}
                     </a>
                   </li>
+                  {* Menu tab chỉ hiển thị cho pages ẩm thực *}
+                  {if $spage['page_business_type_id'] == 1 || $spage['page_business_type_id'] == 13}
+                    <li {if $sub_view == "menu"}class="active" {/if}>
+                      <a href="{$system['system_url']}/pages/{$spage['page_name']}/settings?view=menu">
+                        <i class="fa fa-utensils mr10" style="width: 24px; height: 24px; font-size: 18px;"></i>
+                        Quản lý thực đơn
+                      </a>
+                    </li>
+                  {/if}
                   {if $user->_data['can_monetize_content']}
                     <li {if $sub_view == "monetization"}class="active" {/if}>
                       <a href="{$system['system_url']}/pages/{$spage['page_name']}/settings/monetization">
@@ -1777,6 +1786,35 @@
             </div>
           </div>
 
+        {elseif $view == "menu"}
+          <!-- Menu Management -->
+          <div class="col-lg-3 order-1 order-lg-1">
+            <!-- profile-sidebar -->
+            <div class="card">
+              <div class="card-body with-nav">
+                <ul class="side-nav">
+                  <li {if $sub_view == "menu"}class="active" {/if}>
+                    <a href="{$system['system_url']}/pages/{$spage['page_name']}?view=menu">
+                      <i class="fa fa-utensils mr10" style="width: 24px; height: 24px; font-size: 18px;"></i>
+                      Quản lý thực đơn
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <!-- profile-sidebar -->
+          </div>
+
+          <div class="col-lg-9 order-2 order-lg-2">
+            <!-- profile-content -->
+            <div class="row">
+              <div class="col-12">
+                {include file='page_menu_management.tpl'}
+              </div>
+            </div>
+            <!-- profile-content -->
+          </div>
+
         {/if}
         <!-- view content -->
       </div>
@@ -1787,6 +1825,12 @@
         {include file='_footer.links.tpl'}
       {/if}
       <!-- footer links -->
+      <!-- Menu Display for Food & Beverage Pages (chỉ hiển thị ở trang chính, không phải settings) -->
+      {if ($spage['page_business_type_id'] == 1 || $spage['page_business_type_id'] == 13) && $page_menu && $view == ""}
+        {include file='page_menu_display.tpl'}
+      {/if}
+      <!-- Menu Display -->
+
     </div>
     <!-- content panel -->
 
