@@ -27,6 +27,48 @@ if ($user->_data['user_demo']) {
   modal("ERROR", __("Demo Restriction"), __("You can't do this with demo account"));
 }
 
+/**
+ * Handle menu image upload
+ */
+function handle_menu_image_upload($file) {
+  global $system;
+  
+  // Validate file
+  if (!isset($file['tmp_name']) || !is_uploaded_file($file['tmp_name'])) {
+    return ['success' => false, 'message' => 'No file uploaded'];
+  }
+  
+  // Validate file type
+  $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+  if (!in_array($file['type'], $allowed_types)) {
+    return ['success' => false, 'message' => 'Invalid file type. Only JPG, PNG, GIF, WebP allowed'];
+  }
+  
+  // Validate file size (5MB)
+  if ($file['size'] > 5 * 1024 * 1024) {
+    return ['success' => false, 'message' => 'File too large. Maximum size is 5MB'];
+  }
+  
+  // Create directory
+  $upload_dir = 'content/uploads/photos/' . date('Y') . '/' . date('m') . '/';
+  if (!file_exists($upload_dir)) {
+    mkdir($upload_dir, 0755, true);
+  }
+  
+  // Generate unique filename
+  $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+  $filename = 'menu_' . uniqid() . '_' . time() . '.' . $extension;
+  $file_path = $upload_dir . $filename;
+  
+  // Move uploaded file
+  if (move_uploaded_file($file['tmp_name'], $file_path)) {
+    $file_url = $system['system_url'] . '/' . $file_path;
+    return ['success' => true, 'file_url' => $file_url];
+  } else {
+    return ['success' => false, 'message' => 'Failed to upload file'];
+  }
+}
+
 try {
 
   switch ($_GET['do']) {
@@ -103,11 +145,16 @@ try {
       $_POST['is_available'] = (isset($_POST['is_available'])) ? '1' : '0';
       $_POST['display_order'] = !is_empty($_POST['display_order']) ? intval($_POST['display_order']) : 1;
       
-      /* handle image - prioritize uploaded image over URL */
+      /* handle image - prioritize uploaded file over URL */
       $item_image = '';
-      if (!is_empty($_POST['item_image'])) {
-        // Uploaded image
-        $item_image = $_POST['item_image'];
+      if (!empty($_FILES['item_image_file']['name'])) {
+        // Handle file upload
+        $upload = handle_menu_image_upload($_FILES['item_image_file']);
+        if ($upload['success']) {
+          $item_image = $upload['file_url'];
+        } else {
+          throw new Exception($upload['message']);
+        }
       } elseif (!is_empty($_POST['item_image_url'])) {
         // URL image
         $item_image = $_POST['item_image_url'];
@@ -154,11 +201,16 @@ try {
       $_POST['is_popular'] = (isset($_POST['is_popular'])) ? '1' : '0';
       $_POST['is_available'] = (isset($_POST['is_available'])) ? '1' : '0';
       
-      /* handle image - prioritize uploaded image over URL */
+      /* handle image - prioritize uploaded file over URL */
       $item_image = '';
-      if (!is_empty($_POST['item_image'])) {
-        // Uploaded image
-        $item_image = $_POST['item_image'];
+      if (!empty($_FILES['item_image_file']['name'])) {
+        // Handle file upload
+        $upload = handle_menu_image_upload($_FILES['item_image_file']);
+        if ($upload['success']) {
+          $item_image = $upload['file_url'];
+        } else {
+          throw new Exception($upload['message']);
+        }
       } elseif (!is_empty($_POST['item_image_url'])) {
         // URL image
         $item_image = $_POST['item_image_url'];

@@ -8,7 +8,7 @@
         <h5 class="modal-title">Thêm món mới</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
-      <form id="addItemForm" data-url="{$system.system_url}/includes/ajax/pages/menu.php?do=add_item&page_id={$spage['page_id']}" enctype="multipart/form-data">
+      <form id="addItemForm" enctype="multipart/form-data">
         <div class="modal-body">
           <div class="row">
             <div class="col-md-6">
@@ -42,18 +42,19 @@
           
           <div class="form-group">
             <label class="form-label">Hình ảnh món ăn</label>
-            <div class="x-image">
-              <button type="button" class="btn-close x-hidden js_x-image-remover" title='{__("Remove")}'></button>
-              <div class="x-image-loader">
-                <div class="progress x-progress">
-                  <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-              </div>
-              <i class="fa fa-camera fa-2x js_x-uploader" data-handle="x-image"></i>
-              <input type="hidden" class="js_x-image-input" name="item_image" value="">
-            </div>
+            <input type="file" class="form-control" name="item_image_file" accept="image/*" id="addItemImageFile">
             <div class="form-text">
-              Hoặc nhập URL hình ảnh: <input type="text" class="form-control mt-2" name="item_image_url" placeholder="https://example.com/image.jpg">
+              <small class="text-muted">Chọn file ảnh JPG, PNG, GIF (tối đa 5MB)</small>
+            </div>
+            <div class="mt-2">
+              <strong>Hoặc nhập URL hình ảnh:</strong>
+              <input type="text" class="form-control mt-1" name="item_image_url" placeholder="https://example.com/image.jpg">
+            </div>
+            <div id="addItemImagePreview" class="mt-2" style="display: none;">
+              <img id="addItemPreviewImg" src="" class="img-thumbnail" style="max-width: 200px; max-height: 150px;">
+              <button type="button" class="btn btn-sm btn-danger ms-2" onclick="clearAddItemImage()">
+                <i class="fa fa-times"></i> Xóa
+              </button>
             </div>
           </div>
           
@@ -186,19 +187,21 @@
           
           <div class="form-group">
             <label class="form-label">Hình ảnh món ăn</label>
-            <div class="x-image">
-              <button type="button" class="btn-close x-hidden js_x-image-remover" title='{__("Remove")}'></button>
-              <div class="x-image-loader">
-                <div class="progress x-progress">
-                  <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-              </div>
-              <i class="fa fa-camera fa-2x js_x-uploader" data-handle="x-image"></i>
-              <input type="hidden" class="js_x-image-input" name="item_image" id="edit_item_image" value="">
-            </div>
+            <input type="file" class="form-control" name="item_image_file" accept="image/*" id="editItemImageFile">
             <div class="form-text">
-              Hoặc nhập URL hình ảnh: <input type="text" class="form-control mt-2" name="item_image_url" id="edit_item_image_url" placeholder="https://example.com/image.jpg">
+              <small class="text-muted">Chọn file ảnh mới (JPG, PNG, GIF, tối đa 5MB)</small>
             </div>
+            <div class="mt-2">
+              <strong>Hoặc nhập URL hình ảnh:</strong>
+              <input type="text" class="form-control mt-1" name="item_image_url" id="edit_item_image_url" placeholder="https://example.com/image.jpg">
+            </div>
+            <div id="editItemImagePreview" class="mt-2">
+              <img id="editItemPreviewImg" src="" class="img-thumbnail" style="max-width: 200px; max-height: 150px;">
+              <button type="button" class="btn btn-sm btn-danger ms-2" onclick="clearEditItemImage()">
+                <i class="fa fa-times"></i> Xóa
+              </button>
+            </div>
+            <input type="hidden" name="item_image" id="edit_item_image" value="">
           </div>
           
           <div class="row">

@@ -196,6 +196,7 @@ RewriteRule ^pages/category/([^/]+)/([^/]+)/([^/]+)/?$ pages.php?view=category&c
 RewriteRule ^pages/([^/]+)/?$ page.php?username=$1 [L,QSA]
 RewriteRule ^pages/([^/]+)/([^/]+)/?$ page.php?username=$1&view=$2 [L,QSA]
 RewriteRule ^pages/([^/]+)/([^/]+)/([^/]+)/?$ page.php?username=$1&view=$2&id=$3 [L,QSA]
+RewriteRule ^pages/([^/]+)/([^/]+)/([^/]+)/([^/]+)/?$ page.php?username=$1&view=$2&id=$3&sub_id=$4 [L,QSA]
 
 # Groups
 RewriteRule ^groups/?$ groups.php [L,QSA]

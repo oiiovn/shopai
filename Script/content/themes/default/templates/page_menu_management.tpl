@@ -77,9 +77,10 @@ function editMenuItem(itemId, itemData) {
     
     // Show current image if exists
     if (itemData.image) {
-        var $imageContainer = $('#editItemModal .x-image');
-        $imageContainer.css('background-image', 'url(' + itemData.image + ')');
-        $imageContainer.addClass('x-image-active');
+        $('#editItemPreviewImg').attr('src', itemData.image);
+        $('#editItemImagePreview').show();
+    } else {
+        $('#editItemImagePreview').hide();
     }
     
     // Set item_id in hidden field (this is what AJAX handler expects)
@@ -99,9 +100,65 @@ function waitForJQuery(callback) {
     }
 }
 
+// Image preview and file handling functions
+function setupImagePreview() {
+    // Add item image preview
+    $('#addItemImageFile').on('change', function() {
+        handleImagePreview(this, 'addItem');
+    });
+    
+    // Edit item image preview
+    $('#editItemImageFile').on('change', function() {
+        handleImagePreview(this, 'editItem');
+    });
+}
+
+function handleImagePreview(input, prefix) {
+    var file = input.files[0];
+    if (file) {
+        // Validate file type
+        if (!file.type.match('image.*')) {
+            showNotification('Vui lòng chọn file ảnh hợp lệ (JPG, PNG, GIF)', 'error');
+            input.value = '';
+            return;
+        }
+        
+        // Validate file size (5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            showNotification('File ảnh quá lớn. Vui lòng chọn ảnh nhỏ hơn 5MB', 'error');
+            input.value = '';
+            return;
+        }
+        
+        // Show preview
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            $('#' + prefix + 'PreviewImg').attr('src', e.target.result);
+            $('#' + prefix + 'ImagePreview').show();
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+function clearAddItemImage() {
+    $('#addItemImageFile').val('');
+    $('#addItemPreviewImg').attr('src', '');
+    $('#addItemImagePreview').hide();
+}
+
+function clearEditItemImage() {
+    $('#editItemImageFile').val('');
+    $('#editItemPreviewImg').attr('src', '');
+    $('#edit_item_image').val('');
+    $('#editItemImagePreview').hide();
+}
+
 // All form submissions - bind after modal is shown
 waitForJQuery(function() {
     console.log('jQuery loaded, setting up handlers');
+    
+    // Setup image preview
+    setupImagePreview();
     
     $(document).on('shown.bs.modal', '#editItemModal', function() {
     console.log('Edit modal shown, binding form handler');
@@ -114,11 +171,12 @@ waitForJQuery(function() {
         e.preventDefault();
         e.stopPropagation();
         
-        var formData = $(this).serialize();
+        // Create FormData for file upload
+        var formData = new FormData(this);
         var itemId = $('#edit_item_id').val();
         var formUrl = '{$system.system_url}/includes/ajax/pages/menu.php?do=edit_item&item_id=' + itemId;
         
-        console.log('Submitting edit form:', formUrl, formData);
+        console.log('Submitting edit form with file upload:', formUrl);
         
         // Show loading
         var $submitBtn = $(this).find('button[type="submit"]');
@@ -129,6 +187,8 @@ waitForJQuery(function() {
             url: formUrl,
             type: 'POST',
             data: formData,
+            processData: false,
+            contentType: false,
             dataType: 'json',
             success: function(response) {
                 console.log('Edit response:', response);
@@ -167,10 +227,11 @@ waitForJQuery(function() {
         e.preventDefault();
         e.stopPropagation();
         
-        var formData = $(this).serialize();
-        var formUrl = $(this).attr('data-url');
+        // Create FormData for file upload
+        var formData = new FormData(this);
+        var formUrl = '{$system.system_url}/includes/ajax/pages/menu.php?do=add_item&page_id={$spage['page_id']}';
         
-        console.log('Submitting add form:', formUrl, formData);
+        console.log('Submitting add form with file upload:', formUrl);
         
         // Show loading
         var $submitBtn = $(this).find('button[type="submit"]');
@@ -181,13 +242,20 @@ waitForJQuery(function() {
             url: formUrl,
             type: 'POST',
             data: formData,
+            processData: false,
+            contentType: false,
             dataType: 'json',
             success: function(response) {
                 console.log('Add response:', response);
                 if (response.success || response.callback) {
                     showNotification('Đã thêm món thành công!', 'success');
                     $('#addItemModal').modal('hide');
-                    window.location.reload();
+                    // Reset form
+                    $('#addItemForm')[0].reset();
+                    $('#addItemImagePreview').hide();
+                    setTimeout(function() {
+                        window.location.reload();
+                    }, 500);
                 } else {
                     showNotification('Có lỗi xảy ra: ' + (response.message || 'Unknown error'), 'error');
                     $submitBtn.html(originalText).prop('disabled', false);

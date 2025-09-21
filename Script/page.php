@@ -247,6 +247,10 @@ try {
             $items = [];
             if ($get_items && $get_items->num_rows > 0) {
               while ($item = $get_items->fetch_assoc()) {
+                // Format image URL
+                if ($item['item_image'] && strpos($item['item_image'], 'http') !== 0) {
+                  $item['item_image'] = $system['system_url'] . '/' . $item['item_image'];
+                }
                 $items[] = $item;
               }
             }
@@ -268,7 +272,7 @@ try {
       }
 
       /* get sub_view content */
-      $sub_view = $_GET['id'];
+      $sub_view = $_GET['id'] ?? '';
       switch ($sub_view) {
         case '':
           // get pages categories
