@@ -197,7 +197,7 @@ function checkUserPhoneByUsername($username) {
 
 // Function to call checkso.pro API
 function callChecksoAPI($username, $phone = '99') {
-    $api_token = '8d3b77d956264a950f28224928c7390941eedd0180f87de4a487edbaf80b3841';
+    $api_token = '1770dd4e380567afd3668f8a9be69c21c587e08da9c5b75b5269174291ec7076';
     $endpoint = 'http://checkso.pro/search_users_advanced';
     
     $data = [
