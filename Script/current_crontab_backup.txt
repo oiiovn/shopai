@@ -1,0 +1,5 @@
+* * * * * /opt/homebrew/opt/php@8.2/bin/php /Users/buiquocvu/dropseller/artisan schedule:run >> /dev/null 2>&1
+* * * * * /usr/bin/php /Users/buiquocvu/dropseller/artisan schedule:run >> /dev/null 2>&1
+* * * * * /usr/bin/php8.1 /var/www/html/dropseller/artisan schedule:run >> /dev/null 2>&1
+* * * * * php /path/to/artisan schedule:run >> /dev/null 2>&1
+
