@@ -3358,14 +3358,17 @@ body.night-mode .x-image {
 /* verification badge common styles */
 .verified-badge,
 .verified-badge-gray {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   margin-left: 3px;
   vertical-align: middle;
+  line-height: 1;
 }
 
 .verified-badge svg,
 .verified-badge-gray svg {
   vertical-align: middle;
+  display: inline-block;
 }
 
 /* verification badge tooltips */
@@ -3412,6 +3415,16 @@ body.night-mode .x-image {
 
 .pro-badge {
   color: #e13c4c;
+  display: inline-flex;
+  align-items: center;
+  margin-left: 3px;
+  vertical-align: middle;
+  line-height: 1;
+}
+
+.pro-badge svg {
+  vertical-align: middle;
+  display: inline-block;
 }
 
 .privacy-badge {

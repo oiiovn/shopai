@@ -3348,10 +3348,45 @@ body.night-mode .x-image {
 /* badges */
 .verified-badge {
   color: #55acee;
+  display: inline-flex;
+  align-items: center;
+  margin-right: 3px;
+  vertical-align: middle;
+  line-height: 1;
+}
+
+.verified-badge svg {
+  vertical-align: middle;
+  display: inline-block;
+}
+
+/* gray verified badge */
+.verified-badge-gray {
+  color: #6c757d;
+  display: inline-flex;
+  align-items: center;
+  margin-right: 3px;
+  vertical-align: middle;
+  line-height: 1;
+}
+
+.verified-badge-gray svg {
+  vertical-align: middle;
+  display: inline-block;
 }
 
 .pro-badge {
   color: #e13c4c;
+  display: inline-flex;
+  align-items: center;
+  margin-right: 3px;
+  vertical-align: middle;
+  line-height: 1;
+}
+
+.pro-badge svg {
+  vertical-align: middle;
+  display: inline-block;
 }
 
 .privacy-badge {
