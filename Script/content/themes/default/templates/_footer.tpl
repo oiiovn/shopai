@@ -27,6 +27,9 @@
     {html_entity_decode($system['custome_js_footer'], ENT_QUOTES)}
   </script>
 {/if}
+
+<!-- Phương Nhi Chat Widget -->
+{include file='phuong_nhi_widget.tpl'}
 <!-- Footer Custom JavaScript -->
 
 <!-- Analytics Code -->
