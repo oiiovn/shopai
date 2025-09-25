@@ -137,6 +137,38 @@ function findQRCodeMappingByQRCode($qrCode, $amount, $pdo) {
     }
 }
 
+// Hàm tìm QR Code mapping bằng partial QR code
+function findQRCodeMappingByPartialQR($partialQR, $amount, $pdo) {
+    try {
+        // Tìm QR code mapping dựa trên partial QR code và số tiền
+        $stmt = $pdo->prepare("
+            SELECT qr_id, user_id, amount, qr_code, transfer_content 
+            FROM qr_code_mapping 
+            WHERE qr_code LIKE ? 
+            AND amount = ? 
+            AND status = 'active' 
+            AND expires_at > NOW() 
+            ORDER BY created_at DESC 
+            LIMIT 1
+        ");
+        $likePattern = $partialQR . '%';
+        $stmt->execute([$likePattern, $amount]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($result) {
+            writeLog("✅ Tìm thấy partial QR mapping: Partial={$partialQR}, Full={$result['qr_code']}, User={$result['user_id']}, Amount={$amount}");
+            return $result;
+        } else {
+            writeLog("❌ Không tìm thấy partial QR mapping cho: Partial={$partialQR}, Amount={$amount}");
+            return null;
+        }
+        
+    } catch (PDOException $e) {
+        writeLog("❌ Lỗi tìm partial QR mapping: " . $e->getMessage());
+        return null;
+    }
+}
+
 // Hàm tìm QR Code mapping bằng transfer content (backup method)
 function findQRCodeMappingByTransferContent($transferDescription, $amount, $pdo) {
     try {
@@ -405,10 +437,44 @@ try {
                 continue;
             }
             
-            // Extract QR code từ description Pay2S (format: "RZXXXXX GD ...")
+            // Extract QR code từ description Pay2S - nâng cấp để handle các format phức tạp
             $extractedQR = '';
-            if (preg_match('/^(RZ[A-Z0-9]+)/', trim($description), $matches)) {
-                $extractedQR = $matches[1];
+            
+            // Method 1: Tìm QR code trong chuỗi phức tạp (MBVCB, VCB, etc.)
+            if (preg_match('/RZ[A-Z0-9]+/', trim($description), $matches)) {
+                $extractedQR = $matches[0];
+                writeLog("🔍 Method 1 - Found QR in complex string: $extractedQR");
+            }
+            
+            // Method 2: Nếu không tìm thấy, thử extract từ các pattern khác
+            if (empty($extractedQR)) {
+                // Pattern cho các ngân hàng khác nhau
+                $patterns = [
+                    '/RZ[A-Z0-9]+/',  // RZ + alphanumeric
+                    '/RZ\d+[A-Z0-9]+/',  // RZ + numbers + alphanumeric
+                    '/RZ[A-Z]\d+[A-Z0-9]+/',  // RZ + letter + numbers + alphanumeric
+                ];
+                
+                foreach ($patterns as $pattern) {
+                    if (preg_match($pattern, trim($description), $matches)) {
+                        $extractedQR = $matches[0];
+                        writeLog("🔍 Method 2 - Found QR with pattern $pattern: $extractedQR");
+                        break;
+                    }
+                }
+            }
+            
+            // Method 3: Nếu vẫn không tìm thấy, thử tìm bằng cách split và filter
+            if (empty($extractedQR)) {
+                // Split by common delimiters và tìm RZ codes
+                $parts = preg_split('/[\.\s\-_]+/', trim($description));
+                foreach ($parts as $part) {
+                    if (preg_match('/^RZ[A-Z0-9]+$/', trim($part))) {
+                        $extractedQR = trim($part);
+                        writeLog("🔍 Method 3 - Found QR in split parts: $extractedQR");
+                        break;
+                    }
+                }
             }
             
             writeLog("🔍 So sánh Pay2S description: $description");
@@ -420,10 +486,51 @@ try {
                 continue;
             }
             
-            // Tìm QR code mapping bằng extracted QR code
+            // Tìm QR code mapping bằng extracted QR code - nâng cấp với multiple methods
+            $qrMapping = null;
+            
+            // Method 1: Tìm exact match
             $qrMapping = findQRCodeMappingByQRCode($extractedQR, $amount, $pdo);
+            if ($qrMapping) {
+                writeLog("✅ Method 1 - Exact match found for: $extractedQR");
+            }
+            
+            // Method 2: Nếu không tìm thấy exact match, thử tìm với amount khác nhau (±10%)
             if (!$qrMapping) {
-                writeLog("❌ Không tìm thấy QR mapping cho: $extractedQR");
+                $amountVariations = [
+                    $amount * 0.9,  // -10%
+                    $amount * 1.1,  // +10%
+                    $amount * 0.95, // -5%
+                    $amount * 1.05, // +5%
+                ];
+                
+                foreach ($amountVariations as $variationAmount) {
+                    $qrMapping = findQRCodeMappingByQRCode($extractedQR, $variationAmount, $pdo);
+                    if ($qrMapping) {
+                        writeLog("✅ Method 2 - Amount variation match found: $extractedQR (original: $amount, matched: $variationAmount)");
+                        break;
+                    }
+                }
+            }
+            
+            // Method 3: Tìm partial match (QR code có thể bị cắt ngắn)
+            if (!$qrMapping) {
+                // Thử tìm với các độ dài khác nhau của QR code
+                $qrLengths = [strlen($extractedQR), strlen($extractedQR) - 1, strlen($extractedQR) + 1];
+                foreach ($qrLengths as $length) {
+                    if ($length > 10) { // Minimum QR code length
+                        $partialQR = substr($extractedQR, 0, $length);
+                        $qrMapping = findQRCodeMappingByPartialQR($partialQR, $amount, $pdo);
+                        if ($qrMapping) {
+                            writeLog("✅ Method 3 - Partial match found: $extractedQR -> $partialQR");
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            if (!$qrMapping) {
+                writeLog("❌ Không tìm thấy QR mapping cho: $extractedQR (tried exact, amount variations, partial match)");
                 $failed++;
                 continue;
             }
