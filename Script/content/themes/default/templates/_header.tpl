@@ -398,3 +398,26 @@
       <!-- ads -->
       {include file='_ads.tpl' _ads=$ads_master['header'] _master=true}
 <!-- ads -->
+
+<!-- User Data for JavaScript -->
+{if $user->_logged_in}
+<script>
+window.user = {
+    name: '{$user->_data['name']|escape:"javascript"}',
+    user_name: '{$user->_data['user_name']|escape:"javascript"}',
+    gender: '{$user->_data['user_gender']|escape:"javascript"}',
+    user_gender: '{$user->_data['user_gender']|escape:"javascript"}',
+    logged_in: true
+};
+</script>
+{else}
+<script>
+window.user = {
+    name: 'Guest',
+    user_name: 'Guest',
+    gender: 'unknown',
+    user_gender: 'unknown',
+    logged_in: false
+};
+</script>
+{/if}
