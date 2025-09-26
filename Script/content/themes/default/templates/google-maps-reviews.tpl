@@ -300,22 +300,26 @@
 
             {if $view == 'create-request'}
               <div class="card-header bg-transparent">
-                <strong>Tạo yêu cầu đánh giá</strong>
+                <strong>Tạo chiến dịch đánh giá</strong>
               </div>
               <div class="card-body">
+                <!-- Hiển thị số dư hiện tại -->
+                <div class="alert alert-info text-center mb-4">
+                  <strong>Số dư hiện tại: <span id="currentBalance">{number_format($user_balance, 0, ',', '.')}</span> VND</strong>
+                </div>
+                
                 <form id="createRequestForm">
                   <div class="row">
                     <div class="col-md-6">
                       <div class="form-group">
-                        <label for="google_place_id">Google Place ID</label>
-                        <input type="text" class="form-control" id="google_place_id" name="google_place_id" required>
-                        <small class="form-text text-muted">Nhập Google Place ID của doanh nghiệp của bạn</small>
+                        <label for="place_name">Tên địa điểm</label>
+                        <input type="text" class="form-control" id="place_name" name="place_name" required>
                       </div>
                     </div>
                     <div class="col-md-6">
                       <div class="form-group">
-                        <label for="place_name">Tên địa điểm</label>
-                        <input type="text" class="form-control" id="place_name" name="place_name" required>
+                        <label for="place_url">URL địa điểm (Tùy chọn)</label>
+                        <input type="url" class="form-control" id="place_url" name="place_url">
                       </div>
                     </div>
                   </div>
@@ -329,13 +333,14 @@
                     <div class="col-md-4">
                       <div class="form-group">
                         <label for="reward_amount">Số tiền thưởng (VND)</label>
-                        <input type="number" class="form-control" id="reward_amount" name="reward_amount" min="1000" step="1000" required>
+                        <input type="number" class="form-control" id="reward_amount" name="reward_amount" value="15000" readonly>
+                        <small class="form-text text-muted">Số tiền cố định cho mỗi đánh giá</small>
                       </div>
                     </div>
                     <div class="col-md-4">
                       <div class="form-group">
-                        <label for="target_reviews">Mục tiêu đánh giá</label>
-                        <input type="number" class="form-control" id="target_reviews" name="target_reviews" min="1" max="100" value="1" required>
+                        <label for="target_reviews">Số lượng đánh giá</label>
+                        <input type="number" class="form-control" id="target_reviews" name="target_reviews" min="1" max="100" value="1" required onchange="calculateTotal()">
                       </div>
                     </div>
                     <div class="col-md-4">
@@ -346,16 +351,31 @@
                     </div>
                   </div>
                   
-                  <div class="form-group">
-                    <label for="place_url">URL địa điểm (Tùy chọn)</label>
-                    <input type="url" class="form-control" id="place_url" name="place_url">
+                  <!-- Hiển thị hóa đơn -->
+                  <div class="card bg-light mb-4">
+                    <div class="card-body">
+                      <h6 class="card-title">Hóa đơn chiến dịch</h6>
+                      <div class="row">
+                        <div class="col-md-6">
+                          <p class="mb-1">Số tiền thưởng: <span id="rewardAmount">15,000</span> VND</p>
+                          <p class="mb-1">Số lượng đánh giá: <span id="quantity">1</span></p>
+                        </div>
+                        <div class="col-md-6">
+                          <p class="mb-1"><strong>Tổng chi phí: <span id="totalCost">15,000</span> VND</strong></p>
+                          <p class="mb-1">Số dư sau khi trừ: <span id="remainingBalance">0</span> VND</p>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                   
                   <div class="text-center">
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" class="btn btn-primary" id="createButton" disabled>
                       <i class="fa fa-plus mr5"></i>
-                      Tạo yêu cầu
+                      Tạo chiến dịch
                     </button>
+                    <small class="form-text text-muted d-block mt-2" id="balanceWarning" style="display: none;">
+                      Số dư không đủ để tạo chiến dịch này
+                    </small>
                   </div>
                 </form>
               </div>
@@ -369,6 +389,15 @@
 
 <script>
 $(document).ready(function() {
+  // Set default expiry time (3 days from now)
+  var now = new Date();
+  now.setDate(now.getDate() + 3);
+  var expiryTime = now.toISOString().slice(0, 16);
+  $('#expires_at').val(expiryTime);
+  
+  // Calculate total on page load
+  calculateTotal();
+  
   // Handle form submission
   $('#createRequestForm').on('submit', function(e) {
     e.preventDefault();
@@ -385,7 +414,7 @@ $(document).ready(function() {
       dataType: 'json',
       success: function(response) {
         if (response.success) {
-          alert('Tạo yêu cầu thành công!');
+          alert('Tạo chiến dịch thành công!');
           location.reload();
         } else {
           alert('Lỗi: ' + response.error);
@@ -396,13 +425,34 @@ $(document).ready(function() {
       }
     });
   });
-  
-  // Set default expiry time (7 days from now)
-  var now = new Date();
-  now.setDate(now.getDate() + 7);
-  var expiryTime = now.toISOString().slice(0, 16);
-  $('#expires_at').val(expiryTime);
 });
+
+function calculateTotal() {
+  var rewardAmount = parseInt($('#reward_amount').val()) || 15000;
+  var quantity = parseInt($('#target_reviews').val()) || 1;
+  var currentBalance = parseInt($('#currentBalance').text().replace(/[.,]/g, '')) || 0;
+  
+  var totalCost = rewardAmount * quantity;
+  var remainingBalance = currentBalance - totalCost;
+  
+  // Update display
+  $('#rewardAmount').text(rewardAmount.toLocaleString('vi-VN'));
+  $('#quantity').text(quantity);
+  $('#totalCost').text(totalCost.toLocaleString('vi-VN'));
+  $('#remainingBalance').text(remainingBalance.toLocaleString('vi-VN'));
+  
+  // Check if balance is sufficient
+  var createButton = $('#createButton');
+  var balanceWarning = $('#balanceWarning');
+  
+  if (remainingBalance >= 0) {
+    createButton.prop('disabled', false);
+    balanceWarning.hide();
+  } else {
+    createButton.prop('disabled', true);
+    balanceWarning.show();
+  }
+}
 
 function assignTask(subRequestId) {
   if (confirm('Bạn có chắc chắn muốn nhận nhiệm vụ này?')) {

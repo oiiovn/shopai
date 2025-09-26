@@ -31,8 +31,16 @@ page_header(__("Google Maps Reviews"));
 $user_requests = [];
 $user_reviews = [];
 $user_earnings = 0;
+$user_balance = 0;
 
 try {
+    // Get user's balance
+    $get_balance = $db->query("SELECT user_balance FROM users WHERE user_id = '{$user->_data['user_id']}'");
+    if ($get_balance->num_rows > 0) {
+        $balance_data = $get_balance->fetch_assoc();
+        $user_balance = $balance_data['user_balance'];
+    }
+    
     // Get user's review requests
     $get_requests = $db->query("
         SELECT gmr.*, p.page_name, p.page_title
@@ -97,6 +105,7 @@ $smarty->assign('user_requests', $user_requests);
 $smarty->assign('user_reviews', $user_reviews);
 $smarty->assign('user_earnings', $user_earnings);
 $smarty->assign('available_tasks', $available_tasks);
+$smarty->assign('user_balance', $user_balance);
 $smarty->assign('view', $view);
 
 // page footer
@@ -136,30 +145,53 @@ function createReviewRequest() {
     global $db, $user;
     
     try {
-        $page_id = $_POST['page_id'] ?? 0;
-        $google_place_id = $_POST['google_place_id'] ?? '';
         $place_name = $_POST['place_name'] ?? '';
         $place_address = $_POST['place_address'] ?? '';
         $place_url = $_POST['place_url'] ?? '';
-        $reward_amount = $_POST['reward_amount'] ?? 0;
+        $reward_amount = 15000; // Fixed amount
         $target_reviews = $_POST['target_reviews'] ?? 1;
         $expires_at = $_POST['expires_at'] ?? '';
         
-        if (empty($google_place_id) || empty($place_name) || empty($place_address)) {
-            echo json_encode(['error' => 'Missing required fields']);
+        if (empty($place_name) || empty($place_address)) {
+            echo json_encode(['error' => 'Vui lòng điền đầy đủ thông tin']);
             return;
         }
         
         $total_budget = $reward_amount * $target_reviews;
         
+        // Check user balance
+        $get_balance = $db->query("SELECT user_balance FROM users WHERE user_id = '{$user->_data['user_id']}'");
+        if ($get_balance->num_rows > 0) {
+            $balance_data = $get_balance->fetch_assoc();
+            $user_balance = $balance_data['user_balance'];
+            
+            if ($user_balance < $total_budget) {
+                echo json_encode(['error' => 'Số dư không đủ để tạo chiến dịch này']);
+                return;
+            }
+        } else {
+            echo json_encode(['error' => 'Không thể lấy thông tin số dư']);
+            return;
+        }
+        
+        // Start transaction
+        $db->query("START TRANSACTION");
+        
+        // Deduct balance from user
+        $db->query("
+            UPDATE users 
+            SET user_balance = user_balance - {$total_budget} 
+            WHERE user_id = '{$user->_data['user_id']}'
+        ");
+        
+        // Create main request
         $db->query("
             INSERT INTO google_maps_review_requests 
-            (page_id, requester_user_id, google_place_id, place_name, place_address, place_url, 
+            (requester_user_id, place_name, place_address, place_url, 
              reward_amount, target_reviews, total_budget, expires_at, created_at, updated_at)
             VALUES 
-            ('{$page_id}', '{$user->_data['user_id']}', '{$google_place_id}', '{$place_name}', 
-             '{$place_address}', '{$place_url}', '{$reward_amount}', '{$target_reviews}', 
-             '{$total_budget}', '{$expires_at}', NOW(), NOW())
+            ('{$user->_data['user_id']}', '{$place_name}', '{$place_address}', '{$place_url}', 
+             '{$reward_amount}', '{$target_reviews}', '{$total_budget}', '{$expires_at}', NOW(), NOW())
         ");
         
         $request_id = $db->insert_id;
@@ -168,13 +200,16 @@ function createReviewRequest() {
         for ($i = 0; $i < $target_reviews; $i++) {
             $db->query("
                 INSERT INTO google_maps_review_sub_requests 
-                (parent_request_id, google_place_id, place_name, place_address, place_url, 
+                (parent_request_id, place_name, place_address, place_url, 
                  reward_amount, expires_at, created_at, updated_at)
                 VALUES 
-                ('{$request_id}', '{$google_place_id}', '{$place_name}', '{$place_address}', 
+                ('{$request_id}', '{$place_name}', '{$place_address}', 
                  '{$place_url}', '{$reward_amount}', '{$expires_at}', NOW(), NOW())
             ");
         }
+        
+        // Commit transaction
+        $db->query("COMMIT");
         
         echo json_encode(['success' => true, 'request_id' => $request_id]);
         
