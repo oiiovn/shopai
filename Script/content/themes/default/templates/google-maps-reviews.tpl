@@ -390,10 +390,12 @@
 <script>
 // Wait for jQuery to be available
 function initGoogleMapsReviews() {
-  // Set default expiry time (3 days from now)
+  // Set default expiry time (3 days from now) - HCM timezone
   var now = new Date();
-  now.setDate(now.getDate() + 3);
-  var expiryTime = now.toISOString().slice(0, 16);
+  // Convert to HCM timezone (UTC+7)
+  var hcmTime = new Date(now.getTime() + (7 * 60 * 60 * 1000));
+  hcmTime.setDate(hcmTime.getDate() + 3);
+  var expiryTime = hcmTime.toISOString().slice(0, 16);
   $('#expires_at').val(expiryTime);
   
   // Calculate total immediately on page load

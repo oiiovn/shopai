@@ -86,7 +86,7 @@ try {
         FROM google_maps_review_sub_requests gmsr
         LEFT JOIN google_maps_review_requests gmr ON gmsr.parent_request_id = gmr.request_id
         WHERE gmsr.status = 'available' 
-        AND gmsr.expires_at > NOW()
+        AND gmsr.expires_at > CONVERT_TZ(NOW(), '+00:00', '+07:00')
         AND gmr.status = 'active'
         AND gmr.requester_user_id != '{$user->_data['user_id']}'
         AND gmr.request_id NOT IN (
@@ -107,11 +107,10 @@ try {
     }
 try {
     $get_tasks = $db->query("
-        SELECT gmsr.*, gmr.place_name, gmr.place_address, gmr.reward_amount, p.page_name, p.page_title
+        SELECT gmsr.*, gmr.place_name, gmr.place_address, gmr.reward_amount
         FROM google_maps_review_sub_requests gmsr
         LEFT JOIN google_maps_review_requests gmr ON gmsr.parent_request_id = gmr.request_id
-        LEFT JOIN pages p ON gmr.page_id = p.page_id
-        WHERE gmsr.status = 'available' AND gmsr.expires_at > NOW()
+        WHERE gmsr.status = 'available' AND gmsr.expires_at > CONVERT_TZ(NOW(), '+00:00', '+07:00')
         ORDER BY gmsr.created_at DESC
         LIMIT 20
     ");
@@ -171,7 +170,6 @@ function createReviewRequest() {
     global $db, $user;
     
     try {
-        // Không cần page_id nữa
         $place_name = isset($_POST['place_name']) ? $_POST['place_name'] : '';
         $place_address = isset($_POST['place_address']) ? $_POST['place_address'] : '';
         $place_url = isset($_POST['place_url']) ? $_POST['place_url'] : '';
@@ -218,7 +216,6 @@ function createReviewRequest() {
         }
         
         // Debug: Log all parameters
-        error_log("Google Maps Debug - Page ID: $page_id");
         error_log("Google Maps Debug - Place Name: $place_name");
         error_log("Google Maps Debug - Place Address: $place_address");
         error_log("Google Maps Debug - Target Reviews: $target_reviews");
@@ -238,7 +235,20 @@ function createReviewRequest() {
             throw new Exception("Lỗi trừ tiền: " . $db->error);
         }
         
-        error_log("Google Maps Debug - Balance deducted successfully");
+        // Tạo lịch sử giao dịch trong users_wallets_transactions
+        $transaction_description = "Tạo chiến dịch Google Maps: {$place_name} ({$target_reviews} đánh giá)";
+        $create_transaction = $db->query("
+            INSERT INTO users_wallets_transactions 
+            (user_id, amount, type, description, time) 
+            VALUES 
+            ('{$user->_data['user_id']}', '{$total_budget}', 'withdraw', '{$transaction_description}', CONVERT_TZ(NOW(), '+00:00', '+07:00'))
+        ");
+        
+        if (!$create_transaction) {
+            throw new Exception("Lỗi tạo lịch sử giao dịch: " . $db->error);
+        }
+        
+        error_log("Google Maps Debug - Balance deducted and transaction logged successfully");
         
         // Create main request (chiến dịch mẹ)
         $insert_main = $db->query("
@@ -247,7 +257,7 @@ function createReviewRequest() {
              reward_amount, target_reviews, total_budget, expires_at, status, created_at, updated_at)
             VALUES 
             ('{$user->_data['user_id']}', '', '{$place_name}', '{$place_address}', '{$place_url}', 
-             '{$reward_amount}', '{$target_reviews}', '{$total_budget}', '{$expires_at}', 'active', NOW(), NOW())
+             '{$reward_amount}', '{$target_reviews}', '{$total_budget}', '{$expires_at}', 'active', CONVERT_TZ(NOW(), '+00:00', '+07:00'), CONVERT_TZ(NOW(), '+00:00', '+07:00'))
         ");
         
         if (!$insert_main) {
@@ -265,7 +275,7 @@ function createReviewRequest() {
                  reward_amount, expires_at, status, created_at, updated_at)
                 VALUES 
                 ('{$request_id}', '', '{$place_name}', '{$place_address}', 
-                 '{$place_url}', '{$reviewer_reward}', '{$expires_at}', 'available', NOW(), NOW())
+                 '{$place_url}', '{$reviewer_reward}', '{$expires_at}', 'available', CONVERT_TZ(NOW(), '+00:00', '+07:00'), CONVERT_TZ(NOW(), '+00:00', '+07:00'))
             ");
             
             if (!$insert_sub) {
@@ -341,9 +351,9 @@ function assignReviewTask() {
         $db->query("
             UPDATE google_maps_review_sub_requests 
             SET assigned_user_id = '{$user->_data['user_id']}', 
-                assigned_at = NOW(), 
+                assigned_at = CONVERT_TZ(NOW(), '+00:00', '+07:00'), 
                 status = 'assigned',
-                updated_at = NOW()
+                updated_at = CONVERT_TZ(NOW(), '+00:00', '+07:00')
             WHERE sub_request_id = '{$sub_request_id}'
         ");
         
@@ -395,15 +405,40 @@ function submitReview() {
             ('{$sub_request['parent_request_id']}', '{$sub_request_id}', '{$user->_data['user_id']}', 
              '{$sub_request['google_place_id']}', '{$rating}', '{$review_text}', '{$review_url}', 
              '{$screenshot_proof}', 'pending', 'screenshot', '{$sub_request['reward_amount']}', 
-             'pending', NOW())
+             'pending', CONVERT_TZ(NOW(), '+00:00', '+07:00'))
         ");
         
         $review_id = $db->insert_id;
         
+        // Cộng tiền thưởng vào ví người dùng
+        $reward_amount = $sub_request['reward_amount'];
+        $add_balance = $db->query("
+            UPDATE users 
+            SET user_wallet_balance = user_wallet_balance + {$reward_amount} 
+            WHERE user_id = '{$user->_data['user_id']}'
+        ");
+        
+        if (!$add_balance) {
+            throw new Exception("Lỗi cộng tiền thưởng: " . $db->error);
+        }
+        
+        // Tạo lịch sử giao dịch cho người đánh giá
+        $reward_description = "Thưởng đánh giá Google Maps: {$sub_request['place_name']}";
+        $create_reward_transaction = $db->query("
+            INSERT INTO users_wallets_transactions 
+            (user_id, amount, type, description, time) 
+            VALUES 
+            ('{$user->_data['user_id']}', '{$reward_amount}', 'recharge', '{$reward_description}', CONVERT_TZ(NOW(), '+00:00', '+07:00'))
+        ");
+        
+        if (!$create_reward_transaction) {
+            throw new Exception("Lỗi tạo lịch sử giao dịch thưởng: " . $db->error);
+        }
+        
         // Update sub-request status
         $db->query("
             UPDATE google_maps_review_sub_requests 
-            SET status = 'completed', updated_at = NOW()
+            SET status = 'completed', updated_at = CONVERT_TZ(NOW(), '+00:00', '+07:00')
             WHERE sub_request_id = '{$sub_request_id}'
         ");
         
