@@ -305,7 +305,7 @@
               <div class="card-body">
                 <!-- Hiển thị số dư hiện tại -->
                 <div class="alert alert-info text-center mb-4">
-                  <strong>Số dư hiện tại: <span id="currentBalance">{number_format($user_balance, 0, ',', '.')}</span> VND</strong>
+                  <strong>Số dư hiện tại: <span id="currentBalance">{number_format($user_wallet_balance, 0, ',', '.')}</span> VND</strong>
                 </div>
                 
                 <form id="createRequestForm">
@@ -388,14 +388,15 @@
 </div>
 
 <script>
-$(document).ready(function() {
+// Wait for jQuery to be available
+function initGoogleMapsReviews() {
   // Set default expiry time (3 days from now)
   var now = new Date();
   now.setDate(now.getDate() + 3);
   var expiryTime = now.toISOString().slice(0, 16);
   $('#expires_at').val(expiryTime);
   
-  // Calculate total on page load
+  // Calculate total immediately on page load
   calculateTotal();
   
   // Handle form submission
@@ -406,13 +407,14 @@ $(document).ready(function() {
     formData.append('action', 'create_request');
     
     $.ajax({
-      url: 'google-maps-reviews.php',
+      url: '{$system['system_url']}/google-maps-reviews.php',
       type: 'POST',
       data: formData,
       processData: false,
       contentType: false,
       dataType: 'json',
       success: function(response) {
+        console.log('Response:', response);
         if (response.success) {
           alert('Tạo chiến dịch thành công!');
           location.reload();
@@ -420,26 +422,63 @@ $(document).ready(function() {
           alert('Lỗi: ' + response.error);
         }
       },
-      error: function() {
+      error: function(xhr, status, error) {
+        console.log('AJAX Error:', xhr.responseText);
+        console.log('Status:', status);
+        console.log('Error:', error);
         alert('Đã xảy ra lỗi. Vui lòng thử lại.');
       }
     });
   });
-});
+}
+
+// Initialize when jQuery is ready
+if (typeof $ !== 'undefined') {
+  $(document).ready(function() {
+    initGoogleMapsReviews();
+  });
+} else {
+  // Wait for jQuery to load
+  var checkJQuery = setInterval(function() {
+    if (typeof $ !== 'undefined') {
+      clearInterval(checkJQuery);
+      $(document).ready(function() {
+        initGoogleMapsReviews();
+      });
+    }
+  }, 100);
+}
 
 function calculateTotal() {
   var rewardAmount = parseInt($('#reward_amount').val()) || 15000;
   var quantity = parseInt($('#target_reviews').val()) || 1;
-  var currentBalance = parseInt($('#currentBalance').text().replace(/[.,]/g, '')) || 0;
+  
+  // Parse current balance - extract number from text like "19.800.000 VND"
+  var balanceText = $('#currentBalance').text().trim();
+  var currentBalance = 0;
+  
+  // Extract number part (everything before "VND")
+  var numberMatch = balanceText.match(/([\d.,]+)/);
+  if (numberMatch) {
+    // Remove all dots and commas, then parse
+    var cleanNumber = numberMatch[1].replace(/[.,]/g, '');
+    currentBalance = parseInt(cleanNumber) || 0;
+  }
   
   var totalCost = rewardAmount * quantity;
   var remainingBalance = currentBalance - totalCost;
+  
+  // Debug: log values to console
+  console.log('Balance Text:', balanceText);
+  console.log('Current Balance:', currentBalance);
+  console.log('Total Cost:', totalCost);
+  console.log('Remaining Balance:', remainingBalance);
   
   // Update display
   $('#rewardAmount').text(rewardAmount.toLocaleString('vi-VN'));
   $('#quantity').text(quantity);
   $('#totalCost').text(totalCost.toLocaleString('vi-VN'));
-  $('#remainingBalance').text(remainingBalance.toLocaleString('vi-VN'));
+  $('#remainingBalance').text(remainingBalance.toLocaleString('vi-VN') + ' VND');
   
   // Check if balance is sufficient
   var createButton = $('#createButton');
@@ -457,7 +496,7 @@ function calculateTotal() {
 function assignTask(subRequestId) {
   if (confirm('Bạn có chắc chắn muốn nhận nhiệm vụ này?')) {
     $.ajax({
-      url: 'google-maps-reviews.php',
+      url: '{$system['system_url']}/google-maps-reviews.php',
       type: 'POST',
       data: {
         action: 'assign_task',

@@ -194,6 +194,9 @@ RewriteRule ^google-maps-reviews/available-tasks/?$ google-maps-reviews.php?view
 RewriteRule ^google-maps-reviews/my-reviews/?$ google-maps-reviews.php?view=my-reviews [L,QSA]
 RewriteRule ^google-maps-reviews/create-request/?$ google-maps-reviews.php?view=create-request [L,QSA]
 
+# Available Review Tasks
+RewriteRule ^available-review-tasks/?$ available-review-tasks.php [L,QSA]
+
 # Pages
 RewriteRule ^pages/?$ pages.php [L,QSA]
 RewriteRule ^pages/liked/?$ pages.php?view=liked [L,QSA]

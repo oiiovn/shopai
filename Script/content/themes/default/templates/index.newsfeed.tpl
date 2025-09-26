@@ -132,6 +132,51 @@
             {/if}
             <!-- boosted post -->
 
+            <!-- review tasks -->
+            {if $available_tasks}
+              <div class="card">
+                <div class="card-header bg-transparent border-bottom-0">
+                  <strong class="text-muted">
+                    <i class="fa fa-map-marker-alt mr5"></i>
+                    {__("Nhiệm vụ đánh giá Google Maps")}
+                  </strong>
+                  <div class="float-end">
+                    <a href="{$system['system_url']}/available-review-tasks" class="btn btn-sm btn-primary">
+                      {__("Xem tất cả")}
+                    </a>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div class="row">
+                    {foreach $available_tasks as $task}
+                 <div class="col-md-4 mb15">
+                   <div class="review-task-mini-card">
+                     <h6 class="mb5">{$task.place_name}</h6>
+                     <p class="text-muted small mb5">
+                       <i class="fa fa-map-marker-alt mr5"></i>
+                       {$task.place_address|truncate:25}
+                     </p>
+                     <p class="text-warning small mb5">
+                       <i class="fa fa-clock mr5"></i>
+                       Hết hạn: {$task.expires_at|date_format:"%d/%m/%Y"}
+                     </p>
+                     <div class="d-flex justify-content-between align-items-center">
+                       <div class="text-success font-weight-bold">
+                         {number_format($task.reward_amount, 0, ',', '.')} VND
+                       </div>
+                       <button class="btn btn-sm btn-primary" onclick="assignTask({$task.id})">
+                         {__("Nhận")}
+                       </button>
+                     </div>
+                   </div>
+                 </div>
+                    {/foreach}
+                  </div>
+                </div>
+              </div>
+            {/if}
+            <!-- review tasks -->
+
             <!-- posts -->
             {include file='_posts.tpl' _get="newsfeed"}
             <!-- posts -->
@@ -462,5 +507,98 @@
 
   </div>
 </div>
+
+<style>
+.review-task-mini-card {
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    padding: 8px;
+    background: #fff;
+    height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all 0.2s ease;
+    overflow: hidden;
+}
+
+.review-task-mini-card:hover {
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    transform: translateY(-1px);
+}
+
+.review-task-mini-card h6 {
+    color: #333;
+    font-weight: 600;
+    font-size: 13px;
+    line-height: 1.2;
+    margin: 0 0 4px 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.review-task-mini-card .text-muted {
+    font-size: 11px;
+    line-height: 1.2;
+    margin: 0 0 4px 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.review-task-mini-card .text-warning {
+    font-size: 10px;
+    line-height: 1.2;
+    margin: 0 0 4px 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.review-task-mini-card .text-success {
+    font-size: 12px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.review-task-mini-card .btn {
+    font-size: 11px;
+    padding: 4px 8px;
+    height: 24px;
+    line-height: 1;
+}
+
+.review-task-mini-card .d-flex {
+    margin-top: auto;
+}
+</style>
+
+<script>
+function assignTask(taskId) {
+    if (confirm('Bạn có chắc chắn muốn nhận nhiệm vụ này?')) {
+        $.ajax({
+            url: '{$system['system_url']}/google-maps-reviews.php',
+            type: 'POST',
+            data: {
+                action: 'assign_task',
+                sub_request_id: taskId
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    alert('Nhận nhiệm vụ thành công!');
+                    location.reload();
+                } else {
+                    alert('Lỗi: ' + response.error);
+                }
+            },
+            error: function() {
+                alert('Đã xảy ra lỗi. Vui lòng thử lại.');
+            }
+        });
+    }
+}
+</script>
 
 {include file='_footer.tpl'}
