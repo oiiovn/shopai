@@ -2,7 +2,8 @@
 <div id="chatgpt-widget" class="chatgpt-widget">
     {* Chat Toggle Button *}
     <div id="chatgpt-toggle" class="chatgpt-toggle">
-        <i class="fas fa-comments"></i>
+        <img src="/TCSN/Script/content/uploads/photos/2025/09/sngine_a5f8f9258cd1714d4048655c28818fad_cropped.jpg?v=1" alt="Phương Nhi" class="toggle-avatar" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <i class="fas fa-comments" style="display: none;"></i>
         <span class="chatgpt-badge" id="chatgpt-badge" style="display: none;">1</span>
     </div>
 
@@ -10,12 +11,13 @@
     <div id="chatgpt-window" class="chatgpt-window" style="display: none;">
         {* Chat Header *}
         <div class="chatgpt-header">
-            <div class="chatgpt-header-info">
-                <div class="chatgpt-avatar">
-                    <i class="fas fa-robot"></i>
-                </div>
+             <div class="chatgpt-header-info">
+                 <div class="chatgpt-avatar" id="header-avatar">
+                     <img src="/TCSN/Script/content/uploads/photos/2025/09/sngine_fe74c972cc54d5d8a5169d0807eb26c7_cropped.jpg?v=1" alt="Phương Nhi" class="avatar-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                     <i class="fas fa-robot" style="display: none;"></i>
+                 </div>
                 <div class="chatgpt-header-text">
-                    <h6 class="chatgpt-title">Trợ lý Shop-AI</h6>
+                    <h6 class="chatgpt-title">Phương Nhi</h6>
                     <span class="chatgpt-status" id="chatgpt-status">Đang hoạt động</span>
                 </div>
             </div>
@@ -31,13 +33,14 @@
 
         {* Chat Messages *}
         <div class="chatgpt-messages" id="chatgpt-messages">
-            <div class="chatgpt-message chatgpt-message-bot">
-                <div class="chatgpt-message-avatar">
-                    <i class="fas fa-robot"></i>
-                </div>
+             <div class="chatgpt-message chatgpt-message-bot">
+                 <div class="chatgpt-message-avatar" id="welcome-avatar">
+                     <img src="/TCSN/Script/content/uploads/photos/2025/09/sngine_fe74c972cc54d5d8a5169d0807eb26c7_cropped.jpg?v=1" alt="Phương Nhi" class="avatar-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                     <i class="fas fa-robot" style="display: none;"></i>
+                 </div>
                 <div class="chatgpt-message-content">
-                    <div class="chatgpt-message-text">
-                        Xin chào! Tôi là trợ lý AI của Shop-AI. Tôi có thể giúp bạn hiểu về các dịch vụ check số Shopee, nạp tiền và nhiều tính năng khác. Bạn cần hỗ trợ gì?
+                    <div class="chatgpt-message-text" id="welcome-message">
+                        Xin chào! Em là Phương Nhi, nhân viên hỗ trợ khách hàng của Shop-AI. Em có thể giúp bạn hiểu về các dịch vụ check số Shopee, nạp tiền và nhiều tính năng khác. Bạn cần hỗ trợ gì?
                     </div>
                     <div class="chatgpt-message-time" id="welcome-time"></div>
                 </div>
@@ -82,7 +85,7 @@
 .chatgpt-toggle {
     width: 60px;
     height: 60px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #a8e6cf 0%, #88d8c0 100%);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -101,6 +104,15 @@
 .chatgpt-toggle i {
     color: white;
     font-size: 24px;
+}
+
+.toggle-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 .chatgpt-badge {
@@ -134,7 +146,7 @@
 }
 
 .chatgpt-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #a8e6cf 0%, #88d8c0 100%);
     color: white;
     padding: 15px;
     display: flex;
@@ -156,10 +168,18 @@
     align-items: center;
     justify-content: center;
     margin-right: 10px;
+    overflow: hidden;
 }
 
 .chatgpt-avatar i {
     font-size: 18px;
+}
+
+.chatgpt-avatar .avatar-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
 }
 
 .chatgpt-title {
@@ -220,10 +240,23 @@
     justify-content: center;
     margin: 0 8px;
     flex-shrink: 0;
+    overflow: hidden;
+}
+
+.avatar-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.chatgpt-message-user .chatgpt-message-avatar {
+    margin-left: 4px;
+    margin-right: 8px;
 }
 
 .chatgpt-message-bot .chatgpt-message-avatar {
-    background: #667eea;
+    background: #a8e6cf;
     color: white;
 }
 
@@ -236,6 +269,12 @@
     max-width: 70%;
 }
 
+.chatgpt-message-user .chatgpt-message-content {
+    margin-left: auto;
+    margin-right: 0;
+    max-width: 80%;
+}
+
 .chatgpt-message-text {
     background: white;
     padding: 10px 15px;
@@ -246,8 +285,12 @@
 }
 
 .chatgpt-message-user .chatgpt-message-text {
-    background: #667eea;
+    background: linear-gradient(135deg, #a8e6cf 0%, #88d8c0 100%);
     color: white;
+    padding: 12px 16px;
+    border-radius: 18px;
+    font-size: 14px;
+    line-height: 1.4;
 }
 
 .chatgpt-message-time {
@@ -317,13 +360,13 @@
 }
 
 .chatgpt-input:focus {
-    border-color: #667eea;
+    border-color: #a8e6cf;
 }
 
 .chatgpt-send {
     width: 40px;
     height: 40px;
-    background: #667eea;
+    background: #a8e6cf;
     border: none;
     border-radius: 50%;
     color: white;
@@ -382,21 +425,104 @@
 {* Chat GPT Widget JavaScript *}
 <script>
 class ChatGPTHelper {
-    constructor() {
-        this.conversationId = null;
-        this.sessionId = this.generateSessionId();
-        this.isTyping = false;
-        this.init();
-    }
+     constructor() {
+         this.conversationId = null;
+         this.sessionId = this.generateSessionId();
+         this.isTyping = false;
+         this.userName = 'Guest';
+         this.userGender = 'unknown';
+         this.phuongNhiAvatarUrl = ''; // Avatar URL của Phương Nhi
+         this.init();
+     }
 
-    init() {
-        this.bindEvents();
-        this.setWelcomeTime();
-        this.loadConversation();
+     init() {
+         this.detectUserInfo();
+         this.bindEvents();
+         this.setWelcomeTime();
+         this.generateWelcomeMessage();
+         this.loadConversation();
+         this.getPhuongNhiAvatar();
+     }
+
+    detectUserInfo() {
+        try {
+            // Try multiple methods to detect user info
+            
+            // Method 1: Global variables
+            if (typeof window.user !== 'undefined' && window.user) {
+                this.userName = window.user.name || window.user.user_name || 'Guest';
+                this.userGender = window.user.gender || window.user.user_gender || 'unknown';
+                console.log('Found user from window.user:', this.userName, this.userGender);
+                return;
+            }
+            
+            // Method 2: Meta tags
+            const nameMeta = document.querySelector('meta[name="user-name"], meta[property="user:name"]');
+            const genderMeta = document.querySelector('meta[name="user-gender"], meta[property="user:gender"]');
+            if (nameMeta) {
+                this.userName = nameMeta.content || 'Guest';
+                this.userGender = genderMeta ? genderMeta.content : 'unknown';
+                console.log('Found user from meta tags:', this.userName, this.userGender);
+                return;
+            }
+            
+            // Method 3: Data attributes
+            const userElement = document.querySelector('[data-user-name], [data-username]');
+            if (userElement) {
+                this.userName = userElement.getAttribute('data-user-name') || 
+                               userElement.getAttribute('data-username') || 'Guest';
+                this.userGender = userElement.getAttribute('data-user-gender') || 'unknown';
+                console.log('Found user from data attributes:', this.userName, this.userGender);
+                return;
+            }
+            
+            // Method 4: Common selectors
+            const nameSelectors = [
+                '.user-name', '.username', '.profile-name', '.display-name',
+                '[data-username]', '[data-user-name]', '.post-author'
+            ];
+            
+            for (const selector of nameSelectors) {
+                const element = document.querySelector(selector);
+                if (element) {
+                    this.userName = element.textContent?.trim() || 
+                                   element.getAttribute('data-username') ||
+                                   element.getAttribute('data-user-name') || 'Guest';
+                    console.log('Found user from selector', selector, ':', this.userName);
+                    break;
+                }
+            }
+            
+            console.log('Final detected user:', this.userName, this.userGender);
+        } catch (error) {
+            console.error('Error detecting user info:', error);
+            this.userName = 'Guest';
+            this.userGender = 'unknown';
+        }
     }
 
     generateSessionId() {
         return 'chatgpt_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    }
+
+    getChatHistory() {
+        // Get last 5 messages for context
+        const messages = document.querySelectorAll('.chatgpt-message');
+        const history = [];
+        
+        for (let i = 0; i < Math.min(messages.length, 10); i++) {
+            const message = messages[i];
+            const textElement = message.querySelector('.chatgpt-message-text');
+            if (textElement) {
+                const sender = message.classList.contains('chatgpt-message-user') ? 'user' : 'bot';
+                history.push({
+                    sender: sender,
+                    text: textElement.textContent.trim()
+                });
+            }
+        }
+        
+        return history;
     }
 
     bindEvents() {
@@ -441,6 +567,34 @@ class ChatGPTHelper {
             minute: '2-digit' 
         });
         document.getElementById('welcome-time').textContent = timeString;
+    }
+
+    async generateWelcomeMessage() {
+        try {
+            const resp = await fetch('{$system.system_url}/includes/ajax/phuong_nhi.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'generate_welcome', user_name: this.userName })
+            });
+
+            const raw = await resp.text(); // <- ĐỌC TEXT
+            let data;
+            try {
+                data = JSON.parse(raw);
+            } catch (e) {
+                throw new Error('Bad JSON from server: ' + raw.slice(0, 400));
+            }
+
+            if (data.success && data.message) {
+                const el = document.querySelector('#welcome-message') || document.querySelector('.chatgpt-message-text');
+                if (el) el.textContent = data.message;
+            } else {
+                throw new Error((data && (data.error || data.message)) || 'Unknown error');
+            }
+        } catch (err) {
+            console.error('Welcome error:', err);
+            // Giữ UI không crash
+        }
     }
 
     toggleChat() {
@@ -499,15 +653,16 @@ class ChatGPTHelper {
             
         } catch (error) {
             console.error('Chat error:', error);
+            console.error('Error details:', error.message);
             this.hideTyping();
-            this.addMessage('Xin lỗi, có lỗi xảy ra. Vui lòng thử lại sau.', 'bot');
+            this.addMessage('Xin lỗi, có lỗi xảy ra. Vui lòng thử lại sau. Lỗi: ' + error.message, 'bot');
         }
     }
 
     addMessage(content, sender) {
         const messagesContainer = document.getElementById('chatgpt-messages');
         const messageDiv = document.createElement('div');
-        messageDiv.className = `chatgpt-message chatgpt-message-${sender}`;
+        messageDiv.className = `chatgpt-message chatgpt-message-` + sender;
 
         const now = new Date();
         const timeString = now.toLocaleTimeString('vi-VN', { 
@@ -515,17 +670,28 @@ class ChatGPTHelper {
             minute: '2-digit' 
         });
 
-        const avatarIcon = sender === 'user' ? 'fas fa-user' : 'fas fa-robot';
+         const avatarIcon = sender === 'user' ? 'fas fa-user' : 'fas fa-robot';
+         let avatarContent;
+         if (sender === 'bot') {
+             // Sử dụng avatar động của Phương Nhi
+             if (this.phuongNhiAvatarUrl) {
+                 avatarContent = '<img src="' + this.phuongNhiAvatarUrl + '" alt="Phương Nhi" class="avatar-image" onerror="this.style.display=\'none\'; this.nextElementSibling.style.display=\'flex\';"><i class="' + avatarIcon + '" style="display: none;"></i>';
+             } else {
+                 // Fallback nếu chưa load được avatar
+                 avatarContent = '<img src="/TCSN/Script/content/uploads/photos/2025/09/sngine_fe74c972cc54d5d8a5169d0807eb26c7_cropped.jpg?v=1" alt="Phương Nhi" class="avatar-image" onerror="this.style.display=\'none\'; this.nextElementSibling.style.display=\'flex\';"><i class="' + avatarIcon + '" style="display: none;"></i>';
+             }
+         } else {
+             avatarContent = '<i class="' + avatarIcon + '"></i>';
+         }
 
-        messageDiv.innerHTML = `
-            <div class="chatgpt-message-avatar">
-                <i class="${avatarIcon}"></i>
-            </div>
-            <div class="chatgpt-message-content">
-                <div class="chatgpt-message-text">${this.escapeHtml(content)}</div>
-                <div class="chatgpt-message-time">${timeString}</div>
-            </div>
-        `;
+        messageDiv.innerHTML = 
+            '<div class="chatgpt-message-avatar">' +
+                avatarContent +
+            '</div>' +
+            '<div class="chatgpt-message-content">' +
+                '<div class="chatgpt-message-text">' + this.escapeHtml(content) + '</div>' +
+                '<div class="chatgpt-message-time">' + timeString + '</div>' +
+            '</div>';
 
         messagesContainer.appendChild(messageDiv);
         this.scrollToBottom();
@@ -550,40 +716,44 @@ class ChatGPTHelper {
     }
 
     async sendToBackend(message) {
-        const formData = new FormData();
-        formData.append('action', 'send_message');
-        formData.append('message', message);
-        formData.append('conversation_id', this.conversationId || '');
-        formData.append('session_id', this.sessionId);
-
-        const response = await fetch('{$system.system_url}/includes/ajax/chatgpt.php', {
+        const resp = await fetch('{$system.system_url}/includes/ajax/phuong_nhi.php', {
             method: 'POST',
-            body: formData
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                action: 'send_message',
+                message,
+                user_name: this.userName,
+                chat_history: this.getChatHistory(),
+                session_id: this.sessionId
+            })
         });
 
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
+        const raw = await resp.text();
+        let data;
+        try {
+            data = JSON.parse(raw);
+        } catch (e) {
+            throw new Error('Bad JSON from server: ' + raw.slice(0, 400));
         }
 
-        const data = await response.json();
-        
         if (data.success) {
-            this.conversationId = data.conversation_id;
+            this.conversationId = data.conversation_id || this.conversationId;
             return data;
-        } else {
-            throw new Error(data.message || 'Unknown error');
         }
+        throw new Error(data.error || data.message || 'Unknown error');
     }
 
     async loadConversation() {
         try {
-            const formData = new FormData();
-            formData.append('action', 'load_conversation');
-            formData.append('session_id', this.sessionId);
-
-            const response = await fetch('{$system.system_url}/includes/ajax/chatgpt.php', {
+            const response = await fetch('{$system.system_url}/includes/ajax/phuong_nhi.php', {
                 method: 'POST',
-                body: formData
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    action: 'load_conversation',
+                    session_id: this.sessionId
+                })
             });
 
             if (response.ok) {
@@ -607,12 +777,72 @@ class ChatGPTHelper {
         });
     }
 
-    escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
-}
+     escapeHtml(text) {
+         const div = document.createElement('div');
+         div.textContent = text;
+         return div.innerHTML;
+     }
+
+     async getPhuongNhiAvatar() {
+         try {
+             const response = await fetch('{$system.system_url}/includes/ajax/phuong_nhi.php', {
+                 method: 'POST',
+                 headers: {
+                     'Content-Type': 'application/json',
+                 },
+                 body: JSON.stringify({
+                     action: 'get_avatar'
+                 })
+             });
+
+             if (response.ok) {
+                 const data = await response.json();
+                 if (data.success && data.avatar) {
+                     this.updatePhuongNhiAvatar(data.avatar);
+                 }
+             }
+         } catch (error) {
+             console.error('Error getting Phương Nhi avatar:', error);
+         }
+     }
+
+     updatePhuongNhiAvatar(avatarPath) {
+         if (!avatarPath) return;
+         
+         const avatarUrl = '{$system.system_url}/content/uploads/' + avatarPath;
+         
+        // Cập nhật avatar trong toggle button (góc phải)
+        const toggleAvatar = document.querySelector('.toggle-avatar');
+        if (toggleAvatar) {
+            toggleAvatar.src = avatarUrl;
+        }
+        
+        // Cập nhật avatar trong header (icon ngay tên Phương Nhi và Đang hoạt động)
+        const headerAvatar = document.querySelector('#header-avatar img');
+        if (headerAvatar) {
+            headerAvatar.src = avatarUrl;
+        }
+        
+        // Cập nhật avatar trong tin nhắn chào đầu tiên
+        const welcomeAvatar = document.querySelector('#welcome-avatar img');
+        if (welcomeAvatar) {
+            welcomeAvatar.src = avatarUrl;
+        }
+         
+         // Cập nhật avatar trong tất cả tin nhắn hiện tại
+         const messageAvatars = document.querySelectorAll('.chatgpt-message-avatar img');
+         messageAvatars.forEach(img => {
+             if (img.alt === 'Phương Nhi') {
+                 img.src = avatarUrl;
+             }
+         });
+         
+         // Lưu avatar cho việc thêm tin nhắn mới
+         this.phuongNhiAvatarUrl = avatarUrl;
+         
+         console.log('Avatar updated to:', avatarUrl);
+     }
+ }
 
 // Initialize Chat GPT Helper when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
