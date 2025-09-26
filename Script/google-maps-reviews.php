@@ -27,13 +27,20 @@ if (!$user->_logged_in) {
 $view = isset($_GET['view']) ? $_GET['view'] : 'dashboard';
 
 // page header
-page_header(__("Google Maps Reviews"));
+if ($view == 'my-reviews') {
+    page_header(__("My Reviews"));
+} else {
+    page_header(__("Google Maps Reviews"));
+}
 
 // Get user's Google Maps review requests
 $user_requests = array();
 $user_reviews = array();
 $user_earnings = 0;
 $user_wallet_balance = 0;
+
+// Get user's assigned review tasks (for my-reviews view)
+$assigned_tasks = array();
 
 try {
     // Get user's balance from users table
@@ -74,6 +81,40 @@ try {
         }
     }
     
+    // Get user's assigned review tasks (for my-reviews view)
+    if ($view == 'my-reviews') {
+        // Pagination settings
+        $per_page = 9; // 9 cards per page
+        $current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $offset = ($current_page - 1) * $per_page;
+        
+        // Get total count for pagination
+        $count_query = $db->query("
+            SELECT COUNT(*) as total
+            FROM google_maps_review_sub_requests gmsr
+            LEFT JOIN google_maps_review_requests gmr ON gmsr.parent_request_id = gmr.request_id
+            WHERE gmsr.assigned_user_id = '{$user->_data['user_id']}'
+        ");
+        $total_tasks = $count_query->fetch_assoc()['total'];
+        $total_pages = ceil($total_tasks / $per_page);
+        
+        // Get paginated tasks
+        $get_assigned_tasks = $db->query("
+            SELECT gmsr.*, gmr.requester_user_id, gmr.place_name as parent_place_name, gmr.place_address as parent_place_address, gmr.place_url
+            FROM google_maps_review_sub_requests gmsr
+            LEFT JOIN google_maps_review_requests gmr ON gmsr.parent_request_id = gmr.request_id
+            WHERE gmsr.assigned_user_id = '{$user->_data['user_id']}'
+            ORDER BY gmsr.assigned_at DESC
+            LIMIT {$per_page} OFFSET {$offset}
+        ");
+        
+        if ($get_assigned_tasks->num_rows > 0) {
+            while ($task = $get_assigned_tasks->fetch_assoc()) {
+                $assigned_tasks[] = $task;
+            }
+        }
+    }
+    
 } catch (Exception $e) {
     error_log("Error getting user data: " . $e->getMessage());
 }
@@ -84,7 +125,15 @@ $smarty->assign('user_requests', $user_requests);
 $smarty->assign('user_reviews', $user_reviews);
 $smarty->assign('user_earnings', $user_earnings);
 $smarty->assign('user_wallet_balance', $user_wallet_balance);
+$smarty->assign('assigned_tasks', $assigned_tasks);
 $smarty->assign('view', $view);
+
+// Pagination variables
+if ($view == 'my-reviews') {
+    $smarty->assign('current_page', $current_page);
+    $smarty->assign('total_pages', $total_pages);
+    $smarty->assign('total_tasks', $total_tasks);
+}
 
 // page footer
 page_footer('google-maps-reviews');

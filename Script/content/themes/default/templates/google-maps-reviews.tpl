@@ -209,53 +209,242 @@ console.log('🔍 Available tasks count:', {if $available_tasks}{$available_task
 
             {if $view == 'my-reviews'}
               <div class="card-header bg-transparent">
-                <strong>Đánh giá của tôi</strong>
+                <div class="d-flex justify-content-between align-items-center">
+                  <strong>Nhiệm vụ đánh giá của tôi</strong>
+                  <span class="badge badge-info">{$assigned_tasks|count} nhiệm vụ</span>
+                </div>
               </div>
-              <div class="card-body">
-                {if $user_reviews}
-                  <div class="table-responsive">
-                    <table class="table table-striped">
-                      <thead>
-                        <tr>
-                          <th>Tên địa điểm</th>
-                          <th>Đánh giá</th>
-                          <th>Nội dung đánh giá</th>
-                          <th>Tình trạng</th>
-                          <th>Thưởng</th>
-                          <th>Đã tạo</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {foreach $user_reviews as $review}
-                          <tr>
-                            <td>{$review.place_name}</td>
-                            <td>
-                              <div class="rating">
-                                {for $i=1 to 5}
-                                  <i class="fa fa-star {if $i <= $review.rating}text-warning{else}text-muted{/if}"></i>
-                                {/for}
-                              </div>
-                            </td>
-                            <td>{$review.review_text|truncate:50}</td>
-                            <td>
-                              <span class="badge badge-{if $review.verification_status == 'verified'}success{elseif $review.verification_status == 'rejected'}danger{else}warning{/if}">
-                                {if $review.verification_status == 'verified'}Đã xác minh{elseif $review.verification_status == 'rejected'}Bị từ chối{elseif $review.verification_status == 'pending'}Đang chờ{else}Đang tranh chấp{/if}
+              
+              <!-- Tabs lọc trạng thái -->
+              <div class="card-body border-bottom">
+                <ul class="nav nav-pills nav-fill" id="statusTabs" role="tablist">
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="all-tab" data-bs-toggle="pill" data-bs-target="#all" type="button" role="tab">
+                      <i class="fa fa-list mr-1"></i>Tất cả
+                      <span class="badge badge-light ml-1">{$assigned_tasks|count}</span>
+                    </button>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="assigned-tab" data-bs-toggle="pill" data-bs-target="#assigned" type="button" role="tab">
+                      <i class="fa fa-hand-paper mr-1"></i>Đã nhận
+                      <span class="badge badge-warning ml-1">{assign var="assigned_count" value=0}{foreach $assigned_tasks as $task}{if $task.status == 'assigned'}{assign var="assigned_count" value=$assigned_count+1}{/if}{/foreach}{$assigned_count}</span>
+                    </button>
+                  </li>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link" id="verified-tab" data-bs-toggle="pill" data-bs-target="#verified" type="button" role="tab">
+                  <i class="fa fa-shield-alt mr-1"></i>Đang xác minh
+                  <span class="badge badge-primary ml-1">{assign var="verified_count" value=0}{foreach $assigned_tasks as $task}{if $task.status == 'verified'}{assign var="verified_count" value=$verified_count+1}{/if}{/foreach}{$verified_count}</span>
+                </button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link" id="completed-tab" data-bs-toggle="pill" data-bs-target="#completed" type="button" role="tab">
+                  <i class="fa fa-check-circle mr-1"></i>Hoàn thành
+                  <span class="badge badge-success ml-1">{assign var="completed_count" value=0}{foreach $assigned_tasks as $task}{if $task.status == 'completed'}{assign var="completed_count" value=$completed_count+1}{/if}{/foreach}{$completed_count}</span>
+                </button>
+              </li>
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="expired-tab" data-bs-toggle="pill" data-bs-target="#expired" type="button" role="tab">
+                      <i class="fa fa-times-circle mr-1"></i>Hết hạn
+                      <span class="badge badge-danger ml-1">{assign var="expired_count" value=0}{foreach $assigned_tasks as $task}{if $task.status == 'expired'}{assign var="expired_count" value=$expired_count+1}{/if}{/foreach}{$expired_count}</span>
+                    </button>
+                  </li>
+                </ul>
+              </div>
+              
+              <!-- Tab content -->
+              <div class="tab-content" id="statusTabContent">
+                <div class="tab-pane fade show active" id="all" role="tabpanel">
+                  <div class="card-body">
+                    {if $assigned_tasks}
+                      <div class="row">
+                        {foreach $assigned_tasks as $task}
+                          <div class="col-md-6 col-lg-4 mb-3 task-card" data-status="{$task.status}">
+                            <div class="card h-100 shadow-sm">
+                          <div class="card-body p-2">
+                            <!-- Header với tên và trạng thái -->
+                            <div class="d-flex justify-content-between align-items-start">
+                              <h6 class="card-title mb-0" style="max-width: 180px; font-size: 0.75rem; line-height: 1.0;" title="{$task.place_name}">
+                                {$task.place_name}
+                              </h6>
+                              <span class="badge badge-{if $task.status == 'assigned'}warning{elseif $task.status == 'completed'}success{elseif $task.status == 'verified'}primary{else}danger{/if} badge-sm font-weight-bold">
+                                {if $task.status == 'assigned'}ĐÃ NHẬN{elseif $task.status == 'completed'}HOÀN THÀNH{elseif $task.status == 'verified'}ĐANG XÁC MINH{else}HẾT HẠN{/if}
                               </span>
-                            </td>
-                            <td>{$review.reward_paid|number_format:0} VND</td>
-                            <td>{$review.created_at|date_format:"%d/%m/%Y"}</td>
-                          </tr>
+                            </div>
+                            
+                            <!-- Địa chỉ và thông tin -->
+                            <div>
+                              <p class="text-secondary mb-0" style="font-size: 0.6rem; line-height: 1.2;">
+                                <i class="fa fa-map-marker-alt mr-1"></i>
+                                {$task.place_address}
+                              </p>
+                              <div class="d-flex justify-content-between align-items-center mt-0">
+                                <div class="text-success font-weight-bold" style="font-size: 0.65rem;">
+                                  <i class="fa fa-money-bill-wave mr-1"></i>
+                                  {$task.reward_amount|number_format:0} VND
+                                </div>
+                                <div class="text-secondary" style="font-size: 0.55rem;">
+                                  Hạn: {$task.expires_at|date_format:"%d/%m"}
+                                </div>
+                              </div>
+                              <!-- Ngày nhận nhiệm vụ ngay dưới ngày hết hạn -->
+                              {if $task.status == 'assigned'}
+                                <div class="text-right mt-0">
+                                  <small class="text-secondary" style="font-size: 0.5rem;">
+                                    Nhận: {$task.assigned_at|date_format:"%d/%m"}
+                                  </small>
+                                </div>
+                              {/if}
+                            </div>
+                            
+                            <!-- Action buttons -->
+                            <div class="d-flex justify-content-between align-items-center">
+                              {if $task.status == 'assigned'}
+                                <div class="d-flex" style="gap: 0.1rem;">
+                                  {if $task.place_url}
+                                    <a href="{$task.place_url}" target="_blank" class="btn btn-primary btn-sm">
+                                      <i class="fa fa-star mr-1"></i>Đánh giá 5 sao
+                                    </a>
+                                  {else}
+                                    <a href="https://maps.google.com/?q={$task.place_address|urlencode}" target="_blank" class="btn btn-primary btn-sm">
+                                      <i class="fa fa-star mr-1"></i>Đánh giá 5 sao
+                                    </a>
+                                  {/if}
+                                  <a href="{$system['system_url']}/google-maps-reviews/submit-proof/{$task.sub_request_id}" class="btn btn-outline-success btn-sm">
+                                    <i class="fa fa-camera mr-1"></i>Gửi bằng chứng
+                                  </a>
+                                </div>
+                              {elseif $task.status == 'completed'}
+                                <div class="d-flex align-items-center" style="gap: 0.1rem;">
+                                  <span class="text-success small font-weight-bold">
+                                    <i class="fa fa-check-circle mr-1"></i>Đã hoàn thành
+                                  </span>
+                                  <a href="{$system['system_url']}/google-maps-reviews/view-proof/{$task.sub_request_id}" class="btn btn-outline-success btn-sm">
+                                    <i class="fa fa-gift mr-1"></i>Xem phần thưởng
+                                  </a>
+                                </div>
+                                <small class="text-secondary" style="font-size: 0.6rem;">
+                                  {$task.completed_at|date_format:"%d/%m"}
+                                </small>
+                              {elseif $task.status == 'verified'}
+                                <div class="d-flex align-items-center" style="gap: 0.1rem;">
+                                  <span class="text-primary small font-weight-bold">
+                                    <i class="fa fa-shield-alt mr-1"></i>Đang xác minh
+                                  </span>
+                                  <a href="{$system['system_url']}/google-maps-reviews/view-proof/{$task.sub_request_id}" class="btn btn-outline-info btn-sm">
+                                    <i class="fa fa-eye mr-1"></i>Xem bằng chứng
+                                  </a>
+                                </div>
+                                <small class="text-secondary" style="font-size: 0.6rem;">
+                                  {$task.verified_at|date_format:"%d/%m"}
+                                </small>
+                              {elseif $task.status == 'expired'}
+                                <div class="d-flex align-items-center" style="gap: 0.1rem;">
+                                  <span class="text-danger small font-weight-bold">
+                                    <i class="fa fa-clock mr-1"></i>Hết hạn
+                                  </span>
+                                  <a href="{$system['system_url']}/google-maps-reviews/view-penalty/{$task.sub_request_id}" class="btn btn-outline-danger btn-sm">
+                                    <i class="fa fa-exclamation-triangle mr-1"></i>Xem lỗi phạt
+                                  </a>
+                                </div>
+                                <small class="text-secondary" style="font-size: 0.6rem;">
+                                  {$task.expired_at|date_format:"%d/%m"}
+                                </small>
+                              {else}
+                                <div class="d-flex flex-column">
+                                  <span class="text-danger small font-weight-bold">
+                                    <i class="fa fa-times-circle mr-1"></i>Hết hạn
+                                  </span>
+                                </div>
+                                <small class="text-secondary" style="font-size: 0.6rem;">
+                                  Hết hạn: {$task.expires_at|date_format:"%d/%m"}
+                                </small>
+                              {/if}
+                            </div>
+                          </div>
+                            </div>
+                          </div>
                         {/foreach}
-                      </tbody>
-                    </table>
+                      </div>
+                      
+                      <!-- Pagination -->
+                      {if $total_pages > 1}
+                        <div class="d-flex justify-content-center mt-4">
+                          <nav aria-label="Page navigation">
+                            <ul class="pagination pagination-sm">
+                              {if $current_page > 1}
+                                <li class="page-item">
+                                  <a class="page-link" href="?page={$current_page-1}" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                  </a>
+                                </li>
+                              {/if}
+                              
+                              {for $i=1 to $total_pages}
+                                <li class="page-item {if $i == $current_page}active{/if}">
+                                  <a class="page-link" href="?page={$i}">{$i}</a>
+                                </li>
+                              {/for}
+                              
+                              {if $current_page < $total_pages}
+                                <li class="page-item">
+                                  <a class="page-link" href="?page={$current_page+1}" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                  </a>
+                                </li>
+                              {/if}
+                            </ul>
+                          </nav>
+                        </div>
+                      {/if}
+                    {else}
+                      <div class="text-center py-4">
+                        <i class="fa fa-tasks fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">Chưa có nhiệm vụ nào</h5>
+                        <p class="text-muted">Bạn chưa nhận nhiệm vụ đánh giá nào.</p>
+                        <a href="{$system['system_url']}/google-maps-reviews/dashboard" class="btn btn-primary">
+                          <i class="fa fa-search mr-1"></i>Tìm nhiệm vụ
+                        </a>
+                      </div>
+                    {/if}
                   </div>
-                {else}
-                  <div class="text-center py-4">
-                    <i class="fa fa-star fa-3x text-muted mb-3"></i>
-                    <h5 class="text-muted">Không tìm thấy đánh giá nào</h5>
-                    <p class="text-muted">Bắt đầu nhận nhiệm vụ đánh giá để kiếm tiền</p>
+                </div>
+                
+                <!-- Tab Đã nhận -->
+                <div class="tab-pane fade" id="assigned" role="tabpanel">
+                  <div class="card-body">
+                    <div class="row" id="assigned-tasks">
+                      <!-- Sẽ được lọc bằng JavaScript -->
+                    </div>
                   </div>
-                {/if}
+                </div>
+                
+            <!-- Tab Đang xác minh -->
+            <div class="tab-pane fade" id="verified" role="tabpanel">
+              <div class="card-body">
+                <div class="row" id="verified-tasks">
+                  <!-- Sẽ được lọc bằng JavaScript -->
+                </div>
+              </div>
+            </div>
+            
+            <!-- Tab Hoàn thành -->
+            <div class="tab-pane fade" id="completed" role="tabpanel">
+              <div class="card-body">
+                <div class="row" id="completed-tasks">
+                  <!-- Sẽ được lọc bằng JavaScript -->
+                </div>
+              </div>
+            </div>
+                
+                <!-- Tab Hết hạn -->
+                <div class="tab-pane fade" id="expired" role="tabpanel">
+                  <div class="card-body">
+                    <div class="row" id="expired-tasks">
+                      <!-- Sẽ được lọc bằng JavaScript -->
+                    </div>
+                  </div>
+                </div>
+              </div>
               </div>
             {/if}
 
@@ -349,6 +538,312 @@ console.log('🔍 Available tasks count:', {if $available_tasks}{$available_task
 </div>
 
 <style>
+/* My Reviews Cards - Thu hẹp chiều cao */
+.card.h-100 {
+  min-height: 140px;
+  max-height: 160px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+/* Hover effect cho cards */
+.card.h-100:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-color: #007bff;
+}
+
+.card-body.p-2 {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  padding: 1rem !important;
+}
+
+/* Thu hẹp nội dung card - Giảm 1/3 kích thước */
+.card-body .d-flex {
+  gap: 0.05rem;
+}
+
+.card-body p {
+  line-height: 1.0;
+  margin-bottom: 0.05rem;
+  padding: 0.1rem 0;
+}
+
+.card-body > div {
+  margin-bottom: 0.1rem;
+  padding: 0.05rem 0;
+}
+
+.card-body > div:last-child {
+  margin-bottom: 0;
+}
+
+/* Tạo khoảng cách an toàn cho text */
+.card-body h6 {
+  padding: 0.05rem 0;
+}
+
+.card-body .text-secondary {
+  padding: 0.05rem 0;
+}
+
+.badge-sm {
+  font-size: 0.7rem;
+  padding: 0.25rem 0.5rem;
+}
+
+/* Đảm bảo text không bị overflow */
+.text-truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Responsive grid */
+@media (max-width: 768px) {
+  .col-md-6 {
+    margin-bottom: 1rem;
+  }
+}
+
+@media (min-width: 992px) {
+  .col-lg-4 {
+    flex: 0 0 33.333333%;
+    max-width: 33.333333%;
+  }
+}
+
+/* Tab styling */
+.nav-pills .nav-link {
+  border-radius: 20px;
+  font-size: 0.9rem;
+  padding: 0.5rem 1rem;
+  margin: 0 0.25rem;
+  transition: all 0.3s ease;
+}
+
+.nav-pills .nav-link:hover {
+  background-color: #f8f9fa;
+  transform: translateY(-1px);
+}
+
+.nav-pills .nav-link.active {
+  background-color: #007bff;
+  color: white;
+  box-shadow: 0 2px 4px rgba(0,123,255,0.3);
+}
+
+.nav-pills .nav-link .badge {
+  font-size: 0.7rem;
+  padding: 0.2rem 0.4rem;
+}
+
+/* Tab content */
+.tab-content {
+  min-height: 300px;
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #6c757d;
+}
+
+.empty-state i {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+/* Card buttons */
+.btn-sm {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  line-height: 1.2;
+}
+
+/* Card spacing */
+.mb-1 {
+  margin-bottom: 0.25rem !important;
+}
+
+/* Button styling */
+.btn-primary.btn-sm {
+  background-color: #007bff;
+  border-color: #007bff;
+  font-weight: 500;
+  font-size: 0.7rem;
+  padding: 0.2rem 0.4rem;
+}
+
+.btn-primary.btn-sm:hover {
+  background-color: #0056b3;
+  border-color: #0056b3;
+}
+
+.btn-outline-success.btn-sm {
+  font-size: 0.7rem;
+  padding: 0.2rem 0.4rem;
+  border-width: 1px;
+}
+
+.btn-outline-info.btn-sm {
+  font-size: 0.7rem;
+  padding: 0.2rem 0.4rem;
+  border-width: 1px;
+}
+
+/* Badge styling - Trạng thái nổi bật */
+.badge-sm {
+  font-size: 0.65rem;
+  padding: 0.3rem 0.5rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.2s ease;
+}
+
+/* Badge hover effects */
+.badge-sm:hover {
+  transform: scale(1.05);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Pagination styling */
+.pagination-sm .page-link {
+  font-size: 0.8rem;
+  padding: 0.25rem 0.5rem;
+}
+
+.pagination-sm .page-item.active .page-link {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.pagination-sm .page-link:hover {
+  background-color: #e9ecef;
+  border-color: #dee2e6;
+}
+
+.badge-warning {
+  background-color: #ffc107 !important;
+  color: #000 !important;
+}
+
+.badge-success {
+  background-color: #28a745 !important;
+  color: #fff !important;
+}
+
+.badge-primary {
+  background-color: #007bff !important;
+  color: #fff !important;
+}
+
+.badge-danger {
+  background-color: #dc3545 !important;
+  color: #fff !important;
+}
+
+/* Text colors - Sửa chữ trắng thành xám */
+.text-secondary {
+  color: #6c757d !important;
+}
+
+/* Card spacing - Thu hẹp khoảng cách tối đa */
+.mb-1 {
+  margin-bottom: 0 !important;
+}
+
+/* Flex column buttons - Gap nhỏ nhất */
+.d-flex.flex-column {
+  gap: 0.1rem;
+}
+
+/* Button styling - Thu nhỏ buttons tối đa */
+.btn-sm {
+  font-size: 0.55rem;
+  padding: 0.08rem 0.2rem;
+  line-height: 0.9;
+  transition: all 0.2s ease;
+}
+
+/* Button hover effects */
+.btn-sm:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary.btn-sm:hover {
+  background-color: #0056b3;
+  border-color: #0056b3;
+}
+
+.btn-outline-success.btn-sm:hover {
+  background-color: #28a745;
+  border-color: #28a745;
+  color: white;
+}
+
+.btn-outline-info.btn-sm:hover {
+  background-color: #17a2b8;
+  border-color: #17a2b8;
+  color: white;
+}
+
+/* Buttons ngang - Gap nhỏ */
+.d-flex .btn-sm {
+  margin-right: 0.05rem;
+}
+
+.d-flex .btn-sm:last-child {
+  margin-right: 0;
+}
+
+/* Text sizing - Thu nhỏ text tối đa */
+.card-title {
+  font-size: 0.75rem;
+  line-height: 1.0;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Compact layout - Gap tối thiểu */
+.card-body .d-flex {
+  gap: 0.03rem;
+}
+
+/* Line height tối ưu - Thu hẹp tối đa */
+.card-body p {
+  line-height: 1.2;
+  margin-bottom: 0;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+}
+
+/* Loại bỏ margin thừa */
+.card-body h6 {
+  margin-bottom: 0;
+}
+
+.card-body .d-flex {
+  margin-bottom: 0;
+}
+
+/* Thu hẹp khoảng cách giữa các section */
+.card-body > div {
+  margin-bottom: 0;
+}
+
+.card-body > div:last-child {
+  margin-bottom: 0;
+}
+
 .review-task-mini-card {
     border: 1px solid #e9ecef;
     border-radius: 6px;
@@ -901,11 +1396,72 @@ function bindConfirmButton() {
   }
 }
 
+// Tab filtering functionality
+function initTabFiltering() {
+  // Lấy tất cả task cards
+  var allTasks = document.querySelectorAll('.task-card');
+  
+  // Lưu trữ tất cả tasks để có thể hiển thị lại
+  var tasksByStatus = {
+    'assigned': [],
+    'completed': [],
+    'verified': [],
+    'expired': []
+  };
+  
+  // Phân loại tasks theo status
+  allTasks.forEach(function(task) {
+    var status = task.getAttribute('data-status');
+    if (tasksByStatus[status]) {
+      tasksByStatus[status].push(task.outerHTML);
+    }
+  });
+  
+  // Xử lý tab switching
+  var tabButtons = document.querySelectorAll('#statusTabs button[data-bs-toggle="pill"]');
+  tabButtons.forEach(function(button) {
+    button.addEventListener('click', function() {
+      var targetId = button.getAttribute('data-bs-target').substring(1); // Bỏ dấu #
+      var targetContainer = document.getElementById(targetId + '-tasks');
+      
+      if (targetContainer) {
+        if (targetId === 'all') {
+          // Hiển thị tất cả tasks
+          var allTasksHtml = '';
+          allTasks.forEach(function(task) {
+            allTasksHtml += task.outerHTML;
+          });
+          targetContainer.innerHTML = allTasksHtml;
+        } else {
+          // Hiển thị tasks theo status
+          targetContainer.innerHTML = tasksByStatus[targetId].join('');
+        }
+      }
+    });
+  });
+  
+  // Khởi tạo tab đầu tiên
+  if (allTasks.length > 0) {
+    var firstTab = document.getElementById('all-tasks');
+    if (firstTab) {
+      var allTasksHtml = '';
+      allTasks.forEach(function(task) {
+        allTasksHtml += task.outerHTML;
+      });
+      firstTab.innerHTML = allTasksHtml;
+    }
+  }
+}
+
 // Bind when DOM is ready
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', bindConfirmButton);
+  document.addEventListener('DOMContentLoaded', function() {
+    bindConfirmButton();
+    initTabFiltering();
+  });
 } else {
   bindConfirmButton();
+  initTabFiltering();
 }
 
 // Fallback: Try to bind after a delay
