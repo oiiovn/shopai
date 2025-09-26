@@ -169,10 +169,6 @@ function createReviewRequest() {
         }
         
         // Debug: Log all parameters
-        error_log("Google Maps Debug - Place Name: $place_name");
-        error_log("Google Maps Debug - Place Address: $place_address");
-        error_log("Google Maps Debug - Target Reviews: $target_reviews");
-        error_log("Google Maps Debug - Total Budget: $total_budget");
         
         // Start transaction
         $db->query("START TRANSACTION");
@@ -201,7 +197,6 @@ function createReviewRequest() {
             throw new Exception("Lỗi tạo lịch sử giao dịch: " . $db->error);
         }
         
-        error_log("Google Maps Debug - Balance deducted and transaction logged successfully");
         
         // Create main request (chiến dịch mẹ)
         $insert_main = $db->query("
@@ -218,7 +213,6 @@ function createReviewRequest() {
         }
         
         $request_id = $db->insert_id;
-        error_log("Google Maps Debug - Main request created with ID: $request_id");
         
         // Create sub-requests (chiến dịch con) với tiền thưởng 10k cho người đánh giá
         for ($i = 0; $i < $target_reviews; $i++) {
@@ -236,7 +230,6 @@ function createReviewRequest() {
             }
         }
         
-        error_log("Google Maps Debug - All sub-requests created successfully");
         
         // Commit transaction
         $db->query("COMMIT");
@@ -258,8 +251,6 @@ function assignReviewTask() {
     try {
         $sub_request_id = isset($_POST['sub_request_id']) ? $_POST['sub_request_id'] : 0;
         
-        error_log("Assign task debug - User ID: " . $user->_data['user_id']);
-        error_log("Assign task debug - Sub request ID: " . $sub_request_id);
         
         if (empty($sub_request_id)) {
             echo json_encode(array('error' => 'Missing sub_request_id'));
@@ -301,16 +292,27 @@ function assignReviewTask() {
         }
         
         // Assign task to user
-        $db->query("
+        $update_result = $db->query("
             UPDATE google_maps_review_sub_requests 
             SET assigned_user_id = '{$user->_data['user_id']}', 
                 assigned_at = CONVERT_TZ(NOW(), '+00:00', '+07:00'), 
                 status = 'assigned',
                 updated_at = CONVERT_TZ(NOW(), '+00:00', '+07:00')
-            WHERE sub_request_id = '{$sub_request_id}'
+            WHERE sub_request_id = '{$sub_request_id}' AND status = 'available'
         ");
         
-        echo json_encode(array('success' => true));
+        if (!$update_result) {
+            throw new Exception("Database update failed: " . $db->error);
+        }
+        
+        $affected_rows = $db->affected_rows;
+        
+        if ($affected_rows == 0) {
+            echo json_encode(array('error' => 'Task no longer available or already assigned'));
+            return;
+        }
+        
+        echo json_encode(array('success' => true, 'affected_rows' => $affected_rows));
         
     } catch (Exception $e) {
         echo json_encode(array('error' => $e->getMessage()));

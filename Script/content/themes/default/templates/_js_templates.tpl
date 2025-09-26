@@ -531,12 +531,7 @@
         <a href="{literal}{{url}}{/literal}" class="toast align-items-center text-bg-info border-0 d-block" role="alert" aria-live="assertive" aria-atomic="true">
           <div class="d-flex">
             <div class="toast-body">
-            <div class="data-container">
-              <div class="data-avatar">
-                <img src="{literal}{{image}}{/literal}" />
-              </div>
-              <div class="data-content mt10">{literal}{{message}}{/literal}</div>
-            </div>
+              <div class="data-content">{literal}{{message}}{/literal}</div>
             </div>
             <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
           </div>

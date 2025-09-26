@@ -710,52 +710,132 @@ var currentTaskId = null;
 function showTaskModal(subRequestId, placeName, placeAddress, rewardAmount, expiryDate) {
   currentTaskId = subRequestId;
   
-  // Populate modal content
-  $('#modalPlaceName').text(placeName);
-  $('#modalPlaceAddress').text(placeAddress);
-  $('#modalRewardAmount').text(parseInt(rewardAmount).toLocaleString('vi-VN') + ' VND');
-  $('#modalExpiry').text(expiryDate);
+  // Populate modal content using vanilla JS
+  var modalPlaceName = document.getElementById('modalPlaceName');
+  var modalPlaceAddress = document.getElementById('modalPlaceAddress');
+  var modalRewardAmount = document.getElementById('modalRewardAmount');
+  var modalExpiry = document.getElementById('modalExpiry');
+  
+  if (modalPlaceName) modalPlaceName.textContent = placeName;
+  if (modalPlaceAddress) modalPlaceAddress.textContent = placeAddress;
+  if (modalRewardAmount) modalRewardAmount.textContent = parseInt(rewardAmount).toLocaleString('vi-VN') + ' VND';
+  if (modalExpiry) modalExpiry.textContent = expiryDate;
   
   // Show modal using Bootstrap 5
-  var modal = new bootstrap.Modal(document.getElementById('taskModal'));
-  modal.show();
+  var modalElement = document.getElementById('taskModal');
+  if (modalElement) {
+    var modal = new bootstrap.Modal(modalElement);
+    modal.show();
+  }
 }
 
 function assignTask(taskId) {
-    if (confirm('Bạn có chắc chắn muốn nhận nhiệm vụ này?')) {
-        $.ajax({
-            url: '{$system['system_url']}/google-maps-reviews.php',
-            type: 'POST',
-            data: {
-                action: 'assign_task',
-                sub_request_id: taskId
-            },
-            dataType: 'json',
-            success: function(response) {
-                if (response.success) {
-                    alert('Nhận nhiệm vụ thành công!');
-                    location.reload();
-                } else {
-                    alert('Lỗi: ' + response.error);
-                }
-            },
-            error: function() {
-                alert('Đã xảy ra lỗi. Vui lòng thử lại.');
+    // Ngăn chặn double-click
+    if (window.assigningTask) {
+        return;
+    }
+    window.assigningTask = true;
+    
+    // Sử dụng fetch thay vì jQuery AJAX
+    var formData = new FormData();
+    formData.append('action', 'assign_task');
+    formData.append('sub_request_id', taskId);
+    
+    fetch('{$system['system_url']}/google-maps-reviews.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        return response.text().then(text => {
+            try {
+                return JSON.parse(text);
+            } catch (e) {
+                return { error: 'Invalid JSON response: ' + text };
             }
         });
-    }
+    })
+    .then(data => {
+        if (data.success) {
+            // Sử dụng toast notification của hệ thống
+            if (typeof noty_notification !== 'undefined') {
+                noty_notification('', '✅ Nhận nhiệm vụ thành công!', '');
+            } else if (typeof modal !== 'undefined') {
+                modal('#modal-success', { title: 'Thành công', message: '✅ Nhận nhiệm vụ thành công!' });
+            } else {
+                alert('✅ Nhận nhiệm vụ thành công!');
+            }
+            // Chuyển hướng đến trang My Reviews
+            setTimeout(function() {
+                window.location.href = '{$system['system_url']}/google-maps-reviews/my-reviews';
+            }, 1000);
+        } else {
+            // Sử dụng toast notification lỗi của hệ thống
+            if (typeof noty_notification !== 'undefined') {
+                noty_notification('', '❌ ' + data.error, '');
+            } else if (typeof modal !== 'undefined') {
+                modal('#modal-error', { title: 'Lỗi', message: '❌ ' + data.error });
+            } else {
+                alert('❌ Lỗi: ' + data.error);
+            }
+        }
+        
+        // Reset flag sau khi xử lý xong
+        window.assigningTask = false;
+    })
+    .catch(error => {
+        if (typeof noty_notification !== 'undefined') {
+            noty_notification('', '❌ Đã xảy ra lỗi. Vui lòng thử lại.', '');
+        } else if (typeof modal !== 'undefined') {
+            modal('#modal-error', { title: 'Lỗi', message: '❌ Đã xảy ra lỗi. Vui lòng thử lại.' });
+        } else {
+            alert('❌ Đã xảy ra lỗi. Vui lòng thử lại.');
+        }
+        // Reset flag khi có lỗi
+        window.assigningTask = false;
+    });
 }
 
-// Handle confirm button click
-$(document).ready(function() {
-  $('#confirmAssignBtn').on('click', function() {
-    if (currentTaskId) {
-      var modal = bootstrap.Modal.getInstance(document.getElementById('taskModal'));
-      modal.hide();
-      assignTask(currentTaskId);
-    }
-  });
-});
+// Handle confirm button click - Sử dụng vanilla JS
+function bindConfirmButton() {
+  var confirmBtn = document.getElementById('confirmAssignBtn');
+  if (confirmBtn) {
+    confirmBtn.addEventListener('click', function() {
+      if (currentTaskId) {
+        var modal = bootstrap.Modal.getInstance(document.getElementById('taskModal'));
+        modal.hide();
+        assignTask(currentTaskId);
+      } else {
+        alert('❌ Lỗi: Không tìm thấy ID nhiệm vụ');
+      }
+    });
+  } else {
+    setTimeout(bindConfirmButton, 100);
+  }
+}
+
+// Bind when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', bindConfirmButton);
+} else {
+  bindConfirmButton();
+}
+
+// Fallback: Try to bind after a delay
+setTimeout(function() {
+  var confirmBtn = document.getElementById('confirmAssignBtn');
+  if (confirmBtn && !confirmBtn.hasAttribute('data-bound')) {
+    confirmBtn.setAttribute('data-bound', 'true');
+    confirmBtn.addEventListener('click', function() {
+      if (currentTaskId) {
+        var modal = bootstrap.Modal.getInstance(document.getElementById('taskModal'));
+        modal.hide();
+        assignTask(currentTaskId);
+      } else {
+        alert('❌ Lỗi: Không tìm thấy ID nhiệm vụ');
+      }
+    });
+  }
+}, 2000);
 </script>
 
 {include file='_footer.tpl'}
