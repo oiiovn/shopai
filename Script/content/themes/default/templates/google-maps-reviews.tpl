@@ -332,9 +332,9 @@
                   <div class="row">
                     <div class="col-md-4">
                       <div class="form-group">
-                        <label for="reward_amount">Số tiền thưởng (VND)</label>
+                        <label for="reward_amount">Chi phí cho 1 đánh giá 5 sao</label>
                         <input type="number" class="form-control" id="reward_amount" name="reward_amount" value="15000" readonly>
-                        <small class="form-text text-muted">Số tiền cố định cho mỗi đánh giá</small>
+                        <small class="form-text text-muted">Chi phí cố định cho mỗi đánh giá 5 sao</small>
                       </div>
                     </div>
                     <div class="col-md-4">
@@ -357,7 +357,7 @@
                       <h6 class="card-title">Hóa đơn chiến dịch</h6>
                       <div class="row">
                         <div class="col-md-6">
-                          <p class="mb-1">Số tiền thưởng: <span id="rewardAmount">15,000</span> VND</p>
+                          <p class="mb-1">Chi phí cho 1 đánh giá: <span id="rewardAmount">15,000</span> VND</p>
                           <p class="mb-1">Số lượng đánh giá: <span id="quantity">1</span></p>
                         </div>
                         <div class="col-md-6">

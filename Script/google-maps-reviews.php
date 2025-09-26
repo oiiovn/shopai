@@ -34,7 +34,7 @@ $user_earnings = 0;
 $user_balance = 0;
 
 try {
-    // Get user's balance
+    // Get user's balance from users table
     $get_balance = $db->query("SELECT user_balance FROM users WHERE user_id = '{$user->_data['user_id']}'");
     if ($get_balance->num_rows > 0) {
         $balance_data = $get_balance->fetch_assoc();
@@ -159,7 +159,7 @@ function createReviewRequest() {
         
         $total_budget = $reward_amount * $target_reviews;
         
-        // Check user balance
+        // Check user balance from users table
         $get_balance = $db->query("SELECT user_balance FROM users WHERE user_id = '{$user->_data['user_id']}'");
         if ($get_balance->num_rows > 0) {
             $balance_data = $get_balance->fetch_assoc();
@@ -170,7 +170,7 @@ function createReviewRequest() {
                 return;
             }
         } else {
-            echo json_encode(['error' => 'Không thể lấy thông tin số dư']);
+            echo json_encode(['error' => 'Không thể lấy thông tin số dư từ bảng users']);
             return;
         }
         
