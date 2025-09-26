@@ -146,33 +146,66 @@
                     </a>
                   </div>
                 </div>
-                <div class="card-body">
-                  <div class="row">
-                    {foreach $available_tasks as $task}
-                 <div class="col-md-4 mb15">
-                   <div class="review-task-mini-card">
-                     <h6 class="mb5">{$task.place_name}</h6>
-                     <p class="text-muted small mb5">
-                       <i class="fa fa-map-marker-alt mr5"></i>
-                       {$task.place_address|truncate:25}
-                     </p>
-                     <p class="text-warning small mb5">
-                       <i class="fa fa-clock mr5"></i>
-                       Hết hạn: {$task.expires_at|date_format:"%d/%m/%Y"}
-                     </p>
-                     <div class="d-flex justify-content-between align-items-center">
-                       <div class="text-success font-weight-bold">
-                         {number_format($task.reward_amount, 0, ',', '.')} VND
-                       </div>
-                       <button class="btn btn-sm btn-primary" onclick="assignTask({$task.id})">
-                         {__("Nhận")}
-                       </button>
-                     </div>
-                   </div>
-                 </div>
-                    {/foreach}
-                  </div>
-                </div>
+<div class="card-body">
+  <div class="row">
+    {foreach $available_tasks as $task}
+    <div class="col-md-4 mb15">
+      <div class="review-task-mini-card">
+        <!-- task header -->
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <div class="d-flex align-items-center" style="gap: 4px;">
+            <div class="task-avatar">
+              <img src="{$system['system_url']}/content/uploads/{$task.user_picture}"
+                   alt=""
+                   class="rounded-circle"
+                   style="width: 24px; height: 24px; object-fit: cover;">
+            </div>
+
+            <!-- name + verified badge -->
+            <small class="text-muted  " style="line-height: 1;">
+              {if $task.user_firstname}
+                {$task.user_firstname}
+              {else}
+                {__("Người dùng")}
+              {/if}
+              {if $task.user_verified}
+                <span class="verified-badge d-inline-flex align-items-center ml-1"
+                      data-bs-toggle="tooltip"
+                      title='{__("Verified User")}'
+                      style="line-height: 1;">
+                  {include file='__svg_icons.tpl' icon="verified_badge" width="12px" height="12px"}
+                </span>
+              {/if}
+            </small>
+          </div>
+
+          <span class="badge badge-warning" style="font-size: 8px; padding: 1px 4px;">ADS</span>
+        </div>
+        <!-- task header -->
+
+        <h6 class="mb5">{$task.place_name}</h6>
+        <p class="text-muted small mb5">
+          <i class="fa fa-map-marker-alt mr5"></i>
+          {$task.place_address|truncate:25}
+        </p>
+        <p class="text-warning small mb5">
+          <i class="fa fa-clock mr5"></i>
+          Hết hạn: {$task.expires_at|date_format:"%d/%m/%Y"}
+        </p>
+        <div class="d-flex justify-content-between align-items-center">
+          <div class="text-success font-weight-bold">
+            {number_format($task.reward_amount, 0, ',', '.')} VND
+          </div>
+          <button class="btn btn-sm btn-primary" onclick="assignTask({$task.id})">
+            {__("Nhận")}
+          </button>
+        </div>
+      </div>
+    </div>
+    {/foreach}
+  </div>
+</div>
+
               </div>
             {/if}
             <!-- review tasks -->
@@ -514,12 +547,13 @@
     border-radius: 6px;
     padding: 8px;
     background: #fff;
-    height: 120px;
+    height: 140px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     transition: all 0.2s ease;
     overflow: hidden;
+    position: relative;
 }
 
 .review-task-mini-card:hover {
@@ -572,6 +606,27 @@
 .review-task-mini-card .d-flex {
     margin-top: auto;
 }
+
+
+.review-task-mini-card .task-avatar img {
+    border: 1px solid #e9ecef;
+}
+
+.review-task-mini-card .badge-warning {
+    background-color: #ffc107;
+    color: #000;
+    font-weight: 600;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+}
+
+.review-task-mini-card .verified-badge {
+    vertical-align: middle;
+    display: inline-flex;
+    align-items: center;
+}
+
 </style>
 
 <script>

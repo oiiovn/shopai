@@ -124,9 +124,11 @@ try {
         // Loại bỏ các chiến dịch mà user đã tạo và đã nhận
         $available_tasks = array();
         $get_available_tasks = $db->query("
-            SELECT gmsr.*, gmr.place_name, gmr.place_address, gmr.place_url, gmr.expires_at as parent_expires_at
+            SELECT gmsr.*, gmr.place_name, gmr.place_address, gmr.place_url, gmr.expires_at as parent_expires_at,
+                   u.user_firstname, u.user_lastname, u.user_picture, u.user_verified
             FROM google_maps_review_sub_requests gmsr
             LEFT JOIN google_maps_review_requests gmr ON gmsr.parent_request_id = gmr.request_id
+            LEFT JOIN users u ON gmr.requester_user_id = u.user_id
             WHERE gmsr.status = 'available' 
             AND gmsr.expires_at > NOW()
             AND gmr.status = 'active'
