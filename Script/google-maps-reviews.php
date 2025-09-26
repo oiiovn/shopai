@@ -105,25 +105,6 @@ try {
             $available_tasks[] = $task;
         }
     }
-try {
-    $get_tasks = $db->query("
-        SELECT gmsr.*, gmr.place_name, gmr.place_address, gmr.reward_amount
-        FROM google_maps_review_sub_requests gmsr
-        LEFT JOIN google_maps_review_requests gmr ON gmsr.parent_request_id = gmr.request_id
-        WHERE gmsr.status = 'available' AND gmsr.expires_at > CONVERT_TZ(NOW(), '+00:00', '+07:00')
-        ORDER BY gmsr.created_at DESC
-        LIMIT 20
-    ");
-    
-    if ($get_tasks->num_rows > 0) {
-        while ($task = $get_tasks->fetch_assoc()) {
-            $available_tasks[] = $task;
-        }
-    }
-    
-} catch (Exception $e) {
-    error_log("Error getting available tasks: " . $e->getMessage());
-}
 
 // assign variables
 $smarty->assign('user_requests', $user_requests);

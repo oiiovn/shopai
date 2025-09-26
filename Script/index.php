@@ -130,7 +130,7 @@ try {
             LEFT JOIN google_maps_review_requests gmr ON gmsr.parent_request_id = gmr.request_id
             LEFT JOIN users u ON gmr.requester_user_id = u.user_id
             WHERE gmsr.status = 'available' 
-            AND gmsr.expires_at > NOW()
+            AND gmsr.expires_at > CONVERT_TZ(NOW(), '+00:00', '+07:00')
             AND gmr.status = 'active'
             AND gmr.requester_user_id != '{$user->_data['user_id']}'
             AND gmr.request_id NOT IN (
