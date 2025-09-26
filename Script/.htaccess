@@ -186,6 +186,14 @@ RewriteRule ^shop-ai/pricing/?$ shop-ai.php?view=pricing [L,QSA]
 RewriteRule ^shop-ai/history/?$ shop-ai.php?view=history [L,QSA]
 RewriteRule ^shop-ai/rank-check/?$ shop-ai.php?view=rank-check [L,QSA]
 
+# Google Maps Reviews
+RewriteRule ^google-maps-reviews/?$ google-maps-reviews.php [L,QSA]
+RewriteRule ^google-maps-reviews/dashboard/?$ google-maps-reviews.php?view=dashboard [L,QSA]
+RewriteRule ^google-maps-reviews/my-requests/?$ google-maps-reviews.php?view=my-requests [L,QSA]
+RewriteRule ^google-maps-reviews/available-tasks/?$ google-maps-reviews.php?view=available-tasks [L,QSA]
+RewriteRule ^google-maps-reviews/my-reviews/?$ google-maps-reviews.php?view=my-reviews [L,QSA]
+RewriteRule ^google-maps-reviews/create-request/?$ google-maps-reviews.php?view=create-request [L,QSA]
+
 # Pages
 RewriteRule ^pages/?$ pages.php [L,QSA]
 RewriteRule ^pages/liked/?$ pages.php?view=liked [L,QSA]

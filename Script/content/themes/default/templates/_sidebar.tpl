@@ -283,6 +283,16 @@
           </a>
         </li>
       {/if}
+
+      <!-- Google Maps Reviews -->
+      <li {if $page == "google-maps-reviews"}class="active" {/if}>
+        <a href="{$system['system_url']}/google-maps-reviews">
+          <i class="fas fa-map-marker-alt main-icon mr10" style="width: 24px; height: 24px; font-size: 18px;"></i>
+          {__("Google Maps Reviews")}
+        </a>
+      </li>
+      <!-- Google Maps Reviews -->
+
       <!-- explore -->
     </ul>
   </div>
