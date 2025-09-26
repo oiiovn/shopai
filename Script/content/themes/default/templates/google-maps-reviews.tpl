@@ -684,6 +684,23 @@ function calculateTotal() {
   }
 }
 
+// Global variable to store current task ID
+var currentTaskId = null;
+
+function showTaskModal(subRequestId, placeName, placeAddress, rewardAmount, expiryDate) {
+  currentTaskId = subRequestId;
+  
+  // Populate modal content
+  $('#modalPlaceName').text(placeName);
+  $('#modalPlaceAddress').text(placeAddress);
+  $('#modalRewardAmount').text(parseInt(rewardAmount).toLocaleString('vi-VN') + ' VND');
+  $('#modalExpiry').text(expiryDate);
+  
+  // Show modal using Bootstrap 5
+  var modal = new bootstrap.Modal(document.getElementById('taskModal'));
+  modal.show();
+}
+
 function assignTask(subRequestId) {
   if (confirm('Bạn có chắc chắn muốn nhận nhiệm vụ này?')) {
     $.ajax({
@@ -708,6 +725,17 @@ function assignTask(subRequestId) {
     });
   }
 }
+
+// Handle confirm button click
+$(document).ready(function() {
+  $('#confirmAssignBtn').on('click', function() {
+    if (currentTaskId) {
+      var modal = bootstrap.Modal.getInstance(document.getElementById('taskModal'));
+      modal.hide();
+      assignTask(currentTaskId);
+    }
+  });
+});
 
 function viewRequestDetails(requestId) {
   // Implement view request details
