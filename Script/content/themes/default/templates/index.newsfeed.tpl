@@ -133,81 +133,7 @@
             <!-- boosted post -->
 
             <!-- review tasks -->
-            {if $available_tasks}
-              <div class="card">
-                <div class="card-header bg-transparent border-bottom-0">
-                  <strong class="text-muted">
-                    <i class="fa fa-map-marker-alt mr5"></i>
-                    {__("Nhiệm vụ đánh giá Google Maps")}
-                  </strong>
-                  <div class="float-end">
-                    <a href="{$system['system_url']}/available-review-tasks" class="btn btn-sm btn-primary">
-                      {__("Xem tất cả")}
-                    </a>
-                  </div>
-                </div>
-<div class="card-body">
-  <div class="row">
-    {foreach $available_tasks as $task}
-    <div class="col-md-4 mb15">
-      <div class="review-task-mini-card">
-        <!-- task header -->
-        <div class="d-flex align-items-center justify-content-between mb-2">
-          <div class="d-flex align-items-center" style="gap: 4px;">
-            <div class="task-avatar">
-              <img src="{$system['system_url']}/content/uploads/{$task.user_picture}"
-                   alt=""
-                   class="rounded-circle"
-                   style="width: 24px; height: 24px; object-fit: cover;">
-            </div>
-
-            <!-- name + verified badge -->
-            <small class="text-muted  " style="line-height: 1;">
-              {if $task.user_firstname}
-                {$task.user_firstname}
-              {else}
-                {__("Người dùng")}
-              {/if}
-              {if $task.user_verified}
-                <span class="verified-badge d-inline-flex align-items-center ml-1"
-                      data-bs-toggle="tooltip"
-                      title='{__("Verified User")}'
-                      style="line-height: 1;">
-                  {include file='__svg_icons.tpl' icon="verified_badge" width="12px" height="12px"}
-                </span>
-              {/if}
-            </small>
-          </div>
-
-          <span class="badge badge-warning" style="font-size: 8px; padding: 1px 4px;">ADS</span>
-        </div>
-        <!-- task header -->
-
-        <h6 class="mb5">{$task.place_name}</h6>
-        <p class="text-muted small mb5">
-          <i class="fa fa-map-marker-alt mr5"></i>
-          {$task.place_address|truncate:25}
-        </p>
-        <p class="text-warning small mb5">
-          <i class="fa fa-clock mr5"></i>
-          Hết hạn: {$task.expires_at|date_format:"%d/%m/%Y"}
-        </p>
-        <div class="d-flex justify-content-between align-items-center">
-          <div class="text-success font-weight-bold">
-            {number_format($task.reward_amount, 0, ',', '.')} VND
-          </div>
-          <button class="btn btn-sm btn-primary" onclick="assignTask({$task.id})">
-            {__("Nhận")}
-          </button>
-        </div>
-      </div>
-    </div>
-    {/foreach}
-  </div>
-</div>
-
-              </div>
-            {/if}
+            {include file='_review_tasks_mini_card.tpl'}
             <!-- review tasks -->
 
             <!-- posts -->
@@ -625,6 +551,154 @@
     vertical-align: middle;
     display: inline-flex;
     align-items: center;
+}
+
+/* Horizontal mini card styles */
+.review-task-mini-card-horizontal {
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    padding: 12px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s ease;
+    position: relative;
+    min-height: 80px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.review-task-mini-card-horizontal:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transform: translateY(-1px);
+}
+
+.review-task-mini-card-horizontal .task-info {
+    flex: 1;
+    margin-right: 15px;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.review-task-mini-card-horizontal .task-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.review-task-mini-card-horizontal .task-details {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.review-task-mini-card-horizontal .task-avatar {
+    margin-right: 8px;
+}
+
+.review-task-mini-card-horizontal .task-avatar img {
+    width: 32px;
+    height: 32px;
+    border: 1px solid #e9ecef;
+}
+
+.review-task-mini-card-horizontal .task-title {
+    font-weight: 600;
+    font-size: 14px;
+    color: #333;
+    margin: 0 0 4px 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.review-task-mini-card-horizontal .task-address {
+    font-size: 12px;
+    color: #6c757d;
+    margin: 0 0 4px 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.review-task-mini-card-horizontal .task-expiry {
+    font-size: 11px;
+    color: #ffc107;
+    margin: 0;
+}
+
+.review-task-mini-card-horizontal .task-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    flex-shrink: 0;
+    min-width: 120px;
+}
+
+.review-task-mini-card-horizontal .task-reward {
+    font-size: 14px;
+    font-weight: 700;
+    color: #28a745;
+    margin: 0;
+}
+
+.review-task-mini-card-horizontal .btn {
+    font-size: 12px;
+    padding: 6px 12px;
+    height: 32px;
+    line-height: 1;
+}
+
+.review-task-mini-card-horizontal .badge-warning {
+    background-color: #ffc107;
+    color: #000;
+    font-weight: 600;
+    font-size: 9px;
+    padding: 2px 6px;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+}
+
+.review-task-mini-card-horizontal .verified-badge {
+    vertical-align: middle;
+    display: inline-flex;
+    align-items: center;
+}
+
+/* Horizontal scroll container */
+.review-tasks-horizontal-scroll {
+    display: flex;
+    overflow-x: auto;
+    gap: 15px;
+    padding: 10px 0;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+}
+
+.review-tasks-horizontal-scroll::-webkit-scrollbar {
+    height: 6px;
+}
+
+.review-tasks-horizontal-scroll::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.review-tasks-horizontal-scroll::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+.review-tasks-horizontal-scroll::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+.review-task-item {
+    flex: 0 0 350px;
+    min-width: 350px;
 }
 
 </style>

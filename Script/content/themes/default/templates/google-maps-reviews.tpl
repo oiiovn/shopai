@@ -22,12 +22,6 @@
                 Yêu cầu của tôi
               </a>
             </li>
-            <li {if $view == 'available-tasks'}class="active" {/if}>
-              <a href="{$system['system_url']}/google-maps-reviews/available-tasks">
-                <i class="fa fa-tasks main-icon mr-2" style="width: 24px; height: 24px; font-size: 18px;"></i>
-                Nhiệm vụ có sẵn
-              </a>
-            </li>
             <li {if $view == 'my-reviews'}class="active" {/if}>
               <a href="{$system['system_url']}/google-maps-reviews/my-reviews">
                 <i class="fa fa-star main-icon mr-2" style="width: 24px; height: 24px; font-size: 18px;"></i>
@@ -60,11 +54,6 @@
           <li {if $view == 'my-requests'}class="active" {/if}>
             <a href="{$system['system_url']}/google-maps-reviews/my-requests">
               Yêu cầu
-            </a>
-          </li>
-          <li {if $view == 'available-tasks'}class="active" {/if}>
-            <a href="{$system['system_url']}/google-maps-reviews/available-tasks">
-              Nhiệm vụ
             </a>
           </li>
           <li {if $view == 'my-reviews'}class="active" {/if}>
@@ -211,40 +200,6 @@
               </div>
             {/if}
 
-            {if $view == 'available-tasks'}
-              <div class="card-header bg-transparent">
-                <strong>Nhiệm vụ có sẵn</strong>
-              </div>
-              <div class="card-body">
-                {if $available_tasks}
-                  <div class="row">
-                    {foreach $available_tasks as $task}
-                      <div class="col-md-6 mb-3">
-                        <div class="card">
-                          <div class="card-body">
-                            <h6 class="card-title">{$task.place_name}</h6>
-                            <p class="card-text text-muted">{$task.place_address}</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                              <span class="badge badge-success">{$task.reward_amount|number_format:0} VND</span>
-                              <button class="btn btn-sm btn-primary" onclick="assignTask({$task.sub_request_id})">
-                                <i class="fa fa-hand-paper mr5"></i>
-                                Nhận nhiệm vụ
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    {/foreach}
-                  </div>
-                {else}
-                  <div class="text-center py-4">
-                    <i class="fa fa-tasks fa-3x text-muted mb-3"></i>
-                    <h5 class="text-muted">Không có nhiệm vụ nào</h5>
-                    <p class="text-muted">Quay lại sau để xem nhiệm vụ đánh giá mới</p>
-                  </div>
-                {/if}
-              </div>
-            {/if}
 
             {if $view == 'my-reviews'}
               <div class="card-header bg-transparent">
@@ -386,6 +341,240 @@
     </div>
   </div>
 </div>
+
+<style>
+.review-task-mini-card {
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    padding: 8px;
+    background: #fff;
+    height: 140px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all 0.2s ease;
+    overflow: hidden;
+    position: relative;
+}
+
+.review-task-mini-card:hover {
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    transform: translateY(-1px);
+}
+
+.review-task-mini-card h6 {
+    color: #333;
+    font-weight: 600;
+    font-size: 13px;
+    line-height: 1.2;
+    margin: 0 0 4px 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.review-task-mini-card .text-muted {
+    font-size: 11px;
+    line-height: 1.2;
+    margin: 0 0 4px 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.review-task-mini-card .text-warning {
+    font-size: 10px;
+    line-height: 1.2;
+    margin: 0 0 4px 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.review-task-mini-card .text-success {
+    font-size: 12px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.review-task-mini-card .btn {
+    font-size: 11px;
+    padding: 4px 8px;
+    height: 24px;
+    line-height: 1;
+}
+
+.review-task-mini-card .d-flex {
+    margin-top: auto;
+}
+
+.review-task-mini-card .task-avatar img {
+    border: 1px solid #e9ecef;
+}
+
+.review-task-mini-card .badge-warning {
+    background-color: #ffc107;
+    color: #000;
+    font-weight: 600;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+}
+
+.review-task-mini-card .verified-badge {
+    vertical-align: middle;
+    display: inline-flex;
+    align-items: center;
+}
+
+/* Horizontal mini card styles */
+.review-task-mini-card-horizontal {
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    padding: 12px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s ease;
+    position: relative;
+    min-height: 80px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.review-task-mini-card-horizontal:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transform: translateY(-1px);
+}
+
+.review-task-mini-card-horizontal .task-info {
+    flex: 1;
+    margin-right: 15px;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.review-task-mini-card-horizontal .task-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.review-task-mini-card-horizontal .task-details {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.review-task-mini-card-horizontal .task-avatar {
+    margin-right: 8px;
+}
+
+.review-task-mini-card-horizontal .task-avatar img {
+    width: 32px;
+    height: 32px;
+    border: 1px solid #e9ecef;
+}
+
+.review-task-mini-card-horizontal .task-title {
+    font-weight: 600;
+    font-size: 14px;
+    color: #333;
+    margin: 0 0 4px 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.review-task-mini-card-horizontal .task-address {
+    font-size: 12px;
+    color: #6c757d;
+    margin: 0 0 4px 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.review-task-mini-card-horizontal .task-expiry {
+    font-size: 11px;
+    color: #ffc107;
+    margin: 0;
+}
+
+.review-task-mini-card-horizontal .task-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    flex-shrink: 0;
+    min-width: 120px;
+}
+
+.review-task-mini-card-horizontal .task-reward {
+    font-size: 14px;
+    font-weight: 700;
+    color: #28a745;
+    margin: 0;
+}
+
+.review-task-mini-card-horizontal .btn {
+    font-size: 12px;
+    padding: 6px 12px;
+    height: 32px;
+    line-height: 1;
+}
+
+.review-task-mini-card-horizontal .badge-warning {
+    background-color: #ffc107;
+    color: #000;
+    font-weight: 600;
+    font-size: 9px;
+    padding: 2px 6px;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+}
+
+.review-task-mini-card-horizontal .verified-badge {
+    vertical-align: middle;
+    display: inline-flex;
+    align-items: center;
+}
+
+/* Horizontal scroll container */
+.review-tasks-horizontal-scroll {
+    display: flex;
+    overflow-x: auto;
+    gap: 15px;
+    padding: 10px 0;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+}
+
+.review-tasks-horizontal-scroll::-webkit-scrollbar {
+    height: 6px;
+}
+
+.review-tasks-horizontal-scroll::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.review-tasks-horizontal-scroll::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+.review-tasks-horizontal-scroll::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+.review-task-item {
+    flex: 0 0 350px;
+    min-width: 350px;
+}
+</style>
 
 <script>
 // Wait for jQuery to be available
