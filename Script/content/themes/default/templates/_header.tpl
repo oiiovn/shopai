@@ -403,6 +403,7 @@
 {if $user->_logged_in}
 <script>
 window.user = {
+    user_id: '{$user->_data['user_id']|escape:"javascript"}',
     name: '{$user->_data['name']|escape:"javascript"}',
     user_name: '{$user->_data['user_name']|escape:"javascript"}',
     gender: '{$user->_data['user_gender']|escape:"javascript"}',

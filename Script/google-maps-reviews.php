@@ -7,18 +7,82 @@
  * @author Zamblek
  */
 
-// Handle API requests FIRST
-if (isset($_GET['action']) || isset($_POST['action']) || (isset($_SERVER['CONTENT_TYPE']) && strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== false)) {
-    // fetch bootloader for API
-    require('bootloader.php');
+// fetch bootloader
+require('bootloader.php');
+
+// Handle API requests for AJAX calls (only for POST requests with action)
+if (isset($_POST['action']) || (isset($_SERVER['CONTENT_TYPE']) && strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== false)) {
     handleAPIRequest();
     exit;
 }
 
-// fetch bootloader for normal page
-require('bootloader.php');
+// Handle specific routes for pages (not API calls) - BEFORE user login check
+if (isset($_GET['action'])) {
+    $action = $_GET['action'];
+    
+    if ($action == 'submit-proof' && isset($_GET['id'])) {
+        // Check user login first for submit-proof page
+        if (!$user->_logged_in) {
+            user_login();
+        }
+        
+        // Submit proof page
+        $sub_request_id = (int)$_GET['id'];
+        
+        // Get task details
+        $task_query = $db->query("
+            SELECT gmsr.*, gmr.place_name, gmr.place_address, gmsr.reward_amount
+            FROM google_maps_review_sub_requests gmsr
+            LEFT JOIN google_maps_review_requests gmr ON gmsr.parent_request_id = gmr.request_id
+            WHERE gmsr.sub_request_id = '{$sub_request_id}'
+            AND gmsr.assigned_user_id = '{$user->_data['user_id']}'
+            AND gmsr.status = 'assigned'
+        ");
+        
+        $task = $task_query->num_rows > 0 ? $task_query->fetch_assoc() : null;
+        
+        page_header(__("Submit Proof"));
+        $smarty->assign('task', $task);
+        $smarty->display('submit-proof.tpl');
+        exit;
+        
+    } elseif ($action == 'view-proof' && isset($_GET['id'])) {
+        // Check user login first for view-proof page
+        if (!$user->_logged_in) {
+            user_login();
+        }
+        
+        // View proof page
+        $sub_request_id = (int)$_GET['id'];
+        
+        // Get task details (allow viewing if user is assigned or admin)
+        $task_query = $db->query("
+            SELECT gmsr.*, gmr.place_name, gmr.place_address, gmsr.reward_amount
+            FROM google_maps_review_sub_requests gmsr
+            LEFT JOIN google_maps_review_requests gmr ON gmsr.parent_request_id = gmr.request_id
+            WHERE gmsr.sub_request_id = '{$sub_request_id}'
+            AND (gmsr.assigned_user_id = '{$user->_data['user_id']}' OR '{$user->_is_admin}' = '1')
+        ");
+        
+        $task = null;
+        $proof_data = null;
+        
+        if ($task_query->num_rows > 0) {
+            $task = $task_query->fetch_assoc();
+            if (!empty($task['proof_data'])) {
+                $proof_data = json_decode($task['proof_data'], true);
+            }
+        }
+        
+        page_header(__("View Proof"));
+        $smarty->assign('task', $task);
+        $smarty->assign('proof_data', $proof_data);
+        $smarty->display('view-proof.tpl');
+        exit;
+    }
+}
 
-// user access
+// user access for other pages
 if (!$user->_logged_in) {
     user_login();
 }

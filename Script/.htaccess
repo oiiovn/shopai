@@ -193,6 +193,11 @@ RewriteRule ^google-maps-reviews/my-requests/?$ google-maps-reviews.php?view=my-
 RewriteRule ^google-maps-reviews/available-tasks/?$ google-maps-reviews.php?view=available-tasks [L,QSA]
 RewriteRule ^google-maps-reviews/my-reviews/?$ google-maps-reviews.php?view=my-reviews [L,QSA]
 RewriteRule ^google-maps-reviews/create-request/?$ google-maps-reviews.php?view=create-request [L,QSA]
+RewriteRule ^google-maps-reviews/submit-proof/([0-9]+)/?$ google-maps-reviews.php?action=submit-proof&id=$1 [L,QSA]
+RewriteRule ^google-maps-reviews/view-proof/([0-9]+)/?$ google-maps-reviews.php?action=view-proof&id=$1 [L,QSA]
+RewriteRule ^submit-proof/?$ submit-proof.php [L,QSA]
+RewriteRule ^gpt-verify-proof/?$ gpt-verify-proof.php [L,QSA]
+RewriteRule ^admin-verify-proofs/?$ admin-verify-proofs.php [L,QSA]
 
 # Available Review Tasks
 RewriteRule ^available-review-tasks/?$ available-review-tasks.php [L,QSA]
