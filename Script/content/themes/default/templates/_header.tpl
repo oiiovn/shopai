@@ -414,6 +414,7 @@ window.user = {
 {else}
 <script>
 window.user = {
+    user_id: null,
     name: 'Guest',
     user_name: 'Guest',
     gender: 'unknown',

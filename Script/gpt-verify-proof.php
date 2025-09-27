@@ -54,7 +54,7 @@ if (!$sub_request_id) {
 try {
     // Get task details
     $task_query = $db->query("
-        SELECT gmsr.*, gmr.place_name, gmr.place_address, gmr.reward_amount
+        SELECT gmsr.*, gmr.place_name, gmr.place_address, gmsr.reward_amount
         FROM google_maps_review_sub_requests gmsr
         LEFT JOIN google_maps_review_requests gmr ON gmsr.parent_request_id = gmr.request_id
         WHERE gmsr.sub_request_id = '{$sub_request_id}'
@@ -248,27 +248,45 @@ Return only JSON, no additional text.";
         $reward_amount = $task['reward_amount'];
         $user_id = $task['assigned_user_id'];
         
-        // Add to user wallet
-        $wallet_query = $db->query("
-            UPDATE users 
-            SET user_wallet_balance = user_wallet_balance + '{$reward_amount}'
-            WHERE user_id = '{$user_id}'
-        ");
+        // Start transaction for wallet update
+        $db->query("START TRANSACTION");
         
-        if ($wallet_query) {
-            // Create wallet transaction record
+        try {
+            // Add to user wallet
+            $wallet_query = $db->query("
+                UPDATE users 
+                SET user_wallet_balance = user_wallet_balance + '{$reward_amount}'
+                WHERE user_id = '{$user_id}'
+            ");
+            
+            if (!$wallet_query || $db->affected_rows == 0) {
+                throw new Exception("Failed to update user wallet balance");
+            }
+            
+            // Create wallet transaction record with HCM time
             $transaction_query = $db->query("
                 INSERT INTO users_wallets_transactions 
-                (user_id, type, amount, balance_after, description, created_at)
+                (user_id, type, amount, description, time)
                 VALUES (
                     '{$user_id}',
-                    'income',
+                    'recharge',
                     '{$reward_amount}',
-                    (SELECT user_wallet_balance FROM users WHERE user_id = '{$user_id}'),
                     'Google Maps Review Reward - Task #{$sub_request_id}',
-                    NOW()
+                    CONVERT_TZ(NOW(), '+00:00', '+07:00')
                 )
             ");
+            
+            if (!$transaction_query) {
+                throw new Exception("Failed to create wallet transaction record");
+            }
+            
+            // Commit transaction
+            $db->query("COMMIT");
+            
+        } catch (Exception $e) {
+            // Rollback transaction on error
+            $db->query("ROLLBACK");
+            error_log("Wallet update failed: " . $e->getMessage());
         }
     }
     
