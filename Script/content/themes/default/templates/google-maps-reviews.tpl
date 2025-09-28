@@ -483,7 +483,7 @@ console.log('🔍 Available tasks count:', {if $available_tasks}{$available_task
                     <div class="col-md-4">
                       <div class="form-group">
                         <label for="reward_amount">Chi phí cho 1 đánh giá 5 sao</label>
-                        <input type="number" class="form-control" id="reward_amount" name="reward_amount" value="15000" readonly>
+                        <input type="number" class="form-control" id="reward_amount" name="reward_amount" value="10000" readonly>
                         <small class="form-text text-muted">Chi phí cố định cho mỗi đánh giá 5 sao</small>
                       </div>
                     </div>
@@ -507,11 +507,11 @@ console.log('🔍 Available tasks count:', {if $available_tasks}{$available_task
                       <h6 class="card-title">Hóa đơn chiến dịch</h6>
                       <div class="row">
                         <div class="col-md-6">
-                          <p class="mb-1">Chi phí cho 1 đánh giá: <span id="rewardAmount">15,000</span> VND</p>
+                          <p class="mb-1">Chi phí cho 1 đánh giá: <span id="rewardAmount">10,000</span> VND</p>
                           <p class="mb-1">Số lượng đánh giá: <span id="quantity">1</span></p>
                         </div>
                         <div class="col-md-6">
-                          <p class="mb-1"><strong>Tổng chi phí: <span id="totalCost">15,000</span> VND</strong></p>
+                          <p class="mb-1"><strong>Tổng chi phí: <span id="totalCost">10,000</span> VND</strong></p>
                           <p class="mb-1">Số dư sau khi trừ: <span id="remainingBalance">0</span> VND</p>
                         </div>
                       </div>
@@ -1139,7 +1139,7 @@ if (document.readyState === 'loading') {
 function calculateTotal() {
   var rewardAmountField = document.getElementById('reward_amount');
   var quantityField = document.getElementById('target_reviews');
-  var rewardAmount = rewardAmountField ? parseInt(rewardAmountField.value) || 15000 : 15000;
+  var rewardAmount = rewardAmountField ? parseInt(rewardAmountField.value) || 10000 : 10000;
   var quantity = quantityField ? parseInt(quantityField.value) || 1 : 1;
   
   // Parse current balance - extract number from text like "19.800.000 VND"
