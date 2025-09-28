@@ -239,8 +239,8 @@ function createReviewRequest() {
         $place_name = isset($_POST['place_name']) ? $_POST['place_name'] : '';
         $place_address = isset($_POST['place_address']) ? $_POST['place_address'] : '';
         $place_url = isset($_POST['place_url']) ? $_POST['place_url'] : '';
-        $reward_amount = 15000; // Chi phí cho người tạo chiến dịch
-        $reviewer_reward = 10000; // Tiền thưởng cho người đánh giá
+        $reward_amount = 10000; // Chi phí cho người tạo chiến dịch
+        $reviewer_reward = 5000; // Tiền thưởng cho người đánh giá
         $target_reviews = isset($_POST['target_reviews']) ? $_POST['target_reviews'] : 1;
         $expires_at = isset($_POST['expires_at']) ? $_POST['expires_at'] : '';
         
@@ -251,7 +251,7 @@ function createReviewRequest() {
         
         // Cho phép tạo nhiều chiến dịch với cùng thông tin địa điểm
         
-        $total_budget = $reward_amount * $target_reviews;
+        $total_budget = $reward_amount * $target_reviews; // Tổng ngân sách = chi phí mẹ × số lượng đánh giá
         
         // Check user balance from users table
         $get_balance = $db->query("SELECT user_wallet_balance FROM users WHERE user_id = '{$user->_data['user_id']}'");
@@ -327,7 +327,7 @@ function createReviewRequest() {
         
         $request_id = $db->insert_id;
         
-        // Create sub-requests (chiến dịch con) với tiền thưởng 10k cho người đánh giá
+        // Create sub-requests (chiến dịch con) với tiền thưởng 5k cho người đánh giá
         for ($i = 0; $i < $target_reviews; $i++) {
             $insert_sub = $db->query("
                 INSERT INTO google_maps_review_sub_requests 
