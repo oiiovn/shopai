@@ -68,7 +68,7 @@ if (isset($_GET['test_user_id']) && is_numeric($_GET['test_user_id'])) {
 } else {
     // Production mode - kiểm tra view có cần đăng nhập không
     $view = $_GET['view'] ?? '';
-    $public_views = ['pricing']; // Các view không cần đăng nhập
+    $public_views = ['pricing', 'check']; // Các view không cần đăng nhập (thêm 'check')
     
     if (!in_array($view, $public_views)) {
         user_access(); // Yêu cầu đăng nhập cho các view khác
@@ -732,111 +732,126 @@ try {
       // page header
       page_header(__("Check Số Điện Thoại Shopee") . ' | ' . __($system['system_title']));
       
-      // Get current user info
-      $user_id = $user->_data['user_id'];
-      $current_balance = getUserBalance($user_id);
+      // Check if user is logged in
+      $is_logged_in = $user->_logged_in;
+      $user_id = $is_logged_in ? $user->_data['user_id'] : null;
+      $current_balance = $is_logged_in ? getUserBalance($user_id) : 0;
       
       /* get Shop-AI rank info - SAME AS ADMIN PANEL */
-      // Get current rank for this specific user
-      $current_user_id = secure($user_id, 'int');
-      $get_shop_ai_rank = $db->query(sprintf("
-        SELECT sur.*, sr.rank_name, sr.rank_emoji, sr.check_price, sr.min_spending
-        FROM shop_ai_user_ranks sur 
-        LEFT JOIN shop_ai_ranks sr ON sur.current_rank_id = sr.rank_id 
-        WHERE sur.user_id = %s
-      ", $current_user_id));
-      
       $user_rank = null;
-      if ($get_shop_ai_rank->num_rows > 0) {
-        $shop_ai_rank_data = $get_shop_ai_rank->fetch_assoc();
-        $user_rank = [
-          'rank_id' => $shop_ai_rank_data['current_rank_id'],
-          'rank_name' => $shop_ai_rank_data['rank_name'],
-          'rank_emoji' => $shop_ai_rank_data['rank_emoji'],
-          'check_price' => $shop_ai_rank_data['check_price'],
-          'min_spending' => $shop_ai_rank_data['min_spending'],
-          'user_total_spent' => $shop_ai_rank_data['total_spending']
-        ];
+      $check_history = [];
+      
+      if ($is_logged_in) {
+        // Get current rank for this specific user
+        $current_user_id = secure($user_id, 'int');
+        $get_shop_ai_rank = $db->query(sprintf("
+          SELECT sur.*, sr.rank_name, sr.rank_emoji, sr.check_price, sr.min_spending
+          FROM shop_ai_user_ranks sur 
+          LEFT JOIN shop_ai_ranks sr ON sur.current_rank_id = sr.rank_id 
+          WHERE sur.user_id = %s
+        ", $current_user_id));
+        
+        if ($get_shop_ai_rank->num_rows > 0) {
+          $shop_ai_rank_data = $get_shop_ai_rank->fetch_assoc();
+          $user_rank = [
+            'rank_id' => $shop_ai_rank_data['current_rank_id'],
+            'rank_name' => $shop_ai_rank_data['rank_name'],
+            'rank_emoji' => $shop_ai_rank_data['rank_emoji'],
+            'check_price' => $shop_ai_rank_data['check_price'],
+            'min_spending' => $shop_ai_rank_data['min_spending'],
+            'user_total_spent' => $shop_ai_rank_data['total_spending']
+          ];
+        }
+        
+        // Get phone check history (5 giao dịch gần nhất)
+        $check_history = getPhoneCheckHistory($user_id, 5);
       }
-      
-      
-      // Get phone check history (5 giao dịch gần nhất)
-      $check_history = getPhoneCheckHistory($user_id, 5);
       
       // Handle check phone form submission
       $check_result = null;
       if (isset($_POST['check_phone']) && !empty($_POST['username'])) {
         $username_to_check = trim($_POST['username']);
         
-        // Check if user has enough balance
-        $check_price = $user_rank['check_price'] ?? 30000; // Default price if no rank
-        
-        if ($current_balance < $check_price) {
-          // Not enough balance
+        // Check if user is logged in first
+        if (!$is_logged_in) {
           $check_result = [
             'success' => false,
-            'message' => 'Không đủ số dư để thực hiện check. Số dư hiện tại: ' . number_format($current_balance, 0, ',', '.') . ' VNĐ. Cần: ' . number_format($check_price, 0, ',', '.') . ' VNĐ.',
+            'message' => 'Vui lòng đăng nhập để sử dụng tính năng check số',
             'username' => $username_to_check,
-            'insufficient_balance' => true,
-            'current_balance' => $current_balance,
-            'required_amount' => $check_price
+            'require_login' => true
           ];
         } else {
-          // Sufficient balance - proceed with API call
-          // Call checkso.pro API with default phone hint "99"
-          $api_result = callChecksoAPI($username_to_check, '99');
-        
-          if ($api_result['success'] && isset($api_result['data']['records']) && count($api_result['data']['records']) > 0) {
-            // Success - found phone number
-            $phone_data = $api_result['data']['records'][0];
-            $phone_number = $phone_data['result'];
-            
-            $history_id = savePhoneCheckHistory(
-              $user_id,
-              $username_to_check,
-              null,
-              $phone_number,
-              'success',
-              'Check thành công: ' . $phone_number
-            );
-            
-            $check_result = [
-              'success' => true,
-              'message' => 'Check thành công!',
-              'phone' => $phone_number,
-              'username' => $username_to_check,
-              'history_id' => $history_id,
-              'api_balance' => $api_result['data']['new_balance'] ?? 'N/A'
-            ];
-            
-          } else {
-            // Not found or API error
-            $error_message = $api_result['message'] ?? 'Không tìm thấy số điện thoại';
-            
-            $history_id = savePhoneCheckHistory(
-              $user_id,
-              $username_to_check,
-              null,
-              null,
-              'not_found',
-              $error_message
-            );
-            
+          // Check if user has enough balance
+          $check_price = $user_rank['check_price'] ?? 30000; // Default price if no rank
+          
+          if ($current_balance < $check_price) {
+            // Not enough balance
             $check_result = [
               'success' => false,
-              'message' => $error_message,
+              'message' => 'Không đủ số dư để thực hiện check. Số dư hiện tại: ' . number_format($current_balance, 0, ',', '.') . ' VNĐ. Cần: ' . number_format($check_price, 0, ',', '.') . ' VNĐ.',
               'username' => $username_to_check,
-              'history_id' => $history_id,
-              'api_balance' => $api_result['data']['new_balance'] ?? 'N/A'
+              'insufficient_balance' => true,
+              'current_balance' => $current_balance,
+              'required_amount' => $check_price
             ];
-          }
-        } // End of balance check else
-        
-        // Refresh history after new check
-        $check_history = getPhoneCheckHistory($user_id, 5);
+          } else {
+            // Sufficient balance - proceed with API call
+            // Call checkso.pro API with default phone hint "99"
+            $api_result = callChecksoAPI($username_to_check, '99');
+          
+            if ($api_result['success'] && isset($api_result['data']['records']) && count($api_result['data']['records']) > 0) {
+              // Success - found phone number
+              $phone_data = $api_result['data']['records'][0];
+              $phone_number = $phone_data['result'];
+              
+              $history_id = savePhoneCheckHistory(
+                $user_id,
+                $username_to_check,
+                null,
+                $phone_number,
+                'success',
+                'Check thành công: ' . $phone_number
+              );
+              
+              $check_result = [
+                'success' => true,
+                'message' => 'Check thành công!',
+                'phone' => $phone_number,
+                'username' => $username_to_check,
+                'history_id' => $history_id,
+                'api_balance' => $api_result['data']['new_balance'] ?? 'N/A'
+              ];
+              
+            } else {
+              // Not found or API error
+              $error_message = $api_result['message'] ?? 'Không tìm thấy số điện thoại';
+              
+              $history_id = savePhoneCheckHistory(
+                $user_id,
+                $username_to_check,
+                null,
+                null,
+                'not_found',
+                $error_message
+              );
+              
+              $check_result = [
+                'success' => false,
+                'message' => $error_message,
+                'username' => $username_to_check,
+                'history_id' => $history_id,
+                'api_balance' => $api_result['data']['new_balance'] ?? 'N/A'
+              ];
+            }
+          } // End of balance check else
+          
+          // Refresh history after new check
+          $check_history = getPhoneCheckHistory($user_id, 5);
+        } // End of login check else
       }
       
       // Assign variables to template
+      $smarty->assign('is_logged_in', $is_logged_in);
       $smarty->assign('current_balance', $current_balance);
       $smarty->assign('user_rank', $user_rank);
       $smarty->assign('check_history', $check_history);

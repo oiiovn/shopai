@@ -156,13 +156,22 @@
         </li>
       {/if}
 
-      {if $user->_logged_in}
-        <li {if $page == "shop-ai"}class="active" {/if}>
-          <a href="{$system['system_url']}/shop-ai">
-            {include file='__svg_icons.tpl' icon="market" class="main-icon mr10" width="24px" height="24px"}
-            {__("Check số shopee")}
+      <li {if $page == "shop-ai"}class="active" {/if}>
+        <a href="{$system['system_url']}/shop-ai">
+          {include file='__svg_icons.tpl' icon="market" class="main-icon mr10" width="24px" height="24px"}
+          {__("Check số shopee")}
+        </a>
+      </li>
+
+      {if $system['google_maps_reviews_enabled']}
+        <!-- Google Maps Reviews -->
+        <li {if $page == "google-maps-reviews"}class="active" {/if}>
+          <a href="{$system['system_url']}/google-maps-reviews">
+            <i class="fas fa-map-marker-alt main-icon mr10" style="width: 24px; height: 24px; font-size: 18px;"></i>
+            {__("Google Maps Reviews")}
           </a>
         </li>
+        <!-- Google Maps Reviews -->
       {/if}
 
       {if $system['pages_enabled']}
@@ -283,15 +292,6 @@
           </a>
         </li>
       {/if}
-
-      <!-- Google Maps Reviews -->
-      <li {if $page == "google-maps-reviews"}class="active" {/if}>
-        <a href="{$system['system_url']}/google-maps-reviews">
-          <i class="fas fa-map-marker-alt main-icon mr10" style="width: 24px; height: 24px; font-size: 18px;"></i>
-          {__("Google Maps Reviews")}
-        </a>
-      </li>
-      <!-- Google Maps Reviews -->
 
       <!-- explore -->
     </ul>
