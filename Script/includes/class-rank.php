@@ -1,5 +1,7 @@
 <?php
 
+require_once 'config.php';
+
 /**
  * Rank System Class cho Shop-AI
  * 
@@ -37,14 +39,15 @@ class RankSystem {
      */
     public function getUserRank($user_id) {
         try {
-            // Lấy tổng chi tiêu của user
+            // Lấy tổng chi tiêu từ bảng shop_ai_user_ranks (đã được cộng dồn)
             $stmt = $this->pdo->prepare("
-                SELECT COALESCE(SUM(amount), 0) as total_spent 
-                FROM users_wallets_transactions 
-                WHERE user_id = ? AND type = 'spent'
+                SELECT total_spending as total_spent
+                FROM shop_ai_user_ranks 
+                WHERE user_id = ?
             ");
             $stmt->execute([$user_id]);
-            $total_spent = $stmt->fetch()['total_spent'] ?? 0;
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            $total_spent = $result['total_spent'] ?? 0;
             
             // Tìm rank phù hợp
             $stmt = $this->pdo->prepare("
@@ -119,43 +122,143 @@ class RankSystem {
     }
     
     /**
-     * Cập nhật rank của user
+     * Cập nhật rank của user (cộng dồn từ giao dịch mới nhất)
      */
     public function updateUserRank($user_id) {
         try {
-            $current_rank = $this->getUserRank($user_id);
-            
-            // Kiểm tra xem đã có record trong shop_ai_user_ranks chưa
+            // Lấy giao dịch mới nhất (ưu tiên withdraw)
             $stmt = $this->pdo->prepare("
-                SELECT * FROM shop_ai_user_ranks WHERE user_id = ?
+                SELECT amount, type, description
+                FROM users_wallets_transactions 
+                WHERE user_id = ? 
+                AND (description LIKE '%Check số Shopee%' OR description LIKE '%Hoàn tiền check số thất bại%')
+                ORDER BY transaction_id DESC 
+                LIMIT 1
             ");
+            $stmt->execute([$user_id]);
+            $latest_transaction = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if (!$latest_transaction) {
+                error_log("No recent Shop-AI transaction found for user $user_id");
+                return false;
+            }
+            
+            // Kiểm tra user đã có record trong shop_ai_user_ranks chưa
+            $stmt = $this->pdo->prepare("SELECT * FROM shop_ai_user_ranks WHERE user_id = ?");
             $stmt->execute([$user_id]);
             $existing = $stmt->fetch(PDO::FETCH_ASSOC);
             
             if ($existing) {
-                // Update existing record
-                $stmt = $this->pdo->prepare("
-                    UPDATE shop_ai_user_ranks 
-                    SET rank_id = ?, total_spent = ?, updated_at = NOW() 
-                    WHERE user_id = ?
+                // CỘNG DỒN vào total_spending hiện tại
+                $new_spending = $existing['total_spending'];
+                
+                if ($latest_transaction['type'] == 'withdraw' && strpos($latest_transaction['description'], 'Check số Shopee') !== false) {
+                    // Cộng tiền chi tiêu
+                    $new_spending += $latest_transaction['amount'];
+                    error_log("User $user_id: Cộng {$latest_transaction['amount']} VNĐ (withdraw)");
+                } elseif ($latest_transaction['type'] == 'recharge' && strpos($latest_transaction['description'], 'Hoàn tiền check số thất bại') !== false) {
+                    // Trừ tiền hoàn lại
+                    $new_spending -= $latest_transaction['amount'];
+                    error_log("User $user_id: Trừ {$latest_transaction['amount']} VNĐ (refund)");
+                }
+                
+                // Đảm bảo không âm
+                $new_spending = max(0, $new_spending);
+                
+                // Tìm rank phù hợp với tổng chi tiêu mới
+                $rank_stmt = $this->pdo->prepare("
+                    SELECT * FROM shop_ai_ranks 
+                    WHERE is_active = 1 AND min_spending <= ? 
+                    ORDER BY min_spending DESC 
+                    LIMIT 1
                 ");
-                $stmt->execute([
-                    $current_rank['rank_id'],
-                    $current_rank['user_total_spent'],
-                    $user_id
-                ]);
+                $rank_stmt->execute([$new_spending]);
+                $new_rank = $rank_stmt->fetch(PDO::FETCH_ASSOC);
+                
+                if (!$new_rank) {
+                    // Fallback to Bronze rank
+                    $rank_stmt = $this->pdo->prepare("
+                        SELECT * FROM shop_ai_ranks 
+                        WHERE is_active = 1 
+                        ORDER BY rank_order ASC 
+                        LIMIT 1
+                    ");
+                    $rank_stmt->execute();
+                    $new_rank = $rank_stmt->fetch(PDO::FETCH_ASSOC);
+                }
+                
+                // CHỈ CẬP NHẬT KHI RANK CAO HƠN
+                if ($new_rank['rank_id'] > $existing['current_rank_id']) {
+                    // Update existing record với rank mới
+                    $update_stmt = $this->pdo->prepare("
+                        UPDATE shop_ai_user_ranks 
+                        SET current_rank_id = ?, total_spending = ?, last_updated = NOW() 
+                        WHERE user_id = ?
+                    ");
+                    $update_stmt->execute([
+                        $new_rank['rank_id'],
+                        $new_spending,
+                        $user_id
+                    ]);
+                    
+                    error_log("User $user_id upgraded to rank {$new_rank['rank_name']} (ID: {$new_rank['rank_id']})");
+                } else {
+                    // CHỈ CẬP NHẬT TOTAL_SPENDING, KHÔNG ĐỔI RANK
+                    $update_stmt = $this->pdo->prepare("
+                        UPDATE shop_ai_user_ranks 
+                        SET total_spending = ?, last_updated = NOW() 
+                        WHERE user_id = ?
+                    ");
+                    $update_stmt->execute([
+                        $new_spending,
+                        $user_id
+                    ]);
+                    
+                    error_log("User $user_id: Updated spending to {$new_spending} VNĐ (rank unchanged)");
+                }
+                
             } else {
+                // Insert new record với chi tiêu từ giao dịch đầu tiên
+                $initial_spending = 0;
+                if ($latest_transaction['type'] == 'withdraw' && strpos($latest_transaction['description'], 'Check số Shopee') !== false) {
+                    $initial_spending = $latest_transaction['amount'];
+                }
+                
+                // Tìm rank phù hợp
+                $rank_stmt = $this->pdo->prepare("
+                    SELECT * FROM shop_ai_ranks 
+                    WHERE is_active = 1 AND min_spending <= ? 
+                    ORDER BY min_spending DESC 
+                    LIMIT 1
+                ");
+                $rank_stmt->execute([$initial_spending]);
+                $new_rank = $rank_stmt->fetch(PDO::FETCH_ASSOC);
+                
+                if (!$new_rank) {
+                    // Fallback to Bronze rank
+                    $rank_stmt = $this->pdo->prepare("
+                        SELECT * FROM shop_ai_ranks 
+                        WHERE is_active = 1 
+                        ORDER BY rank_order ASC 
+                        LIMIT 1
+                    ");
+                    $rank_stmt->execute();
+                    $new_rank = $rank_stmt->fetch(PDO::FETCH_ASSOC);
+                }
+                
                 // Insert new record
-                $stmt = $this->pdo->prepare("
+                $insert_stmt = $this->pdo->prepare("
                     INSERT INTO shop_ai_user_ranks 
-                    (user_id, rank_id, total_spent, created_at, updated_at) 
+                    (user_id, current_rank_id, total_spending, created_at, last_updated) 
                     VALUES (?, ?, ?, NOW(), NOW())
                 ");
-                $stmt->execute([
+                $insert_stmt->execute([
                     $user_id,
-                    $current_rank['rank_id'],
-                    $current_rank['user_total_spent']
+                    $new_rank['rank_id'],
+                    $initial_spending
                 ]);
+                
+                error_log("User $user_id created with rank {$new_rank['rank_name']} (ID: {$new_rank['rank_id']})");
             }
             
             return true;

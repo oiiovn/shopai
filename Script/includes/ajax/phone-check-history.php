@@ -106,6 +106,15 @@ function deductWalletBalance($user_id, $amount, $description) {
         ");
         $stmt->execute([$user_id, $amount, $description]);
         
+        // Update user rank immediately after Shop-AI transaction
+        try {
+            require_once '../../includes/class-rank.php';
+            $rankSystem = new RankSystem();
+            $rankSystem->updateUserRank($user_id);
+        } catch (Exception $e) {
+            error_log("Rank update error for user $user_id: " . $e->getMessage());
+        }
+        
         $pdo->commit();
         
         return [

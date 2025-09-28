@@ -2087,7 +2087,7 @@
                         <!-- Thông tin số dư và giá check -->
                         <div class="alert alert-info mb-3" style="border-radius: 8px;">
                           <div class="row">
-                            <div class="col-6">
+                            <div class="col-4">
                               <div class="text-center">
                                 <i class="fa fa-wallet fa-lg mb-2" style="color: #28a745;"></i>
                                 <div class="small text-muted">Số dư hiện tại</div>
@@ -2100,7 +2100,7 @@
                                 </div>
                               </div>
                             </div>
-                            <div class="col-6">
+                            <div class="col-4">
                               <div class="text-center">
                                 <i class="fa fa-tag fa-lg mb-2" style="color: #007bff;"></i>
                                 <div class="small text-muted">Giá check</div>
@@ -2109,6 +2109,19 @@
                                     {number_format($user_rank.check_price, 0, ',', '.')} VNĐ
                                   {else}
                                     30.000 VNĐ
+                                  {/if}
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-4">
+                              <div class="text-center">
+                                <i class="fa fa-chart-line fa-lg mb-2" style="color: #fd7e14;"></i>
+                                <div class="small text-muted">Tổng đã chi</div>
+                                <div class="h6 mb-0 font-weight-bold" style="color: #fd7e14;">
+                                  {if isset($user_rank) && isset($user_rank.user_total_spent)}
+                                    {number_format($user_rank.user_total_spent, 0, ',', '.')} VNĐ
+                                  {else}
+                                    0 VNĐ
                                   {/if}
                                 </div>
                               </div>
