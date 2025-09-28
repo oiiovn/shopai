@@ -19364,8 +19364,8 @@ class User
       if (!in_array($args['birth_day'], range(1, 31))) {
         throw new ValidationException(__("Please select a valid birth day (1-31)"));
       }
-      if (!in_array($args['birth_year'], range(1905, 2017))) {
-        throw new ValidationException(__("Please select a valid birth year (1905-2017)"));
+      if (!in_array($args['birth_year'], range(1985, 2015))) {
+        throw new ValidationException(__("Please select a valid birth year (1985-2015)"));
       }
       if (date("Y") - $args['birth_year'] < $system['minimum_age']) {
         throw new ValidationException(__("Sorry, You must be") . " " . $system['minimum_age'] . " " . __("years old to register"));

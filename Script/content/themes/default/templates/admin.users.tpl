@@ -536,7 +536,7 @@
                   <div class="col">
                     <select class="form-select" name="birth_year">
                       <option value="none">{__("Select Year")}</option>
-                      {for $i=1905 to 2015}
+                      {for $i=1985 to 2015}
                         <option {if $data['user_birthdate_parsed']['year'] == $i}selected{/if} value="{$i}">{$i}</option>
                       {/for}
                     </select>
