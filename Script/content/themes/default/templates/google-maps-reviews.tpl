@@ -40,6 +40,18 @@ console.log('🔍 Available tasks count:', {if $available_tasks}{$available_task
                 Tạo yêu cầu
               </a>
             </li>
+            <li>
+              <a href="{$system['system_url']}/shop-ai/recharge">
+                <i class="fa fa-credit-card main-icon mr-2" style="width: 24px; height: 24px; font-size: 18px;"></i>
+                Nạp tiền
+              </a>
+            </li>
+            <li {if $view == 'reward-history'}class="active" {/if}>
+              <a href="{$system['system_url']}/google-maps-reviews/reward-history">
+                <i class="fa fa-history main-icon mr-2" style="width: 24px; height: 24px; font-size: 18px;"></i>
+                Lịch sử thưởng
+              </a>
+            </li>
           </ul>
         </div>
       </div>
@@ -70,6 +82,16 @@ console.log('🔍 Available tasks count:', {if $available_tasks}{$available_task
           <li {if $view == 'create-request'}class="active" {/if}>
             <a href="{$system['system_url']}/google-maps-reviews/create-request">
               Tạo mới
+            </a>
+          </li>
+          <li>
+            <a href="{$system['system_url']}/shop-ai/recharge">
+              Nạp tiền
+            </a>
+          </li>
+          <li {if $view == 'reward-history'}class="active" {/if}>
+            <a href="{$system['system_url']}/google-maps-reviews/reward-history">
+              Lịch sử thưởng
             </a>
           </li>
         </ul>

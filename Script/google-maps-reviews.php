@@ -93,6 +93,8 @@ $view = isset($_GET['view']) ? $_GET['view'] : 'dashboard';
 // page header
 if ($view == 'my-reviews') {
     page_header(__("My Reviews"));
+} elseif ($view == 'reward-history') {
+    page_header(__("Lịch sử thưởng"));
 } else {
     page_header(__("Google Maps Reviews"));
 }
@@ -145,6 +147,33 @@ try {
         }
     }
     
+    // Get user's reward history (for reward-history view)
+    $reward_history = array();
+    if ($view == 'reward-history') {
+        $get_reward_history = $db->query("
+            SELECT 
+                gmsr.sub_request_id,
+                gmsr.reward_amount,
+                gmsr.payment_status,
+                gmsr.reward_paid,
+                gmsr.paid_at,
+                gmsr.created_at,
+                gmr.place_name,
+                gmr.place_address
+            FROM google_maps_review_sub_requests gmsr
+            LEFT JOIN google_maps_review_requests gmr ON gmsr.parent_request_id = gmr.request_id
+            WHERE gmsr.assigned_user_id = '{$user->_data['user_id']}'
+            AND gmsr.status = 'completed'
+            ORDER BY gmsr.created_at DESC
+        ");
+        
+        if ($get_reward_history->num_rows > 0) {
+            while ($reward = $get_reward_history->fetch_assoc()) {
+                $reward_history[] = $reward;
+            }
+        }
+    }
+    
     // Get user's assigned review tasks (for my-reviews view)
     if ($view == 'my-reviews') {
         // Pagination settings
@@ -190,6 +219,7 @@ $smarty->assign('user_reviews', $user_reviews);
 $smarty->assign('user_earnings', $user_earnings);
 $smarty->assign('user_wallet_balance', $user_wallet_balance);
 $smarty->assign('assigned_tasks', $assigned_tasks);
+$smarty->assign('reward_history', $reward_history);
 $smarty->assign('view', $view);
 
 // Pagination variables
@@ -199,8 +229,13 @@ if ($view == 'my-reviews') {
     $smarty->assign('total_tasks', $total_tasks);
 }
 
-// page footer
-page_footer('google-maps-reviews');
+// Display template based on view
+if ($view == 'reward-history') {
+    $smarty->display('reward-history.tpl');
+} else {
+    // page footer
+    page_footer('google-maps-reviews');
+}
 
 /**
  * Handle API requests
