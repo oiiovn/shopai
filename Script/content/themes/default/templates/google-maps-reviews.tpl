@@ -8,8 +8,14 @@ console.log('🔍 Available tasks count:', {if $available_tasks}{$available_task
 </script>
 
 <!-- page content -->
-<div class="{if $system['fluid_design']}container-fluid{else}container{/if} mt20">
+<div class="{if $system['fluid_design']}container-fluid{else}container{/if} mt20 sg-offcanvas">
   <div class="row">
+
+    <!-- side panel (mobile only) -->
+    <div class="col-12 d-block d-md-none sg-offcanvas-sidebar">
+      {include file='_sidebar.tpl'}
+    </div>
+    <!-- side panel -->
 
     <!-- google-maps-reviews sidebar (desktop only) -->
     <div class="col-md-4 col-lg-3 sg-offcanvas-sidebar js_sticky-sidebar shop-ai-sidebar d-none d-md-block">
