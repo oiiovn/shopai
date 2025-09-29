@@ -96,6 +96,50 @@
 
       <!-- content -->
       <div class="row">
+        <!-- statistics cards -->
+        {if $reward_history}
+          <div class="col-12 mb-4">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="card bg-primary text-white">
+                  <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                      <div>
+                        <h4 class="mb-0">{$reward_history|count}</h4>
+                        <p class="mb-0">Đánh giá hoàn thành</p>
+                      </div>
+                      <div class="align-self-center">
+                        <i class="fa fa-check-circle fa-2x"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="card bg-success text-white">
+                  <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                      <div>
+                        <h4 class="mb-0">
+                          {assign var="total_earnings" value=0}
+                          {foreach $reward_history as $reward}
+                            {assign var="total_earnings" value=$total_earnings+$reward.reward_amount}
+                          {/foreach}
+                          {number_format($total_earnings, 0, ',', '.')} VND
+                        </h4>
+                        <p class="mb-0">Tổng thu nhập</p>
+                      </div>
+                      <div class="align-self-center">
+                        <i class="fa fa-money-bill-wave fa-2x"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        {/if}
+        
         <!-- main content -->
         <div class="col-12">
           <div class="card">
@@ -110,9 +154,7 @@
                       <tr>
                         <th>Địa điểm</th>
                         <th>Số tiền thưởng</th>
-                        <th>Trạng thái thanh toán</th>
                         <th>Ngày hoàn thành</th>
-                        <th>Ngày thanh toán</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -128,60 +170,12 @@
                             </span>
                           </td>
                           <td>
-                            {if $reward.payment_status == 'paid'}
-                              <span class="badge badge-success">
-                                <i class="fa fa-check-circle mr-1"></i>Đã thanh toán
-                              </span>
-                            {elseif $reward.payment_status == 'pending'}
-                              <span class="badge badge-warning">
-                                <i class="fa fa-clock mr-1"></i>Chờ thanh toán
-                              </span>
-                            {else}
-                              <span class="badge badge-secondary">
-                                <i class="fa fa-times mr-1"></i>Chưa thanh toán
-                              </span>
-                            {/if}
-                          </td>
-                          <td>
                             {$reward.created_at|date_format:"%d/%m/%Y %H:%M"}
-                          </td>
-                          <td>
-                            {if $reward.paid_at}
-                              {$reward.paid_at|date_format:"%d/%m/%Y %H:%M"}
-                            {else}
-                              <span class="text-muted">-</span>
-                            {/if}
                           </td>
                         </tr>
                       {/foreach}
                     </tbody>
                   </table>
-                </div>
-                
-                <!-- Tổng kết -->
-                <div class="row mt-4">
-                  <div class="col-md-6">
-                    <div class="card bg-light">
-                      <div class="card-body text-center">
-                        <h5 class="card-title text-primary">Tổng số đánh giá</h5>
-                        <h3 class="text-primary">{$reward_history|count}</h3>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-md-6">
-                    <div class="card bg-light">
-                      <div class="card-body text-center">
-                        <h5 class="card-title text-success">Tổng thu nhập</h5>
-                        <h3 class="text-success">
-                          {assign var="total_earnings" value=0}
-                          {foreach $reward_history as $reward}
-                            {assign var="total_earnings" value=$total_earnings+$reward.reward_amount}
-                          {/foreach}
-                          {number_format($total_earnings, 0, ',', '.')} VND
-                        </h3>
-                      </div>
-                    </div>
-                  </div>
                 </div>
               {else}
                 <div class="text-center py-5">
