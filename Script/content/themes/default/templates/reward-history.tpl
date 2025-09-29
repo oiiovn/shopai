@@ -182,7 +182,10 @@
                 <!-- Mobile card view -->
                 <div class="d-block d-md-none">
                   {foreach $reward_history as $reward}
-                    <div class="card mb-3 border-left-success" style="border-left: 4px solid #28a745;">
+                    <div class="card mb-3 border-left-success shadow-sm" 
+                         style="border-left: 4px solid #28a745; transition: all 0.3s ease; cursor: pointer;"
+                         onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.15)'"
+                         onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.1)'">
                       <div class="card-body p-3">
                         <div class="d-flex justify-content-between align-items-start mb-2">
                           <div class="flex-grow-1">
@@ -190,7 +193,7 @@
                             <small class="text-muted">{$reward.place_address}</small>
                           </div>
                           <div class="text-end">
-                            <span class="badge bg-success fs-6">
+                            <span class="badge bg-success fs-6 shadow-sm">
                               {number_format($reward.reward_amount, 0, ',', '.')} VND
                             </span>
                           </div>
