@@ -29,7 +29,7 @@
 {/if}
 
 <!-- Phương Nhi Chat Widget -->
-{include file='chatgpt_widget.tpl'}
+{include file='phuong_nhi_widget.tpl'}
 <!-- Footer Custom JavaScript -->
 
 <!-- Analytics Code -->
