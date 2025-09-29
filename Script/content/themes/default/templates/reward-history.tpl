@@ -148,7 +148,8 @@
             </div>
             <div class="card-body">
               {if $reward_history}
-                <div class="table-responsive">
+                <!-- Desktop table view -->
+                <div class="table-responsive d-none d-md-block">
                   <table class="table table-striped">
                     <thead>
                       <tr>
@@ -176,6 +177,36 @@
                       {/foreach}
                     </tbody>
                   </table>
+                </div>
+                
+                <!-- Mobile card view -->
+                <div class="d-block d-md-none">
+                  {foreach $reward_history as $reward}
+                    <div class="card mb-3 border-left-success" style="border-left: 4px solid #28a745;">
+                      <div class="card-body p-3">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                          <div class="flex-grow-1">
+                            <h6 class="card-title mb-1 text-dark">{$reward.place_name}</h6>
+                            <small class="text-muted">{$reward.place_address}</small>
+                          </div>
+                          <div class="text-end">
+                            <span class="badge bg-success fs-6">
+                              {number_format($reward.reward_amount, 0, ',', '.')} VND
+                            </span>
+                          </div>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                          <small class="text-muted">
+                            <i class="fa fa-calendar mr-1"></i>
+                            {$reward.created_at|date_format:"%d/%m/%Y %H:%M"}
+                          </small>
+                          <small class="text-success">
+                            <i class="fa fa-check-circle mr-1"></i>Hoàn thành
+                          </small>
+                        </div>
+                      </div>
+                    </div>
+                  {/foreach}
                 </div>
               {else}
                 <div class="text-center py-5">
