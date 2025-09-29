@@ -2,7 +2,7 @@
 {include file='_header.tpl'}
 
 <!-- page content -->
-<div class="container">
+<div class="container mt20">
   <div class="row">
     <!-- sidebar -->
     <div class="col-12 col-md-4 col-lg-3 sg-offcanvas-sidebar js_sticky-sidebar shop-ai-sidebar d-none d-md-block">
