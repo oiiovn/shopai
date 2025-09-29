@@ -154,16 +154,16 @@ try {
             SELECT 
                 gmsr.sub_request_id,
                 gmsr.reward_amount,
-                gmsr.payment_status,
-                gmsr.reward_paid,
-                gmsr.paid_at,
                 gmsr.created_at,
+                gmsr.status,
+                gmsr.completed_at,
+                gmsr.verified_at,
                 gmr.place_name,
                 gmr.place_address
             FROM google_maps_review_sub_requests gmsr
             LEFT JOIN google_maps_review_requests gmr ON gmsr.parent_request_id = gmr.request_id
             WHERE gmsr.assigned_user_id = '{$user->_data['user_id']}'
-            AND gmsr.status = 'completed'
+            AND gmsr.status IN ('completed', 'verified')
             ORDER BY gmsr.created_at DESC
         ");
         
