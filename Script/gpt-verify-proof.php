@@ -205,18 +205,39 @@ Return only JSON, no additional text.";
         exit;
     }
     
-    // Check time criteria (hidden - không báo lỗi về thời gian)
+    // Check time criteria - kiểm tra thời gian đánh giá
     $review_time_minutes = isset($verification_result['review_time_minutes']) ? (int)$verification_result['review_time_minutes'] : 0;
-    $time_valid = $review_time_minutes <= 5; // Tiêu chí ngầm: dưới 5 phút
+    $time_valid = $review_time_minutes <= 5; // Tiêu chí: dưới 5 phút
     
     // Update database based on verification result
     $new_status = $verification_result['verified'] ? 'completed' : 'expired';
     $verification_notes = $verification_result['verification_notes'] ?? '';
     
-    // Nếu GPT đã verify nhưng thời gian không hợp lệ, đánh dấu thất bại (ngầm)
+    // Kiểm tra URL trùng lặp trước khi xử lý
+    $review_link = $proof_data['shared_link'] ?? '';
+    if (!empty($review_link)) {
+        $check_duplicate = $db->query("
+            SELECT sub_request_id 
+            FROM google_maps_review_sub_requests 
+            WHERE JSON_EXTRACT(proof_data, '$.shared_link') = '{$review_link}'
+            AND sub_request_id != '{$sub_request_id}'
+            AND status IN ('completed', 'verified')
+        ");
+        
+        if ($check_duplicate->num_rows > 0) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'URL đánh giá này đã được sử dụng trước đó. Vui lòng sử dụng URL khác.',
+                'error_type' => 'duplicate_url'
+            ]);
+            exit;
+        }
+    }
+    
+    // Nếu GPT đã verify nhưng thời gian không hợp lệ, đánh dấu thất bại với lý do rõ ràng
     if ($verification_result['verified'] && !$time_valid) {
         $new_status = 'expired';
-        $verification_notes = $verification_result['reason'] ?? 'Verification failed';
+        $verification_notes = "Sử dụng đánh giá của người khác";
     } elseif (!$verification_result['verified']) {
         $verification_notes = $verification_result['reason'] ?? 'Verification failed';
     }

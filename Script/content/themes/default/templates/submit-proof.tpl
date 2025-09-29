@@ -58,9 +58,28 @@
                             </div>
                             
                             <div class="form-group">
-                                <button type="submit" class="btn btn-primary btn-lg">
+                                <button type="submit" class="btn btn-primary btn-lg" id="submit-btn">
                                     <i class="fas fa-paper-plane mr5"></i>Gửi bằng chứng
                                 </button>
+                            </div>
+                            
+                            <!-- Loading State -->
+                            <div class="text-center mt-3" id="loading-state" style="display: none;">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Đang xử lý...</span>
+                                </div>
+                                <p class="mt-2">Đang gửi bằng chứng và xác minh...</p>
+                            </div>
+                            
+                            <!-- Success/Error Messages -->
+                            <div class="alert alert-success mt-3" id="success-message" style="display: none;">
+                                <i class="fas fa-check-circle me-2"></i>
+                                <span id="success-text"></span>
+                            </div>
+                            
+                            <div class="alert alert-danger mt-3" id="error-message" style="display: none;">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <span id="error-text"></span>
                             </div>
                         </form>
                     {else}
@@ -170,27 +189,74 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+// Helper functions
+function showMessage(type, message) {
+    // Hide all messages first
+    document.getElementById('success-message').style.display = 'none';
+    document.getElementById('error-message').style.display = 'none';
+    
+    if (type === 'success') {
+        document.getElementById('success-text').textContent = message;
+        document.getElementById('success-message').style.display = 'block';
+        
+        // Auto redirect after 3 seconds
+        setTimeout(() => {
+            window.location.href = '{$system.system_url}/google-maps-reviews/my-reviews';
+        }, 3000);
+    } else {
+        document.getElementById('error-text').textContent = message;
+        document.getElementById('error-message').style.display = 'block';
+    }
+}
+
+function resetForm() {
+    const submitBtn = document.getElementById('submit-btn');
+    const loadingState = document.getElementById('loading-state');
+    
+    // Reset button state
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = '<i class="fas fa-paper-plane mr5"></i>Gửi bằng chứng';
+    submitBtn.style.display = 'block';
+    loadingState.style.display = 'none';
+}
+
 // Xử lý form submit
 const submitForm = document.getElementById('submit-proof-form');
 if (submitForm) {
     submitForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
-        // Debug user info
-        console.log('Window.user:', window.user);
-        console.log('User logged in:', window.user ? window.user.logged_in : 'undefined');
-        console.log('User ID:', window.user ? window.user.user_id : 'undefined');
+        const submitBtn = document.getElementById('submit-btn');
+        const loadingState = document.getElementById('loading-state');
+        
+        // Chặn nhấn nút hai lần - vô hiệu hóa ngay lập tức
+        if (submitBtn.disabled) {
+            return; // Đã được xử lý, không làm gì thêm
+        }
+        
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr5"></i>Đang xử lý...';
+        
+        // Show loading state
+        submitBtn.style.display = 'none';
+        loadingState.style.display = 'block';
+        
+        // Hide any previous messages
+        document.getElementById('success-message').style.display = 'none';
+        document.getElementById('error-message').style.display = 'none';
         
         const screenshot = document.getElementById('screenshot').files[0];
         if (!screenshot) {
-            alert('Vui lòng chọn ảnh chụp màn hình!');
+            showMessage('error', 'Vui lòng chọn ảnh chụp màn hình!');
+            resetForm();
             return;
         }
         
         // Kiểm tra kích thước file
         const maxSize = 5 * 1024 * 1024; // 5MB
         if (screenshot.size > maxSize) {
-            alert('Ảnh quá lớn! Vui lòng chọn ảnh nhỏ hơn 5MB.');
+            showMessage('error', 'Ảnh quá lớn! Vui lòng chọn ảnh nhỏ hơn 5MB.');
+            resetForm();
             return;
         }
         
@@ -207,15 +273,33 @@ if (submitForm) {
         .then(data => {
             console.log('Response data:', data);
             if (data.success) {
-                alert('Gửi bằng chứng thành công! Đang xác minh...');
-                window.location.href = '{$system.system_url}/google-maps-reviews/my-reviews';
+                showMessage('success', 'Gửi bằng chứng thành công! Đang xác minh... Sẽ chuyển hướng trong 3 giây.');
             } else {
-                alert('Lỗi: ' + data.message);
+                // Xử lý các loại lỗi cụ thể
+                let errorMessage = 'Có lỗi xảy ra';
+                
+                if (data.message) {
+                    if (data.message.includes('duplicate') || data.message.includes('trùng')) {
+                        errorMessage = 'URL đánh giá này đã được sử dụng trước đó. Vui lòng sử dụng URL khác.';
+                    } else if (data.message.includes('time') || data.message.includes('thời gian')) {
+                        errorMessage = 'Thời gian đánh giá không hợp lệ. Vui lòng kiểm tra lại.';
+                    } else if (data.message.includes('image') || data.message.includes('ảnh')) {
+                        errorMessage = 'Hình ảnh không hợp lệ. Vui lòng chọn ảnh khác.';
+                    } else if (data.message.includes('link') || data.message.includes('URL')) {
+                        errorMessage = 'Link đánh giá không hợp lệ. Vui lòng kiểm tra lại URL.';
+                    } else {
+                        errorMessage = 'Lỗi: ' + data.message;
+                    }
+                }
+                
+                showMessage('error', errorMessage);
+                resetForm();
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Có lỗi xảy ra khi gửi bằng chứng');
+            showMessage('error', 'Có lỗi xảy ra khi gửi bằng chứng. Vui lòng thử lại.');
+            resetForm();
         });
     });
 }
