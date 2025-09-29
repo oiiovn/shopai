@@ -1,3 +1,4 @@
+{include file='_head.tpl'}
 {include file='_header.tpl'}
 
 <!-- page content -->
