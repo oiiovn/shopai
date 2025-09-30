@@ -132,6 +132,10 @@
             {/if}
             <!-- boosted post -->
 
+            <!-- review tasks -->
+            {include file='_review_tasks_mini_card.tpl'}
+            <!-- review tasks -->
+
             <!-- posts -->
             {include file='_posts.tpl' _get="newsfeed"}
             <!-- posts -->
@@ -462,5 +466,376 @@
 
   </div>
 </div>
+
+<style>
+.review-task-mini-card {
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    padding: 8px;
+    background: #fff;
+    height: 140px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all 0.2s ease;
+    overflow: hidden;
+    position: relative;
+}
+
+.review-task-mini-card:hover {
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    transform: translateY(-1px);
+}
+
+.review-task-mini-card h6 {
+    color: #333;
+    font-weight: 600;
+    font-size: 13px;
+    line-height: 1.2;
+    margin: 0 0 4px 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.review-task-mini-card .text-muted {
+    font-size: 11px;
+    line-height: 1.2;
+    margin: 0 0 4px 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.review-task-mini-card .text-warning {
+    font-size: 10px;
+    line-height: 1.2;
+    margin: 0 0 4px 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.review-task-mini-card .text-success {
+    font-size: 12px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.review-task-mini-card .btn {
+    font-size: 11px;
+    padding: 4px 8px;
+    height: 24px;
+    line-height: 1;
+}
+
+.review-task-mini-card .d-flex {
+    margin-top: auto;
+}
+
+
+.review-task-mini-card .task-avatar img {
+    border: 1px solid #e9ecef;
+}
+
+.review-task-mini-card .badge-warning {
+    background-color: #ffc107;
+    color: #000;
+    font-weight: 600;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+}
+
+.review-task-mini-card .verified-badge {
+    vertical-align: middle;
+    display: inline-flex;
+    align-items: center;
+}
+
+/* Horizontal mini card styles */
+.review-task-mini-card-horizontal {
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    padding: 12px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s ease;
+    position: relative;
+    min-height: 80px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.review-task-mini-card-horizontal:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transform: translateY(-1px);
+}
+
+.review-task-mini-card-horizontal .task-info {
+    flex: 1;
+    margin-right: 15px;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.review-task-mini-card-horizontal .task-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.review-task-mini-card-horizontal .task-details {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.review-task-mini-card-horizontal .task-avatar {
+    margin-right: 8px;
+}
+
+.review-task-mini-card-horizontal .task-avatar img {
+    width: 32px;
+    height: 32px;
+    border: 1px solid #e9ecef;
+}
+
+.review-task-mini-card-horizontal .task-title {
+    font-weight: 600;
+    font-size: 14px;
+    color: #333;
+    margin: 0 0 4px 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.review-task-mini-card-horizontal .task-address {
+    font-size: 12px;
+    color: #6c757d;
+    margin: 0 0 4px 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.review-task-mini-card-horizontal .task-expiry {
+    font-size: 11px;
+    color: #ffc107;
+    margin: 0;
+}
+
+.review-task-mini-card-horizontal .task-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    flex-shrink: 0;
+    min-width: 120px;
+}
+
+.review-task-mini-card-horizontal .task-reward {
+    font-size: 14px;
+    font-weight: 700;
+    color: #28a745;
+    margin: 0;
+}
+
+.review-task-mini-card-horizontal .btn {
+    font-size: 12px;
+    padding: 6px 12px;
+    height: 32px;
+    line-height: 1;
+}
+
+.review-task-mini-card-horizontal .badge-warning {
+    background-color: #ffc107;
+    color: #000;
+    font-weight: 600;
+    font-size: 9px;
+    padding: 2px 6px;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+}
+
+.review-task-mini-card-horizontal .verified-badge {
+    vertical-align: middle;
+    display: inline-flex;
+    align-items: center;
+}
+
+/* Horizontal scroll container */
+.review-tasks-horizontal-scroll {
+    display: flex;
+    overflow-x: auto;
+    gap: 15px;
+    padding: 10px 0;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+}
+
+.review-tasks-horizontal-scroll::-webkit-scrollbar {
+    height: 6px;
+}
+
+.review-tasks-horizontal-scroll::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.review-tasks-horizontal-scroll::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+.review-tasks-horizontal-scroll::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+.review-task-item {
+    flex: 0 0 350px;
+    min-width: 350px;
+}
+
+</style>
+
+<script>
+// Global variable to store current task ID
+var currentTaskId = null;
+
+function showTaskModal(subRequestId, placeName, placeAddress, rewardAmount, expiryDate) {
+  currentTaskId = subRequestId;
+  
+  // Populate modal content using vanilla JS
+  var modalPlaceName = document.getElementById('modalPlaceName');
+  var modalPlaceAddress = document.getElementById('modalPlaceAddress');
+  var modalRewardAmount = document.getElementById('modalRewardAmount');
+  var modalExpiry = document.getElementById('modalExpiry');
+  
+  if (modalPlaceName) modalPlaceName.textContent = placeName;
+  if (modalPlaceAddress) modalPlaceAddress.textContent = placeAddress;
+  if (modalRewardAmount) modalRewardAmount.textContent = parseInt(rewardAmount).toLocaleString('vi-VN') + ' VND';
+  if (modalExpiry) modalExpiry.textContent = expiryDate;
+  
+  // Show modal using Bootstrap 5
+  var modalElement = document.getElementById('taskModal');
+  if (modalElement) {
+    var modal = new bootstrap.Modal(modalElement);
+    modal.show();
+  }
+}
+
+function assignTask(taskId) {
+    // Ngăn chặn double-click
+    if (window.assigningTask) {
+        return;
+    }
+    window.assigningTask = true;
+    
+    // Sử dụng fetch thay vì jQuery AJAX
+    var formData = new FormData();
+    formData.append('action', 'assign_task');
+    formData.append('sub_request_id', taskId);
+    
+    fetch('{$system['system_url']}/google-maps-reviews.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        return response.text().then(text => {
+            try {
+                return JSON.parse(text);
+            } catch (e) {
+                return { error: 'Invalid JSON response: ' + text };
+            }
+        });
+    })
+    .then(data => {
+        if (data.success) {
+            // Sử dụng toast notification của hệ thống
+            if (typeof noty_notification !== 'undefined') {
+                noty_notification('', '✅ Nhận nhiệm vụ thành công!', '');
+            } else if (typeof modal !== 'undefined') {
+                modal('#modal-success', { title: 'Thành công', message: '✅ Nhận nhiệm vụ thành công!' });
+            } else {
+                alert('✅ Nhận nhiệm vụ thành công!');
+            }
+            // Chuyển hướng đến trang My Reviews
+            setTimeout(function() {
+                window.location.href = '{$system['system_url']}/google-maps-reviews/my-reviews';
+            }, 1000);
+        } else {
+            // Sử dụng toast notification lỗi của hệ thống
+            if (typeof noty_notification !== 'undefined') {
+                noty_notification('', '❌ ' + data.error, '');
+            } else if (typeof modal !== 'undefined') {
+                modal('#modal-error', { title: 'Lỗi', message: '❌ ' + data.error });
+            } else {
+                alert('❌ Lỗi: ' + data.error);
+            }
+        }
+        
+        // Reset flag sau khi xử lý xong
+        window.assigningTask = false;
+    })
+    .catch(error => {
+        if (typeof noty_notification !== 'undefined') {
+            noty_notification('', '❌ Đã xảy ra lỗi. Vui lòng thử lại.', '');
+        } else if (typeof modal !== 'undefined') {
+            modal('#modal-error', { title: 'Lỗi', message: '❌ Đã xảy ra lỗi. Vui lòng thử lại.' });
+        } else {
+            alert('❌ Đã xảy ra lỗi. Vui lòng thử lại.');
+        }
+        // Reset flag khi có lỗi
+        window.assigningTask = false;
+    });
+}
+
+// Handle confirm button click - Sử dụng vanilla JS
+function bindConfirmButton() {
+  var confirmBtn = document.getElementById('confirmAssignBtn');
+  if (confirmBtn) {
+    confirmBtn.addEventListener('click', function() {
+      if (currentTaskId) {
+        var modal = bootstrap.Modal.getInstance(document.getElementById('taskModal'));
+        modal.hide();
+        assignTask(currentTaskId);
+      } else {
+        alert('❌ Lỗi: Không tìm thấy ID nhiệm vụ');
+      }
+    });
+  } else {
+    setTimeout(bindConfirmButton, 100);
+  }
+}
+
+// Bind when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', bindConfirmButton);
+} else {
+  bindConfirmButton();
+}
+
+// Fallback: Try to bind after a delay
+setTimeout(function() {
+  var confirmBtn = document.getElementById('confirmAssignBtn');
+  if (confirmBtn && !confirmBtn.hasAttribute('data-bound')) {
+    confirmBtn.setAttribute('data-bound', 'true');
+    confirmBtn.addEventListener('click', function() {
+      if (currentTaskId) {
+        var modal = bootstrap.Modal.getInstance(document.getElementById('taskModal'));
+        modal.hide();
+        assignTask(currentTaskId);
+      } else {
+        alert('❌ Lỗi: Không tìm thấy ID nhiệm vụ');
+      }
+    });
+  }
+}, 2000);
+</script>
 
 {include file='_footer.tpl'}

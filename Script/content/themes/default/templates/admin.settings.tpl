@@ -32,6 +32,11 @@
             <i class="fa fa-microchip fa-fw mr5"></i><strong>{__("Features")}</strong>
           </a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#Tools" data-bs-toggle="tab">
+            <i class="fa fa-toolbox fa-fw mr5"></i><strong>{__("Tools")}</strong>
+          </a>
+        </li>
       </ul>
       <!-- panel nav -->
     </div>
@@ -875,6 +880,41 @@
         </form>
       </div>
       <!-- Features -->
+
+      <!-- Tools -->
+      <div class="tab-pane" id="Tools">
+        <form class="js_ajax-forms" data-url="admin/settings.php?edit=tools">
+          <div class="card-body">
+            <div class="form-table-row">
+              <div class="avatar">
+                {include file='__svg_icons.tpl' icon="map" class="main-icon" width="40px" height="40px"}
+              </div>
+              <div>
+                <div class="form-label h6">{__("Google Maps Reviews")}</div>
+                <div class="form-text d-none d-sm-block">{__("Enable/Disable Google Maps Reviews menu in sidebar")}</div>
+              </div>
+              <div class="text-end">
+                <label class="switch" for="google_maps_reviews_enabled">
+                  <input type="checkbox" name="google_maps_reviews_enabled" id="google_maps_reviews_enabled" {if $system['google_maps_reviews_enabled']}checked{/if}>
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            </div>
+
+            <!-- success -->
+            <div class="alert alert-success mt15 mb0 x-hidden"></div>
+            <!-- success -->
+
+            <!-- error -->
+            <div class="alert alert-danger mt15 mb0 x-hidden"></div>
+            <!-- error -->
+          </div>
+          <div class="card-footer text-end">
+            <button type="submit" class="btn btn-primary">{__("Save Changes")}</button>
+          </div>
+        </form>
+      </div>
+      <!-- Tools -->
     </div>
     <!-- tab-content -->
 

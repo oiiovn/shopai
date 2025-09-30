@@ -139,6 +139,15 @@ try {
       ]);
       break;
 
+    case 'tools':
+      /* prepare */
+      $_POST['google_maps_reviews_enabled'] = (isset($_POST['google_maps_reviews_enabled'])) ? '1' : '0';
+      /* update */
+      update_system_options([
+        'google_maps_reviews_enabled' => secure($_POST['google_maps_reviews_enabled'])
+      ]);
+      break;
+
     case 'posts':
       /* prepare */
       $_POST['stories_enabled'] = (isset($_POST['stories_enabled'])) ? '1' : '0';

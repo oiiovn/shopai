@@ -156,13 +156,19 @@
         </li>
       {/if}
 
-      {if $user->_logged_in}
-        <li {if $page == "shop-ai"}class="active" {/if}>
-          <a href="{$system['system_url']}/shop-ai">
-            {include file='__svg_icons.tpl' icon="market" class="main-icon mr10" width="24px" height="24px"}
-            {__("Check số shopee")}
-          </a>
-        </li>
+      <li {if $page == "shop-ai"}class="active" {/if}>
+        <a href="{$system['system_url']}/shop-ai">
+          {include file='__svg_icons.tpl' icon="market" class="main-icon mr10" width="24px" height="24px"}
+          {__("Check số shopee")}
+        </a>
+      </li>
+      {if $system['google_maps_reviews_enabled']}
+      <li {if $page == "google-maps-reviews"}class="active" {/if}>
+        <a href="{$system['system_url']}/google-maps-reviews">
+          {include file='__svg_icons.tpl' icon="map" class="main-icon mr10" width="24px" height="24px"}
+          {__("Google Maps Reviews")}
+        </a>
+      </li>
       {/if}
 
       {if $system['pages_enabled']}
@@ -283,6 +289,7 @@
           </a>
         </li>
       {/if}
+
       <!-- explore -->
     </ul>
   </div>
