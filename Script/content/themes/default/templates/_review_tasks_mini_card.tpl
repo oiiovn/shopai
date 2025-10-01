@@ -18,9 +18,25 @@
               <div class="task-header">
                 <div class="task-details">
                   <div class="task-avatar">
-                    <img src="{$system['system_url']}/content/uploads/{$task.user_picture}"
-                         alt=""
-                         class="rounded-circle">
+                    {if $task.user_picture}
+                      <img src="{$system['system_uploads']}/{$task.user_picture}"
+                           alt=""
+                           class="rounded-circle">
+                    {else}
+                      {if $task.user_gender == '1'}
+                        <img src="{$system['system_url']}/content/themes/{$system['theme']}/images/blank_profile_male.png"
+                             alt=""
+                             class="rounded-circle">
+                      {elseif $task.user_gender == '2'}
+                        <img src="{$system['system_url']}/content/themes/{$system['theme']}/images/blank_profile_female.png"
+                             alt=""
+                             class="rounded-circle">
+                      {else}
+                        <img src="{$system['system_url']}/content/themes/{$system['theme']}/images/blank_profile.png"
+                             alt=""
+                             class="rounded-circle">
+                      {/if}
+                    {/if}
                   </div>
                   <div>
                     <small class="text-muted">

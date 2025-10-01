@@ -9,7 +9,7 @@
 
 // ** MySQL settings ** //
 /** The name of the database */
-define('DB_NAME', 'your_production_database_name');
+define('DB_NAME', 'sho73359_shopqi');
 
 /** MySQL database username */
 define('DB_USER', 'your_production_db_username');

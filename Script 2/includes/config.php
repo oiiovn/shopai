@@ -1,5 +1,5 @@
 <?php
-define('DB_NAME', 'tcsn');
+define('DB_NAME', 'sho73359_shopqi');
 define('DB_USER', 'root');
 define('DB_PASSWORD', '');
 define('DB_HOST', 'localhost');
