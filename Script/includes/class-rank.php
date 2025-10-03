@@ -149,21 +149,11 @@ class RankSystem {
             $existing = $stmt->fetch(PDO::FETCH_ASSOC);
             
             if ($existing) {
-                // CỘNG DỒN vào total_spending hiện tại
+                // SỬ DỤNG total_spending hiện có (đã được cập nhật bởi shop-ai.php)
                 $new_spending = $existing['total_spending'];
                 
-                if ($latest_transaction['type'] == 'withdraw' && strpos($latest_transaction['description'], 'Check số Shopee') !== false) {
-                    // Cộng tiền chi tiêu
-                    $new_spending += $latest_transaction['amount'];
-                    error_log("User $user_id: Cộng {$latest_transaction['amount']} VNĐ (withdraw)");
-                } elseif ($latest_transaction['type'] == 'recharge' && strpos($latest_transaction['description'], 'Hoàn tiền check số thất bại') !== false) {
-                    // Trừ tiền hoàn lại
-                    $new_spending -= $latest_transaction['amount'];
-                    error_log("User $user_id: Trừ {$latest_transaction['amount']} VNĐ (refund)");
-                }
-                
-                // Đảm bảo không âm
-                $new_spending = max(0, $new_spending);
+                // KHÔNG cần cộng/trừ gì thêm vì shop-ai.php đã xử lý rồi
+                error_log("User $user_id: Sử dụng total_spending hiện có: {$new_spending} VNĐ");
                 
                 // Tìm rank phù hợp với tổng chi tiêu mới
                 $rank_stmt = $this->pdo->prepare("

@@ -795,53 +795,166 @@ try {
               'required_amount' => $check_price
             ];
           } else {
-            // Sufficient balance - proceed with API call
-            // Call checkso.pro API with default phone hint "99"
-            $api_result = callChecksoAPI($username_to_check, '99');
-          
-            if ($api_result['success'] && isset($api_result['data']['records']) && count($api_result['data']['records']) > 0) {
-              // Success - found phone number
-              $phone_data = $api_result['data']['records'][0];
-              $phone_number = $phone_data['result'];
+            // Sufficient balance - DEDUCT MONEY FIRST, then call API
+            $pdo = new PDO("mysql:host=" . DB_HOST . ";port=" . DB_PORT . ";dbname=" . DB_NAME, DB_USER, DB_PASSWORD);
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            
+            try {
+              $pdo->beginTransaction();
               
-              $history_id = savePhoneCheckHistory(
-                $user_id,
-                $username_to_check,
-                null,
-                $phone_number,
-                'success',
-                'Check thành công: ' . $phone_number
-              );
+              // 1. Deduct money from user wallet FIRST
+              $stmt = $pdo->prepare("UPDATE users SET user_wallet_balance = user_wallet_balance - ? WHERE user_id = ?");
+              $stmt->execute([$check_price, $user_id]);
               
-              $check_result = [
-                'success' => true,
-                'message' => 'Check thành công!',
-                'phone' => $phone_number,
-                'username' => $username_to_check,
-                'history_id' => $history_id,
-                'api_balance' => $api_result['data']['new_balance'] ?? 'N/A'
-              ];
+              // 2. Create pending transaction in users_wallets_transactions
+              $description = "Check số Shopee: {$username_to_check} - Đang xử lý...";
+              $stmt = $pdo->prepare("
+                INSERT INTO users_wallets_transactions (user_id, amount, type, time, description) 
+                VALUES (?, ?, 'withdraw', NOW(), ?)
+              ");
+              $stmt->execute([$user_id, $check_price, $description]);
               
-            } else {
-              // Not found or API error
-              $error_message = $api_result['message'] ?? 'Không tìm thấy số điện thoại';
+              // 3. Create pending transaction in wallet_transactions
+              $stmt = $pdo->prepare("
+                INSERT INTO wallet_transactions (user_id, node_type, node_id, amount, type, date) 
+                VALUES (?, 'shop_ai_check', ?, ?, 'out', NOW())
+              ");
+              $stmt->execute([$user_id, 0, $check_price]);
               
-              $history_id = savePhoneCheckHistory(
-                $user_id,
-                $username_to_check,
-                null,
-                null,
-                'not_found',
-                $error_message
-              );
+              $pdo->commit();
               
-              $check_result = [
-                'success' => false,
-                'message' => $error_message,
-                'username' => $username_to_check,
-                'history_id' => $history_id,
-                'api_balance' => $api_result['data']['new_balance'] ?? 'N/A'
-              ];
+              // Now call API
+              $api_result = callChecksoAPI($username_to_check, '99');
+              
+              if ($api_result['success'] && isset($api_result['data']['records']) && count($api_result['data']['records']) > 0) {
+                // Success - found phone number
+                $phone_data = $api_result['data']['records'][0];
+                $phone_number = $phone_data['result'];
+                
+                // Update transactions with success info
+                $pdo->beginTransaction();
+                
+                // Update users_wallets_transactions with success
+                $description = "Check số Shopee: {$username_to_check} - Thành công: {$phone_number}";
+                $stmt = $pdo->prepare("
+                  UPDATE users_wallets_transactions 
+                  SET description = ? 
+                  WHERE user_id = ? AND description LIKE 'Check số Shopee: {$username_to_check} - Đang xử lý...'
+                  ORDER BY time DESC LIMIT 1
+                ");
+                $stmt->execute([$description, $user_id]);
+                
+                // CHỈ CỘNG VÀO TOTAL_SPENDING KHI CHECK THÀNH CÔNG
+                $stmt = $pdo->prepare("
+                  INSERT INTO shop_ai_user_ranks (user_id, current_rank_id, total_spending, created_at, last_updated) 
+                  VALUES (?, 1, ?, NOW(), NOW())
+                  ON DUPLICATE KEY UPDATE 
+                  total_spending = total_spending + ?, 
+                  last_updated = NOW()
+                ");
+                $stmt->execute([$user_id, $check_price, $check_price]);
+                
+                // Update rank if needed
+                $stmt = $pdo->prepare("
+                  SELECT sr.rank_id, sr.rank_name, sr.check_price, sr.min_spending
+                  FROM shop_ai_ranks sr 
+                  WHERE sr.min_spending <= (
+                    SELECT total_spending FROM shop_ai_user_ranks WHERE user_id = ?
+                  )
+                  ORDER BY sr.rank_order DESC 
+                  LIMIT 1
+                ");
+                $stmt->execute([$user_id]);
+                $new_rank = $stmt->fetch(PDO::FETCH_ASSOC);
+                
+                if ($new_rank) {
+                  $stmt = $pdo->prepare("
+                    UPDATE shop_ai_user_ranks 
+                    SET current_rank_id = ? 
+                    WHERE user_id = ? AND current_rank_id < ?
+                  ");
+                  $stmt->execute([$new_rank['rank_id'], $user_id, $new_rank['rank_id']]);
+                }
+                
+                $pdo->commit();
+                
+                // Save phone check history
+                $history_id = savePhoneCheckHistory(
+                  $user_id,
+                  $username_to_check,
+                  null,
+                  $phone_number,
+                  'success',
+                  'Check thành công: ' . $phone_number
+                );
+                
+                $check_result = [
+                  'success' => true,
+                  'message' => 'Check thành công!',
+                  'phone' => $phone_number,
+                  'username' => $username_to_check,
+                  'history_id' => $history_id,
+                  'api_balance' => $api_result['data']['new_balance'] ?? 'N/A',
+                  'amount_deducted' => $check_price,
+                  'new_balance' => getUserBalance($user_id)
+                ];
+                
+              } else {
+                // Not found or API error - REFUND MONEY
+                $error_message = $api_result['message'] ?? 'Không tìm thấy số điện thoại';
+                
+                $pdo->beginTransaction();
+                
+                // 1. Add money back to user wallet
+                $stmt = $pdo->prepare("UPDATE users SET user_wallet_balance = user_wallet_balance + ? WHERE user_id = ?");
+                $stmt->execute([$check_price, $user_id]);
+                
+                // 2. Update users_wallets_transactions with refund
+                $description = "Hoàn tiền check số thất bại: {$username_to_check} - {$error_message}";
+                $stmt = $pdo->prepare("
+                  UPDATE users_wallets_transactions 
+                  SET type = 'recharge', description = ? 
+                  WHERE user_id = ? AND description LIKE 'Check số Shopee: {$username_to_check} - Đang xử lý...'
+                  ORDER BY time DESC LIMIT 1
+                ");
+                $stmt->execute([$description, $user_id]);
+                
+                // 3. Create refund transaction in wallet_transactions
+                $stmt = $pdo->prepare("
+                  INSERT INTO wallet_transactions (user_id, node_type, node_id, amount, type, date) 
+                  VALUES (?, 'shop_ai_refund', ?, ?, 'in', NOW())
+                ");
+                $stmt->execute([$user_id, 0, $check_price]);
+                
+                // KHÔNG CỘNG VÀO TOTAL_SPENDING KHI CHECK THẤT BẠI
+                // Vì đã hoàn tiền nên không tính vào chi tiêu
+                
+                $pdo->commit();
+                
+                // Save phone check history
+                $history_id = savePhoneCheckHistory(
+                  $user_id,
+                  $username_to_check,
+                  null,
+                  null,
+                  'not_found',
+                  $error_message
+                );
+                
+                $check_result = [
+                  'success' => false,
+                  'message' => $error_message,
+                  'username' => $username_to_check,
+                  'history_id' => $history_id,
+                  'api_balance' => $api_result['data']['new_balance'] ?? 'N/A',
+                  'amount_refunded' => $check_price,
+                  'new_balance' => getUserBalance($user_id)
+                ];
+              }
+              
+            } catch (Exception $e) {
+              $pdo->rollBack();
+              throw new Exception("Lỗi xử lý thanh toán: " . $e->getMessage());
             }
           } // End of balance check else
           
