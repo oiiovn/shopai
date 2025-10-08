@@ -322,6 +322,53 @@ console.log('🔍 Available tasks count:', {if $available_tasks}{$available_task
                               {/if}
                             </div>
                             
+                            <!-- Generated Review Content (GPT) with Countdown -->
+                            {if !empty($task.generated_review_content) && $task.status == 'assigned'}
+                              <div class="gpt-review-box gpt-box-loading" 
+                                   id="gpt-box-{$task.sub_request_id}" 
+                                   data-assigned-time="{$task.assigned_at}"
+                                   data-sub-request-id="{$task.sub_request_id}">
+                                
+                                <!-- Header with Countdown -->
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                  <div class="d-flex align-items-center">
+                                    <span class="gpt-badge">
+                                      <i class="fa fa-magic mr-1"></i>Đánh giá mẫu GPT
+                                    </span>
+                                    <span class="gpt-countdown ml-2" id="countdown-{$task.sub_request_id}">
+                                      <i class="far fa-clock"></i> <span class="countdown-text">30:00</span>
+                                    </span>
+                                  </div>
+                                </div>
+                                
+                                <!-- Review Content with Line Clamp -->
+                                <div class="gpt-content-wrapper" id="wrapper-{$task.sub_request_id}">
+                                  <div class="gpt-content line-clamp" id="content-{$task.sub_request_id}">
+                                    {$task.generated_review_content}
+                                  </div>
+                                  <div class="gpt-fade"></div>
+                                </div>
+                                
+                                <!-- Footer Actions -->
+                                <div class="d-flex justify-content-between align-items-center mt-2">
+                                  <div class="d-flex" style="gap: 0.3rem;">
+                                    <button class="btn-gpt-action btn-copy" 
+                                            onclick="copyReviewContent('{$task.sub_request_id}', this)">
+                                      <i class="fa fa-copy mr-1"></i>Copy
+                                    </button>
+                                    <button class="btn-gpt-action btn-expand" 
+                                            id="expand-btn-{$task.sub_request_id}"
+                                            onclick="toggleReviewExpand('{$task.sub_request_id}')">
+                                      <i class="fa fa-chevron-down mr-1"></i>Xem thêm
+                                    </button>
+                                  </div>
+                                  <small class="gpt-char-count" id="char-count-{$task.sub_request_id}">
+                                    0 ký tự
+                                  </small>
+                                </div>
+                              </div>
+                            {/if}
+                            
                             <!-- Action buttons -->
                             <div class="d-flex justify-content-between align-items-center">
                               {if $task.status == 'assigned'}
@@ -505,6 +552,18 @@ console.log('🔍 Available tasks count:', {if $available_tasks}{$available_task
                     <textarea class="form-control" id="place_address" name="place_address" rows="2" required></textarea>
                   </div>
                   
+                  <div class="form-group">
+                    <label for="review_template">
+                      Đánh giá mẫu (gợi ý cho GPT) 
+                      <i class="fa fa-magic text-primary ml-2"></i>
+                    </label>
+                    <textarea class="form-control" id="review_template" name="review_template" rows="4" 
+                              placeholder="Ví dụ: Nhà hàng này có không gian đẹp, món ăn ngon, phục vụ tốt. Tôi thích món bò nướng và salad tươi..."></textarea>
+                    <small class="form-text text-muted">
+                      <i class="fa fa-info-circle"></i> GPT sẽ tự động tạo đánh giá độc đáo (200-300 ký tự) dựa trên gợi ý của bạn. Mỗi người nhận task sẽ có nội dung đánh giá khác nhau.
+                    </small>
+                  </div>
+                  
                   <div class="row">
                     <div class="col-md-4">
                       <div class="form-group">
@@ -564,12 +623,40 @@ console.log('🔍 Available tasks count:', {if $available_tasks}{$available_task
 </div>
 
 <style>
-/* My Reviews Cards - Thu hẹp chiều cao */
+/* ===============================
+   FIX ẨN GPT BOX & LAYOUT CARD
+   =============================== */
+
+/* Mặc định card */
 .card.h-100 {
   min-height: 140px;
   max-height: 160px;
   transition: all 0.3s ease;
   cursor: pointer;
+  overflow: visible !important; /* Cho phép GPT box tràn tự nhiên */
+}
+
+/* Khi card có GPT box (và box CHƯA expired) thì bỏ giới hạn chiều cao */
+.task-card:has(.gpt-review-box:not(.expired)) .card.h-100 {
+  max-height: none !important;
+  min-height: 220px;
+}
+
+/* Khi GPT box đã expired, card trả về kích thước ban đầu */
+.task-card:has(.gpt-review-box.expired) .card.h-100 {
+  max-height: 160px !important;
+  min-height: 140px !important;
+}
+
+/* Fallback nếu :has() chưa được hỗ trợ */
+.card.h-100.has-gpt-expanded {
+  max-height: none !important;
+  min-height: 220px;
+}
+
+.card.h-100.has-gpt-expired {
+  max-height: 160px !important;
+  min-height: 140px !important;
 }
 
 /* Hover effect cho cards */
@@ -660,6 +747,242 @@ console.log('🔍 Available tasks count:', {if $available_tasks}{$available_task
   background-color: #007bff;
   color: white;
   box-shadow: 0 2px 4px rgba(0,123,255,0.3);
+}
+
+/* ===============================
+   GPT REVIEW BOX
+   =============================== */
+.gpt-review-box {
+  background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+  margin: 0.5rem 0;
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.1);
+  transition: all 0.3s ease;
+  max-width: 100%;
+  overflow: visible !important;
+  position: relative;
+  z-index: 5;
+}
+
+.gpt-review-box:hover {
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.gpt-review-box.expanded {
+  overflow: visible !important;
+  z-index: 10;
+}
+
+/* Header */
+.gpt-badge {
+  display: inline-flex;
+  align-items: center;
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
+  padding: 0.25rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Countdown */
+.gpt-countdown {
+  display: inline-flex;
+  align-items: center;
+  background: #fff3cd;
+  color: #856404;
+  padding: 0.2rem 0.5rem;
+  border-radius: 10px;
+  font-size: 0.6rem;
+  font-weight: 600;
+  border: 1px solid #ffc107;
+}
+
+.gpt-countdown.warning {
+  background: #f8d7da;
+  color: #721c24;
+  border-color: #f5c6cb;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* Nội dung GPT */
+.gpt-content-wrapper {
+  position: relative;
+  margin: 0.5rem 0;
+}
+
+.gpt-content {
+  font-size: 0.7rem;
+  line-height: 1.5;
+  color: #333;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
+  transition: max-height 0.3s ease;
+}
+
+/* Line clamp */
+.gpt-content.line-clamp {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  max-height: 3.2rem;
+}
+
+.gpt-content.expanded {
+  display: block;
+  -webkit-line-clamp: unset;
+  max-height: none;
+}
+
+/* Fade Effect */
+.gpt-fade {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1.5rem;
+  background: linear-gradient(to bottom, transparent, #f8f9ff);
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.gpt-content-wrapper.expanded .gpt-fade {
+  opacity: 0;
+}
+
+/* Action Buttons */
+.btn-gpt-action {
+  background: white;
+  border: 1.5px solid #007bff;
+  color: #007bff;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-gpt-action:hover {
+  background: #007bff;
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 123, 255, 0.3);
+}
+
+.btn-gpt-action.btn-copy {
+  background: #28a745;
+  border-color: #28a745;
+  color: white;
+}
+
+.btn-gpt-action.btn-copy:hover {
+  background: #218838;
+}
+
+.btn-gpt-action.copied {
+  background: #17a2b8;
+  border-color: #17a2b8;
+  color: white;
+}
+
+/* Ký tự đếm */
+.gpt-char-count {
+  font-size: 0.6rem;
+  color: #6c757d;
+  font-weight: 600;
+  padding: 0.2rem 0.4rem;
+  background: #e9ecef;
+  border-radius: 8px;
+}
+
+.gpt-char-count.valid {
+  color: #28a745;
+  background: #d4edda;
+}
+
+.gpt-char-count.invalid {
+  color: #dc3545;
+  background: #f8d7da;
+}
+
+/* Ẩn box mặc định khi loading, JS sẽ show nếu chưa expired */
+.gpt-review-box.gpt-box-loading {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Show box khi JS đã check */
+.gpt-review-box.gpt-box-active {
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity 0.3s ease;
+}
+
+/* Khi hết hạn thì ẩn box */
+.gpt-review-box.expired {
+  display: none !important;
+}
+
+/* ===============================
+   BUTTON & RESPONSIVE TINH GỌN
+   =============================== */
+
+/* Button loading state */
+.btn:disabled {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.btn .fa-spinner {
+  animation: fa-spin 1s infinite linear;
+}
+
+@keyframes fa-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.btn-sm {
+  font-size: 0.55rem;
+  padding: 0.08rem 0.2rem;
+  line-height: 0.9;
+  transition: all 0.2s ease;
+}
+
+.btn-sm:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary.btn-sm {
+  background-color: #007bff;
+  border-color: #007bff;
+  font-weight: 500;
+}
+
+.btn-outline-success.btn-sm {
+  border-width: 1px;
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+  .gpt-review-box { padding: 8px; }
+  .gpt-content { font-size: 0.65rem; }
+  .btn-gpt-action { font-size: 0.6rem; padding: 0.25rem 0.5rem; }
+  .gpt-char-count { font-size: 0.55rem; }
 }
 
 .nav-pills .nav-link .badge {
@@ -1130,6 +1453,15 @@ function initGoogleMapsReviews() {
     createForm.addEventListener('submit', function(e) {
       e.preventDefault();
       
+      var createButton = document.getElementById('createButton');
+      if (!createButton) return;
+      
+      // Vô hiệu hóa nút và hiển thị loading state
+      createButton.disabled = true;
+      var originalButtonHTML = createButton.innerHTML;
+      createButton.innerHTML = '<i class="fa fa-spinner fa-spin mr-2"></i>Đang tạo chiến dịch...';
+      createButton.style.opacity = '0.7';
+      
       var formData = new FormData(this);
       formData.append('action', 'create_request');
       
@@ -1141,15 +1473,32 @@ function initGoogleMapsReviews() {
       .then(data => {
         console.log('Response:', data);
         if (data.success) {
-          alert('Tạo chiến dịch thành công!');
-          location.reload();
+          // Thành công - Hiển thị success state
+          createButton.innerHTML = '<i class="fa fa-check mr-2"></i>Thành công! Đang tải lại...';
+          createButton.classList.remove('btn-primary');
+          createButton.classList.add('btn-success');
+          createButton.style.opacity = '1';
+          
+          // Reload sau 1.5 giây để user thấy success message
+          setTimeout(function() {
+            location.reload();
+          }, 1500);
         } else {
+          // Lỗi - Khôi phục nút
           alert('Lỗi: ' + data.error);
+          createButton.innerHTML = originalButtonHTML;
+          createButton.disabled = false;
+          createButton.style.opacity = '1';
         }
       })
       .catch(error => {
         console.log('Fetch Error:', error);
         alert('Đã xảy ra lỗi. Vui lòng thử lại.');
+        
+        // Khôi phục nút
+        createButton.innerHTML = originalButtonHTML;
+        createButton.disabled = false;
+        createButton.style.opacity = '1';
       });
     });
   }
@@ -1479,15 +1828,234 @@ function initTabFiltering() {
   }
 }
 
+/**
+ * Copy review content to clipboard
+ */
+function copyReviewContent(subRequestId, button) {
+  var contentElement = document.getElementById('content-' + subRequestId);
+  if (!contentElement) {
+    alert('❌ Không tìm thấy nội dung đánh giá');
+    return;
+  }
+  
+  var content = contentElement.textContent || contentElement.innerText;
+  content = content.trim();
+  
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(content)
+      .then(function() {
+        var originalHTML = button.innerHTML;
+        button.innerHTML = '<i class="fa fa-check mr-1"></i>Đã copy!';
+        button.classList.add('copied');
+        
+        setTimeout(function() {
+          button.innerHTML = originalHTML;
+          button.classList.remove('copied');
+        }, 2000);
+      })
+      .catch(function(err) {
+        console.error('Copy failed:', err);
+        fallbackCopyTextToClipboard(content, button);
+      });
+  } else {
+    fallbackCopyTextToClipboard(content, button);
+  }
+}
+
+/**
+ * Toggle expand/collapse review content
+ */
+function toggleReviewExpand(subRequestId) {
+  var contentElement = document.getElementById('content-' + subRequestId);
+  var wrapperElement = document.getElementById('wrapper-' + subRequestId);
+  var boxElement = document.getElementById('gpt-box-' + subRequestId);
+  var button = document.getElementById('expand-btn-' + subRequestId);
+  
+  if (!contentElement || !wrapperElement || !button || !boxElement) return;
+  
+  var parentCard = boxElement.closest('.card.h-100');
+  var isExpanded = contentElement.classList.contains('expanded');
+  
+  if (isExpanded) {
+    contentElement.classList.remove('expanded');
+    wrapperElement.classList.remove('expanded');
+    boxElement.classList.remove('expanded');
+    button.innerHTML = '<i class="fa fa-chevron-down mr-1"></i>Xem thêm';
+    
+    if (parentCard) {
+      parentCard.classList.remove('has-gpt-expanded');
+    }
+  } else {
+    contentElement.classList.add('expanded');
+    wrapperElement.classList.add('expanded');
+    boxElement.classList.add('expanded');
+    button.innerHTML = '<i class="fa fa-chevron-up mr-1"></i>Thu gọn';
+    
+    if (parentCard) {
+      parentCard.classList.add('has-gpt-expanded');
+    }
+  }
+}
+
+/**
+ * Update character count display
+ */
+function updateCharCount(subRequestId) {
+  var contentElement = document.getElementById('content-' + subRequestId);
+  var charCountElement = document.getElementById('char-count-' + subRequestId);
+  
+  if (!contentElement || !charCountElement) return;
+  
+  var content = contentElement.textContent || contentElement.innerText;
+  var length = content.trim().length;
+  
+  charCountElement.textContent = length + ' ký tự';
+  
+  charCountElement.classList.remove('valid', 'invalid');
+  if (length >= 200 && length <= 300) {
+    charCountElement.classList.add('valid');
+  } else if (length > 0) {
+    charCountElement.classList.add('invalid');
+  }
+}
+
+/**
+ * Initialize countdown timer for GPT review box
+ */
+function initCountdownTimer(subRequestId, assignedTime) {
+  var assignedDate = new Date(assignedTime.replace(' ', 'T'));
+  var expiryDate = new Date(assignedDate.getTime() + 30 * 60 * 1000);
+  
+  var countdownElement = document.getElementById('countdown-' + subRequestId);
+  var boxElement = document.getElementById('gpt-box-' + subRequestId);
+  
+  if (!countdownElement || !boxElement) return;
+  
+  var now = new Date();
+  if (expiryDate <= now) {
+    // Đã hết hạn - ẩn box ngay
+    boxElement.classList.add('expired');
+    boxElement.classList.remove('gpt-box-loading');
+    var parentCard = boxElement.closest('.card.h-100');
+    if (parentCard) {
+      parentCard.classList.remove('has-gpt-expanded');
+      parentCard.classList.add('has-gpt-expired');
+    }
+    return;
+  }
+  
+  // Chưa hết hạn - show box
+  boxElement.classList.remove('gpt-box-loading');
+  boxElement.classList.add('gpt-box-active');
+  
+  var countdownInterval = setInterval(function() {
+    var now = new Date();
+    var timeLeft = expiryDate - now;
+    
+    if (timeLeft <= 0) {
+      clearInterval(countdownInterval);
+      boxElement.classList.add('expired');
+      
+      var parentCard = boxElement.closest('.card.h-100');
+      if (parentCard) {
+        parentCard.classList.remove('has-gpt-expanded');
+        parentCard.classList.add('has-gpt-expired');
+      }
+      
+      return;
+    }
+    
+    var minutes = Math.floor(timeLeft / 60000);
+    var seconds = Math.floor((timeLeft % 60000) / 1000);
+    
+    var display = (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+    var textElement = countdownElement.querySelector('.countdown-text');
+    if (textElement) {
+      textElement.textContent = display;
+    }
+    
+    if (minutes < 5) {
+      countdownElement.classList.add('warning');
+    } else {
+      countdownElement.classList.remove('warning');
+    }
+  }, 1000);
+}
+
+/**
+ * Initialize all GPT review boxes on page load
+ */
+function initGPTReviewBoxes() {
+  var gptBoxes = document.querySelectorAll('.gpt-review-box.gpt-box-loading');
+  
+  if (gptBoxes.length === 0) {
+    return;
+  }
+  
+  gptBoxes.forEach(function(box) {
+    var subRequestId = box.getAttribute('data-sub-request-id');
+    var assignedTime = box.getAttribute('data-assigned-time');
+    
+    if (subRequestId && assignedTime) {
+      updateCharCount(subRequestId);
+      initCountdownTimer(subRequestId, assignedTime);
+    }
+  });
+}
+
+/**
+ * Fallback copy method for older browsers
+ */
+function fallbackCopyTextToClipboard(text, button) {
+  var textArea = document.createElement("textarea");
+  textArea.value = text;
+  textArea.style.position = "fixed";
+  textArea.style.top = 0;
+  textArea.style.left = 0;
+  textArea.style.width = "2em";
+  textArea.style.height = "2em";
+  textArea.style.padding = 0;
+  textArea.style.border = "none";
+  textArea.style.outline = "none";
+  textArea.style.boxShadow = "none";
+  textArea.style.background = "transparent";
+  document.body.appendChild(textArea);
+  textArea.focus();
+  textArea.select();
+  
+  try {
+    var successful = document.execCommand('copy');
+    if (successful) {
+      var originalHTML = button.innerHTML;
+      button.innerHTML = '<i class="fa fa-check mr-1"></i>Đã copy!';
+      button.classList.add('copied');
+      
+      setTimeout(function() {
+        button.innerHTML = originalHTML;
+        button.classList.remove('copied');
+      }, 2000);
+    } else {
+      alert('❌ Không thể copy. Vui lòng copy thủ công.');
+    }
+  } catch (err) {
+    console.error('Fallback: Oops, unable to copy', err);
+    alert('❌ Không thể copy. Vui lòng copy thủ công.');
+  }
+  
+  document.body.removeChild(textArea);
+}
+
 // Bind when DOM is ready
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', function() {
     bindConfirmButton();
     initTabFiltering();
+    initGPTReviewBoxes();
   });
 } else {
   bindConfirmButton();
   initTabFiltering();
+  initGPTReviewBoxes();
 }
 
 // Fallback: Try to bind after a delay

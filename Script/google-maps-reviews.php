@@ -10,6 +10,9 @@
 // fetch bootloader
 require('bootloader.php');
 
+// Load OpenAI functions
+require_once('includes/openai-functions.php');
+
 // Handle API requests for AJAX calls (only for POST requests with action)
 if (isset($_POST['action']) || (isset($_SERVER['CONTENT_TYPE']) && strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== false)) {
     handleAPIRequest();
@@ -238,9 +241,9 @@ try {
         $total_tasks = $count_query->fetch_assoc()['total'];
         $total_pages = ceil($total_tasks / $per_page);
         
-        // Get paginated tasks
+        // Get paginated tasks (bao gồm generated_review_content)
         $get_assigned_tasks = $db->query("
-            SELECT gmsr.*, gmr.requester_user_id, gmr.place_name as parent_place_name, gmr.place_address as parent_place_address, gmr.place_url
+            SELECT gmsr.*, gmr.requester_user_id, gmr.place_name as parent_place_name, gmr.place_address as parent_place_address, gmr.place_url, gmsr.generated_review_content
             FROM google_maps_review_sub_requests gmsr
             LEFT JOIN google_maps_review_requests gmr ON gmsr.parent_request_id = gmr.request_id
             WHERE gmsr.assigned_user_id = '{$user->_data['user_id']}'
@@ -321,6 +324,7 @@ function createReviewRequest() {
         $place_name = isset($_POST['place_name']) ? $_POST['place_name'] : '';
         $place_address = isset($_POST['place_address']) ? $_POST['place_address'] : '';
         $place_url = isset($_POST['place_url']) ? $_POST['place_url'] : '';
+        $review_template = isset($_POST['review_template']) ? $_POST['review_template'] : '';
         $reward_amount = 10000; // Chi phí cho người tạo chiến dịch
         $reviewer_reward = 5000; // Tiền thưởng cho người đánh giá
         $target_reviews = isset($_POST['target_reviews']) ? $_POST['target_reviews'] : 1;
@@ -393,13 +397,16 @@ function createReviewRequest() {
         }
         
         
-        // Create main request (chiến dịch mẹ)
+        // Escape review_template for SQL
+        $review_template_escaped = $db->real_escape_string($review_template);
+        
+        // Create main request (chiến dịch mẹ) với review_template
         $insert_main = $db->query("
             INSERT INTO google_maps_review_requests 
-            (requester_user_id, google_place_id, place_name, place_address, place_url, 
+            (requester_user_id, google_place_id, place_name, place_address, place_url, review_template,
              reward_amount, target_reviews, total_budget, expires_at, status, created_at, updated_at)
             VALUES 
-            ('{$user->_data['user_id']}', '', '{$place_name}', '{$place_address}', '{$place_url}', 
+            ('{$user->_data['user_id']}', '', '{$place_name}', '{$place_address}', '{$place_url}', '{$review_template_escaped}',
              '{$reward_amount}', '{$target_reviews}', '{$total_budget}', '{$expires_at}', 'active', CONVERT_TZ(NOW(), '+00:00', '+07:00'), CONVERT_TZ(NOW(), '+00:00', '+07:00'))
         ");
         
@@ -409,15 +416,39 @@ function createReviewRequest() {
         
         $request_id = $db->insert_id;
         
+        // Get OpenAI API key for generating reviews
+        $openai_api_key = getOpenAIAPIKey();
+        
         // Create sub-requests (chiến dịch con) với tiền thưởng 5k cho người đánh giá
         for ($i = 0; $i < $target_reviews; $i++) {
+            $generated_content = '';
+            
+            // Generate unique review content using GPT nếu có API key và review template
+            if (!empty($openai_api_key) && !empty($review_template)) {
+                $gpt_result = generateReviewContent($openai_api_key, $place_name, $place_address, $review_template);
+                
+                if ($gpt_result['success']) {
+                    $generated_content = $gpt_result['content'];
+                    error_log("GPT generated review #{$i}: " . mb_strlen($generated_content, 'UTF-8') . " chars");
+                } else {
+                    error_log("GPT generation failed for sub-request #{$i}: " . $gpt_result['error']);
+                }
+                
+                // Ngủ một chút giữa các request để tránh rate limit
+                if ($i < $target_reviews - 1) {
+                    usleep(500000); // 0.5 giây
+                }
+            }
+            
+            $generated_content_escaped = $db->real_escape_string($generated_content);
+            
             $insert_sub = $db->query("
                 INSERT INTO google_maps_review_sub_requests 
-                (parent_request_id, google_place_id, place_name, place_address, place_url, 
+                (parent_request_id, google_place_id, place_name, place_address, place_url, generated_review_content,
                  reward_amount, expires_at, status, created_at, updated_at)
                 VALUES 
                 ('{$request_id}', '', '{$place_name}', '{$place_address}', 
-                 '{$place_url}', '{$reviewer_reward}', '{$expires_at}', 'available', CONVERT_TZ(NOW(), '+00:00', '+07:00'), CONVERT_TZ(NOW(), '+00:00', '+07:00'))
+                 '{$place_url}', '{$generated_content_escaped}', '{$reviewer_reward}', '{$expires_at}', 'available', CONVERT_TZ(NOW(), '+00:00', '+07:00'), CONVERT_TZ(NOW(), '+00:00', '+07:00'))
             ");
             
             if (!$insert_sub) {
