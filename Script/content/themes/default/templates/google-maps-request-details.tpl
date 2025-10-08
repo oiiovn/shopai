@@ -166,7 +166,6 @@
                               {/for}
                             {/if}
                           </div>
-                          <small class="text-muted d-block">{$sub.gpt_rating_stars}/5 sao</small>
                         {else}
                           <span class="text-muted">-</span>
                         {/if}
@@ -209,35 +208,11 @@
                         {/if}
                       </td>
                       <td class="text-center">
-                        <div class="small">
-                          {if $sub.assigned_at}
-                            <div class="mb-1">
-                              <i class="fa fa-calendar-alt text-info mr-1"></i>
-                              <strong>Nhận:</strong> {$sub.assigned_at|date_format:"%d/%m/%Y %H:%M"}
-                            </div>
-                          {/if}
-                          {if $sub.completed_at}
-                            <div class="mb-1">
-                              <i class="fa fa-check-circle text-success mr-1"></i>
-                              <strong>Hoàn thành:</strong> {$sub.completed_at|date_format:"%d/%m/%Y %H:%M"}
-                            </div>
-                          {/if}
-                          {if $sub.reward_amount}
-                            <div class="mb-1">
-                              <i class="fa fa-coins text-warning mr-1"></i>
-                              <strong>Thưởng:</strong> {$sub.reward_amount|number_format:0} VND
-                            </div>
-                          {/if}
-                          {if ($sub.status == 'completed' || $sub.status == 'verified' || $sub.status == 'expired') && $sub.proof_data}
-                            <div>
-                              <button class="btn btn-sm btn-outline-primary" 
-                                      onclick='showProofModal({$sub.sub_request_id}, {$sub.proof_data|@json_encode})'
-                                      title="Xem bằng chứng">
-                                <i class="fa fa-image mr-1"></i>Bằng chứng
-                              </button>
-                            </div>
-                          {/if}
-                        </div>
+                        <button class="btn btn-sm btn-outline-primary" 
+                                onclick='showDetailsModal({$sub.sub_request_id}, "{$sub.user_firstname} {$sub.user_lastname}", "{$sub.gpt_rating_stars}", "{$sub.gpt_review_content|escape:'html'}", "{$sub.assigned_at}", "{$sub.completed_at}", "{$sub.reward_amount}")'
+                                title="Xem chi tiết">
+                          <i class="fa fa-eye"></i>
+                        </button>
                       </td>
                     </tr>
                   {/foreach}
@@ -319,26 +294,43 @@
   </div>
 </div>
 
-<!-- Proof Modal -->
-<div class="modal fade" id="proofModal" tabindex="-1" role="dialog" aria-labelledby="proofModalLabel" aria-hidden="true">
+<!-- Details Modal -->
+<div class="modal fade" id="detailsModal" tabindex="-1" role="dialog" aria-labelledby="detailsModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="proofModalLabel">
-          <i class="fa fa-image mr-2"></i>Bằng chứng đánh giá
+        <h5 class="modal-title" id="detailsModalLabel">
+          <i class="fa fa-info-circle mr-2"></i>Chi tiết đánh giá
         </h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body text-center">
-        <div id="proofImageContainer">
-          <img id="proofImage" src="" alt="Bằng chứng" class="img-fluid" style="max-width: 100%; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-6">
+            <h6><i class="fa fa-user mr-2"></i>Người đánh giá</h6>
+            <p id="modalUserName" class="text-muted">-</p>
+          </div>
+          <div class="col-md-6">
+            <h6><i class="fa fa-star mr-2"></i>Đánh giá</h6>
+            <div id="modalRating" class="text-warning">-</div>
+          </div>
         </div>
-        <div class="mt-3" id="proofLinkContainer" style="display: none;">
-          <a id="proofLink" href="" target="_blank" class="btn btn-primary">
-            <i class="fa fa-external-link-alt mr-1"></i>Xem review trên Google Maps
-          </a>
+        <div class="row">
+          <div class="col-12">
+            <h6><i class="fa fa-comment mr-2"></i>Nội dung đánh giá</h6>
+            <p id="modalReviewContent" class="text-muted">-</p>
+          </div>
         </div>
-        <div class="mt-3 text-muted" id="proofInfo"></div>
+        <div class="row">
+          <div class="col-md-6">
+            <h6><i class="fa fa-calendar-alt mr-2"></i>Ngày nhận</h6>
+            <p id="modalAssignedDate" class="text-muted">-</p>
+          </div>
+          <div class="col-md-6">
+            <h6><i class="fa fa-check-circle mr-2"></i>Ngày hoàn thành</h6>
+            <p id="modalCompletedDate" class="text-muted">-</p>
+          </div>
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
@@ -350,80 +342,46 @@
 </div>
 
 <script>
-function showProofModal(subRequestId, proofData) {
+function showDetailsModal(subRequestId, userName, rating, reviewContent, assignedDate, completedDate, rewardAmount) {
   try {
-    console.log('🔍 Proof Data:', proofData);
-    console.log('🔄 Function called at:', new Date().toISOString());
-    console.log('🔧 Debug - proofData type:', typeof proofData);
-    console.log('🔧 Debug - proofData keys:', Object.keys(proofData));
+    // Set user name
+    document.getElementById('modalUserName').textContent = userName || 'Chưa có người nhận';
     
-    // Check if proofData is string and parse it
-    if (typeof proofData === 'string') {
-      try {
-        proofData = JSON.parse(proofData);
-        console.log('🔧 Parsed proofData:', proofData);
-      } catch (e) {
-        console.error('❌ Failed to parse proofData:', e);
+    // Set rating
+    var ratingElement = document.getElementById('modalRating');
+    if (rating && rating > 0) {
+      var stars = '';
+      for (var i = 1; i <= 5; i++) {
+        if (i <= rating) {
+          stars += '<i class="fa fa-star"></i> ';
+        } else {
+          stars += '<i class="fa fa-star-o"></i> ';
+        }
       }
-    }
-    
-    // Set image
-    if (proofData.image_path) {
-      var imagePath = proofData.image_path;
-      // Check if path already includes system URL
-      if (!imagePath.startsWith('http')) {
-        imagePath = '{$system['system_url']}/' + imagePath;
-      }
-      console.log('📷 Image path:', imagePath);
-      var imgElement = document.getElementById('proofImage');
-      if (imgElement) {
-        imgElement.src = imagePath;
-        imgElement.onload = function() {
-          console.log('✅ Image loaded successfully');
-        };
-        imgElement.onerror = function() {
-          console.error('❌ Image failed to load:', imagePath);
-          // Show error message in modal
-          imgElement.alt = 'Không thể tải ảnh';
-          imgElement.style.display = 'none';
-          var errorDiv = document.createElement('div');
-          errorDiv.className = 'alert alert-warning text-center';
-          errorDiv.innerHTML = '<i class="fa fa-exclamation-triangle mr-2"></i>Không thể tải ảnh bằng chứng<br><small>File: ' + imagePath + '</small><br><small class="text-muted">Ảnh có thể đã bị xóa hoặc đường dẫn sai</small><br><small class="text-info">Vui lòng liên hệ admin để kiểm tra</small>';
-          document.getElementById('proofImageContainer').appendChild(errorDiv);
-        };
-      } else {
-        console.error('❌ proofImage element not found');
-      }
+      ratingElement.innerHTML = stars;
     } else {
-      console.error('❌ No image_path found');
+      ratingElement.textContent = 'Chưa có đánh giá';
     }
     
-    // Set link
-    if (proofData.shared_link) {
-      document.getElementById('proofLink').href = proofData.shared_link;
-      document.getElementById('proofLinkContainer').style.display = 'block';
-    } else {
-      document.getElementById('proofLinkContainer').style.display = 'none';
-    }
+    // Set review content
+    document.getElementById('modalReviewContent').textContent = reviewContent || 'Chưa có nội dung đánh giá';
     
-    // Set info
-    if (proofData.submitted_at) {
-      document.getElementById('proofInfo').innerHTML = '<i class="fa fa-clock mr-1"></i>Gửi lúc: ' + proofData.submitted_at;
-    }
+    // Set assigned date
+    document.getElementById('modalAssignedDate').textContent = assignedDate || 'Chưa được giao';
+    
+    // Set completed date
+    document.getElementById('modalCompletedDate').textContent = completedDate || 'Chưa hoàn thành';
     
     // Show modal
-    var modalElement = document.getElementById('proofModal');
+    var modalElement = document.getElementById('detailsModal');
     if (modalElement) {
       var modal = new bootstrap.Modal(modalElement);
       modal.show();
-      console.log('✅ Modal shown');
-    } else {
-      console.error('❌ Modal element not found');
     }
     
   } catch (e) {
-    console.error('❌ Error showing proof modal:', e);
-    alert('Lỗi hiển thị bằng chứng: ' + e.message);
+    console.error('❌ Error showing details modal:', e);
+    alert('Lỗi hiển thị chi tiết: ' + e.message);
   }
 }
 </script>
