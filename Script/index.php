@@ -121,7 +121,7 @@ try {
         $smarty->assign('posts', $posts);
 
         // get available review tasks (hiển thị 1 nhiệm vụ con từ mỗi chiến dịch mẹ khác nhau)
-        // Loại bỏ các chiến dịch mà user đã tạo và đã nhận
+        // Loại bỏ các shop owners mà user đã nhận task từ họ
         $available_tasks = array();
         $get_available_tasks = $db->query("
             SELECT gmsr.*, gmr.place_name, gmr.place_address, gmr.place_url, gmr.expires_at as parent_expires_at,
@@ -133,11 +133,12 @@ try {
             AND gmsr.expires_at > CONVERT_TZ(NOW(), '+00:00', '+07:00')
             AND gmr.status = 'active'
             AND gmr.requester_user_id != '{$user->_data['user_id']}'
-            AND gmr.request_id NOT IN (
-                SELECT DISTINCT parent_request_id 
-                FROM google_maps_review_sub_requests 
-                WHERE assigned_user_id = '{$user->_data['user_id']}' 
-                AND status IN ('assigned', 'completed')
+            AND gmr.requester_user_id NOT IN (
+                SELECT DISTINCT gmr2.requester_user_id
+                FROM google_maps_review_sub_requests gmsr2
+                LEFT JOIN google_maps_review_requests gmr2 ON gmsr2.parent_request_id = gmr2.request_id
+                WHERE gmsr2.assigned_user_id = '{$user->_data['user_id']}' 
+                AND gmsr2.status IN ('assigned', 'completed')
             )
             GROUP BY gmr.request_id
             ORDER BY gmsr.created_at DESC
