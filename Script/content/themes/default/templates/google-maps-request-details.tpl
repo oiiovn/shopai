@@ -359,9 +359,24 @@ function showProofModal(subRequestId, proofData) {
     
     // Set image
     if (proofData.image_path) {
-      var imagePath = '{$system['system_url']}/' + proofData.image_path;
+      var imagePath = proofData.image_path;
+      // Check if path already includes system URL
+      if (!imagePath.startsWith('http')) {
+        imagePath = '{$system['system_url']}/' + imagePath;
+      }
       console.log('📷 Image path:', imagePath);
-      document.getElementById('proofImage').src = imagePath;
+      var imgElement = document.getElementById('proofImage');
+      if (imgElement) {
+        imgElement.src = imagePath;
+        imgElement.onload = function() {
+          console.log('✅ Image loaded successfully');
+        };
+        imgElement.onerror = function() {
+          console.error('❌ Image failed to load:', imagePath);
+        };
+      } else {
+        console.error('❌ proofImage element not found');
+      }
     } else {
       console.error('❌ No image_path found');
     }
