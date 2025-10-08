@@ -98,15 +98,12 @@
               <table class="table table-striped table-hover table-bordered">
                 <thead class="thead-light">
                   <tr>
-                    <th width="3%" class="text-center">#</th>
-                    <th width="18%">Người nhận</th>
-                    <th width="8%" class="text-center">Tiền thưởng</th>
-                    <th width="10%" class="text-center">Số sao</th>
-                    <th width="25%">Nội dung đánh giá</th>
-                    <th width="10%" class="text-center">Trạng thái</th>
-                    <th width="10%" class="text-center">Ngày nhận</th>
-                    <th width="10%" class="text-center">Hoàn thành</th>
-                    <th width="6%" class="text-center">Ảnh chứng</th>
+                    <th width="5%" class="text-center">#</th>
+                    <th width="20%">Người nhận</th>
+                    <th width="15%" class="text-center">Số sao</th>
+                    <th width="35%">Nội dung đánh giá</th>
+                    <th width="15%" class="text-center">Trạng thái</th>
+                    <th width="10%" class="text-center">Thông tin</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -156,10 +153,6 @@
                             <i class="fa fa-user-slash mr-1"></i>Chưa có người nhận
                           </span>
                         {/if}
-                      </td>
-                      <td class="text-center">
-                        <div><strong class="text-success">{$sub.reward_amount|number_format:0}</strong></div>
-                        <small class="text-muted">VND</small>
                       </td>
                       <td class="text-center">
                         {if $sub.gpt_rating_stars}
@@ -216,31 +209,35 @@
                         {/if}
                       </td>
                       <td class="text-center">
-                        {if $sub.assigned_at}
-                          <div class="font-weight-bold">{$sub.assigned_at|date_format:"%d/%m/%Y"}</div>
-                          <small class="text-muted">{$sub.assigned_at|date_format:"%H:%M"}</small>
-                        {else}
-                          <span class="text-muted">-</span>
-                        {/if}
-                      </td>
-                      <td class="text-center">
-                        {if $sub.completed_at}
-                          <div class="font-weight-bold text-success">{$sub.completed_at|date_format:"%d/%m/%Y"}</div>
-                          <small class="text-muted">{$sub.completed_at|date_format:"%H:%M"}</small>
-                        {else}
-                          <span class="text-muted">-</span>
-                        {/if}
-                      </td>
-                      <td class="text-center">
-                        {if ($sub.status == 'completed' || $sub.status == 'verified' || $sub.status == 'expired') && $sub.proof_data}
-                          <button class="btn btn-sm btn-primary" 
-                                  onclick='showProofModal({$sub.sub_request_id}, {$sub.proof_data|@json_encode})'
-                                  title="Xem bằng chứng">
-                            <i class="fa fa-image"></i>
-                          </button>
-                        {else}
-                          <span class="text-muted">-</span>
-                        {/if}
+                        <div class="small">
+                          {if $sub.assigned_at}
+                            <div class="mb-1">
+                              <i class="fa fa-calendar-alt text-info mr-1"></i>
+                              <strong>Nhận:</strong> {$sub.assigned_at|date_format:"%d/%m/%Y %H:%M"}
+                            </div>
+                          {/if}
+                          {if $sub.completed_at}
+                            <div class="mb-1">
+                              <i class="fa fa-check-circle text-success mr-1"></i>
+                              <strong>Hoàn thành:</strong> {$sub.completed_at|date_format:"%d/%m/%Y %H:%M"}
+                            </div>
+                          {/if}
+                          {if $sub.reward_amount}
+                            <div class="mb-1">
+                              <i class="fa fa-coins text-warning mr-1"></i>
+                              <strong>Thưởng:</strong> {$sub.reward_amount|number_format:0} VND
+                            </div>
+                          {/if}
+                          {if ($sub.status == 'completed' || $sub.status == 'verified' || $sub.status == 'expired') && $sub.proof_data}
+                            <div>
+                              <button class="btn btn-sm btn-outline-primary" 
+                                      onclick='showProofModal({$sub.sub_request_id}, {$sub.proof_data|@json_encode})'
+                                      title="Xem bằng chứng">
+                                <i class="fa fa-image mr-1"></i>Bằng chứng
+                              </button>
+                            </div>
+                          {/if}
+                        </div>
                       </td>
                     </tr>
                   {/foreach}
@@ -357,6 +354,18 @@ function showProofModal(subRequestId, proofData) {
   try {
     console.log('🔍 Proof Data:', proofData);
     console.log('🔄 Function called at:', new Date().toISOString());
+    console.log('🔧 Debug - proofData type:', typeof proofData);
+    console.log('🔧 Debug - proofData keys:', Object.keys(proofData));
+    
+    // Check if proofData is string and parse it
+    if (typeof proofData === 'string') {
+      try {
+        proofData = JSON.parse(proofData);
+        console.log('🔧 Parsed proofData:', proofData);
+      } catch (e) {
+        console.error('❌ Failed to parse proofData:', e);
+      }
+    }
     
     // Set image
     if (proofData.image_path) {
@@ -379,7 +388,7 @@ function showProofModal(subRequestId, proofData) {
           imgElement.style.display = 'none';
           var errorDiv = document.createElement('div');
           errorDiv.className = 'alert alert-warning text-center';
-          errorDiv.innerHTML = '<i class="fa fa-exclamation-triangle mr-2"></i>Không thể tải ảnh bằng chứng<br><small>File: ' + imagePath + '</small>';
+          errorDiv.innerHTML = '<i class="fa fa-exclamation-triangle mr-2"></i>Không thể tải ảnh bằng chứng<br><small>File: ' + imagePath + '</small><br><small class="text-muted">Ảnh có thể đã bị xóa hoặc đường dẫn sai</small><br><small class="text-info">Vui lòng liên hệ admin để kiểm tra</small>';
           document.getElementById('proofImageContainer').appendChild(errorDiv);
         };
       } else {
