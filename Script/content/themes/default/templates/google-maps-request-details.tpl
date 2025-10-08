@@ -356,6 +356,7 @@
 function showProofModal(subRequestId, proofData) {
   try {
     console.log('🔍 Proof Data:', proofData);
+    console.log('🔄 Function called at:', new Date().toISOString());
     
     // Set image
     if (proofData.image_path) {
@@ -373,6 +374,13 @@ function showProofModal(subRequestId, proofData) {
         };
         imgElement.onerror = function() {
           console.error('❌ Image failed to load:', imagePath);
+          // Show error message in modal
+          imgElement.alt = 'Không thể tải ảnh';
+          imgElement.style.display = 'none';
+          var errorDiv = document.createElement('div');
+          errorDiv.className = 'alert alert-warning text-center';
+          errorDiv.innerHTML = '<i class="fa fa-exclamation-triangle mr-2"></i>Không thể tải ảnh bằng chứng<br><small>File: ' + imagePath + '</small>';
+          document.getElementById('proofImageContainer').appendChild(errorDiv);
         };
       } else {
         console.error('❌ proofImage element not found');
