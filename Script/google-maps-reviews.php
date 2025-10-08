@@ -517,6 +517,20 @@ function assignReviewTask() {
             }
         }
         
+        // Get requester_user_id from parent campaign
+        $get_requester = $db->query("
+            SELECT requester_user_id FROM google_maps_review_requests 
+            WHERE request_id = '{$task['parent_request_id']}'
+        ");
+        
+        if ($get_requester->num_rows == 0) {
+            echo json_encode(array('error' => 'Campaign not found'));
+            return;
+        }
+        
+        $requester_data = $get_requester->fetch_assoc();
+        $requester_user_id = $requester_data['requester_user_id'];
+        
         // Assign task to user
         $update_result = $db->query("
             UPDATE google_maps_review_sub_requests 
@@ -536,6 +550,23 @@ function assignReviewTask() {
         if ($affected_rows == 0) {
             echo json_encode(array('error' => 'Task no longer available or already assigned'));
             return;
+        }
+        
+        // Insert hoặc update tracking record
+        $insert_tracking = $db->query("
+            INSERT INTO google_maps_user_requester_tracking 
+            (user_id, requester_user_id, first_assigned_at, last_assigned_at, total_tasks_assigned, created_at, updated_at)
+            VALUES 
+            ('{$user->_data['user_id']}', '{$requester_user_id}', CONVERT_TZ(NOW(), '+00:00', '+07:00'), CONVERT_TZ(NOW(), '+00:00', '+07:00'), 1, CONVERT_TZ(NOW(), '+00:00', '+07:00'), CONVERT_TZ(NOW(), '+00:00', '+07:00'))
+            ON DUPLICATE KEY UPDATE
+            last_assigned_at = CONVERT_TZ(NOW(), '+00:00', '+07:00'),
+            total_tasks_assigned = total_tasks_assigned + 1,
+            updated_at = CONVERT_TZ(NOW(), '+00:00', '+07:00')
+        ");
+        
+        if (!$insert_tracking) {
+            error_log("Failed to insert tracking record: " . $db->error);
+            // Không throw exception vì task đã được assign thành công
         }
         
         echo json_encode(array('success' => true, 'affected_rows' => $affected_rows));
