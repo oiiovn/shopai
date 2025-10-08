@@ -24,6 +24,13 @@
             <!-- Dashboard -->
 
             {if $user->_is_admin}
+              <!-- Shop-AI Admin -->
+              <li {if $view == "shop_ai"}class="active" {/if}>
+                <a href="{$system['system_url']}/{$control_panel['url']}/shop-ai">
+                  <i class="fa fa-robot fa-lg fa-fw mr10" style="color: #5e72e4"></i>{__("Shop-AI Admin")}
+                </a>
+              </li>
+              <!-- Shop-AI Admin -->
               <!-- Settings -->
               <li {if $view == "settings"}class="active" {/if}>
                 <a href="#settings" data-bs-toggle="collapse" {if $view == "settings"}aria-expanded="true" {/if}>

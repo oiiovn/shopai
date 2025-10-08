@@ -470,6 +470,111 @@ try {
       }
       break;
 
+    case 'shop-ai':
+      // check admin permission
+      if ($user->_is_moderator) {
+        _error(__('System Message'), __("You don't have the right permission to access this"));
+      }
+
+      // page header
+      page_header($control_panel['title'] . " &rsaquo; " . __("Shop-AI Admin"));
+
+      // Get Shop-AI statistics
+      $shop_ai_stats = [];
+      
+      // === THỐNG KÊ CHECK SỐ ===
+      // Tổng số check thành công (tất cả thời gian)
+      $get_total_success = $db->query("SELECT COUNT(*) as count FROM phone_check_history WHERE status = 'success'") or _error('SQL_ERROR');
+      $shop_ai_stats['total_success'] = $get_total_success->fetch_assoc()['count'];
+      
+      // Tổng số đang check (pending)
+      $get_total_pending = $db->query("SELECT COUNT(*) as count FROM phone_check_history WHERE status = 'pending'") or _error('SQL_ERROR');
+      $shop_ai_stats['total_pending'] = $get_total_pending->fetch_assoc()['count'];
+      
+      // Tổng số thất bại (bao gồm cả 'failed' và 'not_found')
+      $get_total_failed = $db->query("SELECT COUNT(*) as count FROM phone_check_history WHERE status IN ('failed', 'not_found')") or _error('SQL_ERROR');
+      $shop_ai_stats['total_failed'] = $get_total_failed->fetch_assoc()['count'];
+      
+      // Số check thành công hôm nay - lấy theo ngày tạo thực tế
+      $get_today_success = $db->query("SELECT COUNT(*) as count FROM phone_check_history WHERE status = 'success' AND DATE(created_at) = CURDATE()") or _error('SQL_ERROR');
+      $shop_ai_stats['today_success'] = $get_today_success->fetch_assoc()['count'];
+      
+      // Số đang check hôm nay
+      $get_today_pending = $db->query("SELECT COUNT(*) as count FROM phone_check_history WHERE status = 'pending' AND DATE(created_at) = CURDATE()") or _error('SQL_ERROR');
+      $shop_ai_stats['today_pending'] = $get_today_pending->fetch_assoc()['count'];
+      
+      // Số thất bại hôm nay (bao gồm cả 'failed' và 'not_found')
+      $get_today_failed = $db->query("SELECT COUNT(*) as count FROM phone_check_history WHERE status IN ('failed', 'not_found') AND DATE(created_at) = CURDATE()") or _error('SQL_ERROR');
+      $shop_ai_stats['today_failed'] = $get_today_failed->fetch_assoc()['count'];
+      
+      // === THỐNG KÊ NGƯỜI DÙNG ===
+      // Tổng số người dùng đã sử dụng Shop-AI (đã check số ít nhất 1 lần)
+      $get_total_users = $db->query("SELECT COUNT(DISTINCT checker_user_id) as count FROM phone_check_history") or _error('SQL_ERROR');
+      $shop_ai_stats['total_users'] = $get_total_users->fetch_assoc()['count'];
+      
+      // Số người dùng check hôm nay
+      $get_today_users = $db->query("SELECT COUNT(DISTINCT checker_user_id) as count FROM phone_check_history WHERE DATE(created_at) = CURDATE()") or _error('SQL_ERROR');
+      $shop_ai_stats['today_users'] = $get_today_users->fetch_assoc()['count'];
+      
+      // Số người dùng đã nạp tiền
+      $get_users_recharged = $db->query("SELECT COUNT(DISTINCT user_id) as count FROM users_wallets_transactions WHERE type = 'recharge' AND description REGEXP 'RZ[A-Z0-9]+'") or _error('SQL_ERROR');
+      $shop_ai_stats['users_recharged'] = $get_users_recharged->fetch_assoc()['count'];
+      
+      // === THỐNG KÊ 7 NGÀY GẦN NHẤT ===
+      $chart_data = [];
+      for ($i = 6; $i >= 0; $i--) {
+        $date = date('Y-m-d', strtotime("-$i days"));
+        $day_name = date('d/m', strtotime("-$i days"));
+        
+        // Check thành công
+        $get_success = $db->query("SELECT COUNT(*) as count FROM phone_check_history WHERE status = 'success' AND DATE(created_at) = '$date'") or _error('SQL_ERROR');
+        $success_count = $get_success->fetch_assoc()['count'];
+        
+        // Check thất bại
+        $get_failed = $db->query("SELECT COUNT(*) as count FROM phone_check_history WHERE status IN ('failed', 'not_found') AND DATE(created_at) = '$date'") or _error('SQL_ERROR');
+        $failed_count = $get_failed->fetch_assoc()['count'];
+        
+        // Đang check
+        $get_pending = $db->query("SELECT COUNT(*) as count FROM phone_check_history WHERE status = 'pending' AND DATE(created_at) = '$date'") or _error('SQL_ERROR');
+        $pending_count = $get_pending->fetch_assoc()['count'];
+        
+        // Tiền nạp
+        $get_recharge = $db->query("SELECT COALESCE(SUM(amount), 0) as total FROM users_wallets_transactions WHERE type = 'recharge' AND description REGEXP 'RZ[A-Z0-9]+' AND DATE(time) = '$date'") or _error('SQL_ERROR');
+        $recharge_amount = $get_recharge->fetch_assoc()['total'];
+        
+        $chart_data[] = [
+          'date' => $date,
+          'day_name' => $day_name,
+          'success' => (int)$success_count,
+          'failed' => (int)$failed_count,
+          'pending' => (int)$pending_count,
+          'recharge' => (float)$recharge_amount
+        ];
+      }
+      $shop_ai_stats['chart_data'] = $chart_data;
+      
+      // === THỐNG KÊ NẠP TIỀN ===
+      // Tổng tiền nạp (tất cả thời gian) - từ bảng users_wallets_transactions
+      // Chỉ lấy giao dịch có type='recharge' và description chứa mã RZ (RZ + chữ số)
+      $get_total_recharge = $db->query("SELECT COALESCE(SUM(amount), 0) as total FROM users_wallets_transactions WHERE type = 'recharge' AND description REGEXP 'RZ[A-Z0-9]+'") or _error('SQL_ERROR');
+      $shop_ai_stats['total_recharge'] = $get_total_recharge->fetch_assoc()['total'];
+      
+      // Tổng tiền nạp hôm nay
+      $get_today_recharge = $db->query("SELECT COALESCE(SUM(amount), 0) as total FROM users_wallets_transactions WHERE type = 'recharge' AND description REGEXP 'RZ[A-Z0-9]+' AND DATE(time) = CURDATE()") or _error('SQL_ERROR');
+      $shop_ai_stats['today_recharge'] = $get_today_recharge->fetch_assoc()['total'];
+      
+      // Số lượng giao dịch nạp tiền (tất cả thời gian)
+      $get_total_recharge_count = $db->query("SELECT COUNT(*) as count FROM users_wallets_transactions WHERE type = 'recharge' AND description REGEXP 'RZ[A-Z0-9]+'") or _error('SQL_ERROR');
+      $shop_ai_stats['total_recharge_count'] = $get_total_recharge_count->fetch_assoc()['count'];
+      
+      // Số lượng giao dịch nạp tiền hôm nay
+      $get_today_recharge_count = $db->query("SELECT COUNT(*) as count FROM users_wallets_transactions WHERE type = 'recharge' AND description REGEXP 'RZ[A-Z0-9]+' AND DATE(time) = CURDATE()") or _error('SQL_ERROR');
+      $shop_ai_stats['today_recharge_count'] = $get_today_recharge_count->fetch_assoc()['count'];
+
+      // assign variables
+      $smarty->assign('shop_ai_stats', $shop_ai_stats);
+      break;
+
     case 'users':
       // check admin|moderator permission
       if ($user->_is_moderator) {
