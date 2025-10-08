@@ -79,6 +79,53 @@ if (isset($_GET['action'])) {
         $smarty->assign('proof_data', $proof_data);
         $smarty->display('view-proof.tpl');
         exit;
+        
+    } elseif ($action == 'request-details' && isset($_GET['id'])) {
+        // Check user login first
+        if (!$user->_logged_in) {
+            user_login();
+        }
+        
+        // Request details page - Chi tiết chiến dịch mẹ
+        $request_id = (int)$_GET['id'];
+        
+        // Get campaign details (chỉ cho phép xem nếu là người tạo)
+        $campaign_query = $db->query("
+            SELECT gmr.*
+            FROM google_maps_review_requests gmr
+            WHERE gmr.request_id = '{$request_id}'
+            AND gmr.requester_user_id = '{$user->_data['user_id']}'
+        ");
+        
+        if ($campaign_query->num_rows == 0) {
+            _error(403);
+        }
+        
+        $campaign = $campaign_query->fetch_assoc();
+        
+        // Get all sub-requests của chiến dịch này
+        // Rating và review content đã được lưu trực tiếp trong bảng google_maps_review_sub_requests
+        $sub_requests = array();
+        $get_sub_requests = $db->query("
+            SELECT gmsr.*,
+                   u.user_firstname, u.user_lastname, u.user_name, u.user_picture, u.user_verified, u.user_gender
+            FROM google_maps_review_sub_requests gmsr
+            LEFT JOIN users u ON gmsr.assigned_user_id = u.user_id
+            WHERE gmsr.parent_request_id = '{$request_id}'
+            ORDER BY gmsr.created_at ASC
+        ");
+        
+        if ($get_sub_requests && $get_sub_requests->num_rows > 0) {
+            while ($sub = $get_sub_requests->fetch_assoc()) {
+                $sub_requests[] = $sub;
+            }
+        }
+        
+        page_header(__("Chi tiết chiến dịch: ") . $campaign['place_name']);
+        $smarty->assign('campaign', $campaign);
+        $smarty->assign('sub_requests', $sub_requests);
+        $smarty->display('google-maps-request-details.tpl');
+        exit;
     }
 }
 
@@ -498,18 +545,20 @@ function submitReview() {
         
         $sub_request = $get_sub_request->fetch_assoc();
         
-        // Create review record
-        $db->query("
+        // Create review record với đúng schema
+        $insert_review = $db->query("
             INSERT INTO google_maps_reviews 
-            (request_id, sub_request_id, reviewer_user_id, google_place_id, rating, review_text, 
-             review_url, screenshot_proof, verification_status, verification_method, 
-             reward_paid, payment_status, created_at)
+            (sub_request_id, reviewer_user_id, google_place_id, review_text, rating, 
+             review_url, screenshot_url, status, created_at, updated_at)
             VALUES 
-            ('{$sub_request['parent_request_id']}', '{$sub_request_id}', '{$user->_data['user_id']}', 
-             '{$sub_request['google_place_id']}', '{$rating}', '{$review_text}', '{$review_url}', 
-             '{$screenshot_proof}', 'pending', 'screenshot', '{$sub_request['reward_amount']}', 
-             'pending', CONVERT_TZ(NOW(), '+00:00', '+07:00'))
+            ('{$sub_request_id}', '{$user->_data['user_id']}', '{$sub_request['google_place_id']}', 
+             '{$review_text}', '{$rating}', '{$review_url}', '{$screenshot_proof}', 
+             'pending', CONVERT_TZ(NOW(), '+00:00', '+07:00'), CONVERT_TZ(NOW(), '+00:00', '+07:00'))
         ");
+        
+        if (!$insert_review) {
+            throw new Exception("Lỗi tạo review: " . $db->error);
+        }
         
         $review_id = $db->insert_id;
         

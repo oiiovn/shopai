@@ -190,12 +190,11 @@ console.log('🔍 Available tasks count:', {if $available_tasks}{$available_task
                       <thead>
                         <tr>
                           <th>Tên địa điểm</th>
-                          <th>Mục tiêu đánh giá</th>
-                          <th>Đã hoàn thành</th>
-                          <th>Số tiền thưởng</th>
+                          <th>Mục tiêu</th>
+                          <th>Tổng chi</th>
                           <th>Tình trạng</th>
                           <th>Đã tạo</th>
-                          <th>Hành động</th>
+                          <th>Chi tiết</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -206,8 +205,7 @@ console.log('🔍 Available tasks count:', {if $available_tasks}{$available_task
                               <small class="text-muted">{$request.place_address}</small>
                             </td>
                             <td>{$request.target_reviews}</td>
-                            <td>{$request.completed_reviews}</td>
-                            <td>{$request.reward_amount|number_format:0} VND</td>
+                            <td><strong class="text-danger">{$request.total_budget|number_format:0} VND</strong></td>
                             <td>
                               <span class="badge badge-{if $request.status == 'active'}success{elseif $request.status == 'completed'}primary{else}secondary{/if}">
                                 {if $request.status == 'active'}Kích hoạt{elseif $request.status == 'completed'}Hoàn thành{elseif $request.status == 'cancelled'}Đã hủy{else}Hết hạn{/if}
@@ -215,9 +213,9 @@ console.log('🔍 Available tasks count:', {if $available_tasks}{$available_task
                             </td>
                             <td>{$request.created_at|date_format:"%d/%m/%Y"}</td>
                             <td>
-                              <button class="btn btn-sm btn-info" onclick="viewRequestDetails({$request.request_id})">
-                                <i class="fa fa-eye"></i>
-                              </button>
+                              <a href="{$system['system_url']}/google-maps-reviews/request-details/{$request.request_id}" class="btn btn-sm btn-primary" target="_blank">
+                                <i class="fa fa-external-link-alt mr-1"></i>Xem chi tiết
+                              </a>
                             </td>
                           </tr>
                         {/foreach}
@@ -1533,11 +1531,6 @@ function bindModalButton() {
     };
     console.log('✅ Direct onclick bound');
   }
-}
-
-function viewRequestDetails(requestId) {
-  // Implement view request details
-  alert('Xem chi tiết yêu cầu ID: ' + requestId);
 }
 </script>
 

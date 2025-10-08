@@ -195,6 +195,7 @@ RewriteRule ^google-maps-reviews/my-reviews/?$ google-maps-reviews.php?view=my-r
 RewriteRule ^google-maps-reviews/create-request/?$ google-maps-reviews.php?view=create-request [L,QSA]
 RewriteRule ^google-maps-reviews/reward-history/?$ google-maps-reviews.php?view=reward-history [L,QSA]
 RewriteRule ^google-maps-reviews/transactions/?$ google-maps-reviews.php?view=transactions [L,QSA]
+RewriteRule ^google-maps-reviews/request-details/([0-9]+)/?$ google-maps-reviews.php?action=request-details&id=$1 [L,QSA]
 RewriteRule ^google-maps-reviews/submit-proof/([0-9]+)/?$ google-maps-reviews.php?action=submit-proof&id=$1 [L,QSA]
 RewriteRule ^google-maps-reviews/view-proof/([0-9]+)/?$ google-maps-reviews.php?action=view-proof&id=$1 [L,QSA]
 RewriteRule ^submit-proof/?$ submit-proof.php [L,QSA]
