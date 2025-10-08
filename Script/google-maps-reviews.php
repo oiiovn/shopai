@@ -552,21 +552,30 @@ function assignReviewTask() {
             return;
         }
         
-        // Insert hoặc update tracking record
-        $insert_tracking = $db->query("
-            INSERT INTO google_maps_user_requester_tracking 
-            (user_id, requester_user_id, first_assigned_at, last_assigned_at, total_tasks_assigned, created_at, updated_at)
-            VALUES 
-            ('{$user->_data['user_id']}', '{$requester_user_id}', CONVERT_TZ(NOW(), '+00:00', '+07:00'), CONVERT_TZ(NOW(), '+00:00', '+07:00'), 1, CONVERT_TZ(NOW(), '+00:00', '+07:00'), CONVERT_TZ(NOW(), '+00:00', '+07:00'))
-            ON DUPLICATE KEY UPDATE
-            last_assigned_at = CONVERT_TZ(NOW(), '+00:00', '+07:00'),
-            total_tasks_assigned = total_tasks_assigned + 1,
-            updated_at = CONVERT_TZ(NOW(), '+00:00', '+07:00')
+        // Insert tracking record (chỉ insert lần đầu, không update nếu đã tồn tại)
+        $check_tracking = $db->query("
+            SELECT tracking_id FROM google_maps_user_requester_tracking 
+            WHERE user_id = '{$user->_data['user_id']}' 
+            AND requester_user_id = '{$requester_user_id}'
         ");
         
-        if (!$insert_tracking) {
-            error_log("Failed to insert tracking record: " . $db->error);
-            // Không throw exception vì task đã được assign thành công
+        if ($check_tracking->num_rows == 0) {
+            // Chưa có record → Insert mới
+            $insert_tracking = $db->query("
+                INSERT INTO google_maps_user_requester_tracking 
+                (user_id, requester_user_id, first_task_id, first_task_date, created_at)
+                VALUES 
+                ('{$user->_data['user_id']}', '{$requester_user_id}', '{$sub_request_id}', CONVERT_TZ(NOW(), '+00:00', '+07:00'), CONVERT_TZ(NOW(), '+00:00', '+07:00'))
+            ");
+            
+            if (!$insert_tracking) {
+                error_log("Failed to insert tracking record: " . $db->error);
+                // Không throw exception vì task đã được assign thành công
+            } else {
+                error_log("Tracking inserted: User {$user->_data['user_id']} - Shop {$requester_user_id}");
+            }
+        } else {
+            error_log("Tracking already exists: User {$user->_data['user_id']} - Shop {$requester_user_id}");
         }
         
         echo json_encode(array('success' => true, 'affected_rows' => $affected_rows));
