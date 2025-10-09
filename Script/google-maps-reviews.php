@@ -166,16 +166,25 @@ try {
         $user_wallet_balance = $balance_data['user_wallet_balance'];
     }
     
-    // Get user's review requests
+    // Get user's review requests with sub-request counts
     $get_requests = $db->query("
-        SELECT gmr.*
+        SELECT 
+            gmr.*,
+            COUNT(CASE WHEN gmsr.parent_request_id IS NOT NULL THEN 1 END) as total_valid_subs,
+            COUNT(CASE WHEN gmsr.status IN ('completed', 'verified') AND gmsr.parent_request_id IS NOT NULL THEN 1 END) as completed_subs
         FROM google_maps_review_requests gmr
+        LEFT JOIN google_maps_review_sub_requests gmsr ON gmr.request_id = gmsr.parent_request_id
         WHERE gmr.requester_user_id = '{$user->_data['user_id']}'
+        GROUP BY gmr.request_id
         ORDER BY gmr.created_at DESC
     ");
     
     if ($get_requests->num_rows > 0) {
         while ($request = $get_requests->fetch_assoc()) {
+            // Calculate progress percentage based on completed tasks
+            $request['progress_percent'] = $request['total_valid_subs'] > 0 
+                ? round(($request['completed_subs'] / $request['total_valid_subs']) * 100) 
+                : 0;
             $user_requests[] = $request;
         }
     }
