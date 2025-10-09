@@ -70,39 +70,80 @@ function callOpenAIVisionAPI($api_key, $image_base64, $image_mime, $prompt) {
 function generateReviewContent($api_key, $place_name, $place_address, $review_template) {
     $url = 'https://api.openai.com/v1/chat/completions';
     
-    // Tạo prompt cho GPT
-    $prompt = "Bạn là một người dùng thật đang viết đánh giá trên Google Maps cho địa điểm: \"{$place_name}\" tại {$place_address}.\n\n";
+    // Tạo random style để mỗi review khác nhau hẳn
+    $styles = [
+        "cực kỳ ngắn gọn, súc tích, đi thẳng vào vấn đề",
+        "tự nhiên, như người bình thường kể lại trải nghiệm",
+        "nhiệt tình, hào hứng nhưng vẫn chân thực",
+        "bình tĩnh, khách quan, đánh giá cân bằng",
+        "trẻ trung, năng động, dùng từ ngắn gọn",
+        "trưởng thành hơn, có kinh nghiệm, đánh giá chi tiết"
+    ];
+    $random_style = $styles[array_rand($styles)];
+    
+    // Tạo random variation hints
+    $variations = [
+        "Bắt đầu bằng ấn tượng đầu tiên",
+        "Nhấn mạnh điểm nổi bật nhất",
+        "Kể lại trải nghiệm theo thứ tự thời gian",
+        "So sánh với kỳ vọng ban đầu",
+        "Tập trung vào cảm nhận cá nhân"
+    ];
+    $random_variation = $variations[array_rand($variations)];
+    
+    // Random natural elements để reviews tự nhiên hơn
+    $natural_elements = [
+        "có thể thêm 1-2 emoji (👍😊❤️🔥💯) nếu phù hợp",
+        "dùng viết tắt tiếng Việt tự nhiên (oke, k, dc, vs, ...)",
+        "có thể có 1-2 lỗi chính tả nhỏ (thật → thât, được → đc)",
+        "dùng từ lóng Gen Z nhẹ (ổn áp, xịn sò, ngon lành)",
+        "thêm dấu ... hoặc !!! để thể hiện cảm xúc"
+    ];
+    $random_element = $natural_elements[array_rand($natural_elements)];
+    
+    // Tạo prompt cho GPT - CHỈ dựa trên review_template, KHÔNG dùng tên địa điểm
+    $prompt = "Bạn là người dùng thật viết đánh giá Google Maps.\n\n";
     
     if (!empty($review_template)) {
-        $prompt .= "Dựa trên gợi ý sau: \"{$review_template}\"\n\n";
+        $prompt .= "Dựa trên ý chính: \"{$review_template}\"\n\n";
     }
     
-    $prompt .= "Hãy viết một đánh giá chân thực, tự nhiên với yêu cầu:\n";
-    $prompt .= "- Độ dài: 200-300 ký tự (bắt buộc)\n";
-    $prompt .= "- Phong cách: người Việt thật, tự nhiên, không quá hoa mỹ\n";
-    $prompt .= "- Nội dung: cân bằng giữa kỹ thuật và cảm xúc cá nhân\n";
-    $prompt .= "- Ngôn ngữ: tiếng Việt có dấu\n";
-    $prompt .= "- Tránh: sao chép template, lặp từ ngữ, quá chung chung\n";
-    $prompt .= "- Mỗi lần generate phải khác nhau, thay đổi cách diễn đạt\n\n";
-    $prompt .= "CHỈ TRẢ VỀ NỘI DUNG ĐÁNH GIÁ, KHÔNG CÓ THÊM BẤT KỲ GIẢI THÍCH NÀO KHÁC.";
+    $prompt .= "YÊU CẦU:\n";
+    $prompt .= "- Độ dài: 200-300 ký tự (BẮT BUỘC)\n";
+    $prompt .= "- Phong cách: {$random_style}\n";
+    $prompt .= "- Cách viết: {$random_variation}\n";
+    $prompt .= "- Tự nhiên hơn: {$random_element}\n";
+    $prompt .= "- TUYỆT ĐỐI KHÔNG dùng tên địa điểm cụ thể\n";
+    $prompt .= "- Giữ ý chính nhưng diễn đạt HOÀN TOÀN KHÁC BIỆT\n";
+    $prompt .= "- Thay đổi cấu trúc câu, từ ngữ, thứ tự ý\n";
+    $prompt .= "- Viết như người Việt thật, không formal quá\n";
+    $prompt .= "- Mỗi lần phải khác nhau HOÀN TOÀN, không lặp lại pattern\n\n";
+    $prompt .= "TRÁNH TUYỆT ĐỐI các từ AI thường dùng:\n";
+    $prompt .= "- wow, amazing, awesome, fantastic, incredible\n";
+    $prompt .= "- xuất sắc, tuyệt vời, hoàn hảo, tuyệt hảo\n";
+    $prompt .= "- không thể tin được, đáng kinh ngạc\n";
+    $prompt .= "- chắc chắn sẽ quay lại, definitely recommend\n";
+    $prompt .= "→ Dùng từ bình thường hơn: tốt, ổn, hay, ngon, ok, oke\n\n";
+    $prompt .= "CHỈ TRẢ VỀ NỘI DUNG ĐÁNH GIÁ, KHÔNG GIẢI THÍCH.";
     
     $data = [
-        "model" => "gpt-4o-mini",  // Dùng mini để tiết kiệm chi phí
+        "model" => "gpt-4o-mini",
         "messages" => [
             [
                 "role" => "system",
-                "content" => "Bạn là một người dùng thật viết đánh giá trên Google Maps. Viết tự nhiên, ngắn gọn, chân thực."
+                "content" => "Bạn là người viết review thật. Mỗi lần viết phải khác biệt hoàn toàn về phong cách và cách diễn đạt."
             ],
             [
                 "role" => "user",
                 "content" => $prompt
             ]
         ],
-        "max_tokens" => 200,
-        "temperature" => 1.0,  // Tăng độ ngẫu nhiên để mỗi lần khác nhau
-        "top_p" => 0.95,
-        "frequency_penalty" => 0.5,  // Giảm lặp từ
-        "presence_penalty" => 0.3    // Khuyến khích nội dung mới
+        "max_tokens" => 250,
+        "temperature" => 1.3,  // Tăng cao để đa dạng hơn (từ 1.0 lên 1.3)
+        "top_p" => 0.9,        // Giảm để tăng độ ngẫu nhiên (từ 0.95 xuống 0.9)
+        "frequency_penalty" => 0.8,  // Tăng để tránh lặp từ (từ 0.5 lên 0.8)
+        "presence_penalty" => 0.6,   // Tăng để khuyến khích từ mới (từ 0.3 lên 0.6)
+        "seed" => rand(1, 999999)    // Random seed mỗi lần để kết quả khác nhau
     ];
     
     $headers = [
