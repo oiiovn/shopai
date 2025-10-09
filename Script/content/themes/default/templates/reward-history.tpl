@@ -144,7 +144,12 @@
         <div class="col-12">
           <div class="card">
             <div class="card-header bg-transparent">
-              <strong>Lịch sử thưởng</strong>
+              <div class="d-flex justify-content-between align-items-center">
+                <strong>Lịch sử thưởng</strong>
+                <button type="button" class="btn btn-success btn-sm" onclick="showWithdrawModal()">
+                  <i class="fa fa-money-bill-wave mr-1"></i>Rút tiền
+                </button>
+              </div>
             </div>
             <div class="card-body">
               {if $reward_history}
@@ -228,5 +233,73 @@
     </div>
   </div>
 </div>
+
+<!-- Modal: Tính năng Rút Tiền -->
+<div class="modal fade" id="withdrawModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content" style="border-radius: 16px; border: none; overflow: hidden;">
+      <div class="modal-header" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border: none;">
+        <h5 class="modal-title text-white font-weight-bold">
+          <i class="fa fa-money-bill-wave mr-2"></i>Rút Tiền
+        </h5>
+        <button type="button" class="close text-white" data-dismiss="modal">
+          <span>&times;</span>
+        </button>
+      </div>
+      <div class="modal-body p-4">
+        <!-- Icon Coming Soon -->
+        <div class="text-center mb-4">
+          <div class="d-inline-block p-4 rounded-circle" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <i class="fa fa-hammer fa-3x text-white"></i>
+          </div>
+        </div>
+        
+        <!-- Thông báo -->
+        <div class="text-center mb-4">
+          <h4 class="font-weight-bold mb-2">Tính năng đang phát triển</h4>
+          <p class="text-muted mb-0">
+            Chúng tôi đang hoàn thiện tính năng rút tiền. Vui lòng quay lại sau!
+          </p>
+        </div>
+        
+        <!-- Chính sách rút tiền -->
+        <div class="alert alert-info" style="border-radius: 12px; background: linear-gradient(180deg, #eef5ff, #ffffff); border: 1px solid #dbe7ff;">
+          <h6 class="font-weight-bold mb-3">
+            <i class="fa fa-info-circle mr-2"></i>Chính sách rút tiền
+          </h6>
+          <ul class="mb-0 pl-3" style="list-style: none;">
+            <li class="mb-2">
+              <i class="fa fa-check-circle text-success mr-2"></i>
+              <strong>Số tiền tối thiểu:</strong> 50.000 VNĐ
+            </li>
+            <li class="mb-0">
+              <i class="fa fa-clock text-primary mr-2"></i>
+              <strong>Giới hạn:</strong> 1 lần/24 giờ
+            </li>
+          </ul>
+        </div>
+        
+        <!-- Note -->
+        <div class="text-center mt-3">
+          <small class="text-muted">
+            <i class="fa fa-bell mr-1"></i>
+            Bạn sẽ được thông báo khi tính năng sẵn sàng
+          </small>
+        </div>
+      </div>
+      <div class="modal-footer border-0 pt-0">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          <i class="fa fa-times mr-1"></i>Đóng
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function showWithdrawModal() {
+  $('#withdrawModal').modal('show');
+}
+</script>
 
 {include file='_footer.tpl'}
