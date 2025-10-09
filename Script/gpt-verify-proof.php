@@ -148,7 +148,18 @@ TASK INFORMATION:
 - Address: {$task['place_address']}
 - Review link: {$proof_data['shared_link']}
 
-IMPORTANT: Look for the review timestamp (time when the review was posted) - this is usually shown as \"X phút trước\", \"X giờ trước\", \"X ngày trước\", \"X tháng trước\", or \"X năm trước\" next to the star rating or reviewer name.
+IMPORTANT VERIFICATION CRITERIA:
+
+1. PLACE NAME MATCHING (place_name_match):
+   - The screenshot may show PARTIAL place name (ảnh có thể chỉ hiển thị một phần tên)
+   - If you find ANY PART of the place name in the image, especially the BEGINNING of the name = VALID
+   - Example: Place name is \"Nhà hàng Phở Việt Nam\" but image only shows \"Nhà hàng Phở\" or \"Phở Việt\" = Still VALID ✓
+   - The full name doesn't need to be visible because the photo may be cropped
+   - Set place_name_match = true if you see at least 3+ words or 50% of the place name
+
+2. REVIEW TIMESTAMP:
+   - Look for time like \"X phút trước\", \"X giờ trước\", \"X ngày trước\", \"X tháng trước\", or \"X năm trước\"
+   - This is usually shown next to the star rating or reviewer name
 
 Please respond with JSON format (use Vietnamese for text fields):
 {
@@ -163,11 +174,14 @@ Please respond with JSON format (use Vietnamese for text fields):
 }
 
 Note: For review_time_minutes, convert time to minutes:
+- \"vừa xong\" hoặc \"just now\" = 1 minute (mặc định)
 - \"X phút trước\" = X minutes
 - \"X giờ trước\" = X * 60 minutes  
 - \"X ngày trước\" = X * 1440 minutes
 - \"X tháng trước\" = X * 43200 minutes
 - \"X năm trước\" = X * 525600 minutes
+
+IMPORTANT: Review must be posted within 15 minutes to be valid.
 
 Return only JSON, no additional text.";
 
@@ -207,7 +221,7 @@ Return only JSON, no additional text.";
     
     // Check time criteria - kiểm tra thời gian đánh giá
     $review_time_minutes = isset($verification_result['review_time_minutes']) ? (int)$verification_result['review_time_minutes'] : 0;
-    $time_valid = $review_time_minutes <= 5; // Tiêu chí: dưới 5 phút
+    $time_valid = $review_time_minutes <= 15; // Tiêu chí: dưới 15 phút
     
     // Update database based on verification result
     $new_status = $verification_result['verified'] ? 'completed' : 'expired';
