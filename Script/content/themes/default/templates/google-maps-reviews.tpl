@@ -207,9 +207,20 @@ console.log('🔍 Available tasks count:', {if $available_tasks}{$available_task
                             <td>{$request.target_reviews}</td>
                             <td><strong class="text-danger">{$request.total_budget|number_format:0} VND</strong></td>
                             <td>
-                              <span class="badge badge-{if $request.status == 'active'}success{elseif $request.status == 'completed'}primary{else}secondary{/if}">
-                                {if $request.status == 'active'}Kích hoạt{elseif $request.status == 'completed'}Hoàn thành{elseif $request.status == 'cancelled'}Đã hủy{else}Hết hạn{/if}
-                              </span>
+                              <div class="d-flex flex-column" style="min-width: 140px;">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                  <small class="text-muted">
+                                    <strong class="text-success">{$request.completed_subs}</strong>/{$request.total_valid_subs} hoàn thành
+                                  </small>
+                                  <small class="text-muted">{$request.progress_percent}%</small>
+                                </div>
+                                <div class="progress" style="height: 8px;">
+                                  <div class="progress-bar bg-success" role="progressbar" style="width: {$request.progress_percent}%" aria-valuenow="{$request.progress_percent}" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                                <span class="badge badge-{if $request.completed_subs >= $request.total_valid_subs && $request.total_valid_subs > 0}primary{elseif $request.status == 'active'}success{elseif $request.status == 'completed'}primary{else}secondary{/if} mt-1" style="font-size: 0.7rem;">
+                                  {if $request.completed_subs >= $request.total_valid_subs && $request.total_valid_subs > 0}Đã hoàn thành{elseif $request.status == 'active'}Đang chạy{elseif $request.status == 'completed'}Hoàn thành{elseif $request.status == 'cancelled'}Đã hủy{else}Hết hạn{/if}
+                                </span>
+                              </div>
                             </td>
                             <td>{$request.created_at|date_format:"%d/%m/%Y"}</td>
                             <td>
