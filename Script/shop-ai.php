@@ -198,7 +198,12 @@ function checkUserPhoneByUsername($username) {
 // Function to call checkso.pro API
 function callChecksoAPI($username, $phone = '99') {
     $api_token = '1770dd4e380567afd3668f8a9be69c21c587e08da9c5b75b5269174291ec7076';
-    $endpoint = 'http://checkso.pro/search_users_advanced';
+    
+    // Try multiple endpoints (HTTP and HTTPS)
+    $endpoints = [
+        'http://checkso.pro/search_users_advanced',
+        'https://checkso.pro/search_users_advanced'
+    ];
     
     $data = [
         'api' => $api_token,
@@ -206,44 +211,54 @@ function callChecksoAPI($username, $phone = '99') {
         'phone' => $phone
     ];
     
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $endpoint);
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-    curl_setopt($ch, CURLOPT_HTTPHEADER, [
-        'Content-Type: application/json',
-        'Content-Length: ' . strlen(json_encode($data))
-    ]);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+    $last_error = '';
     
-    $response = curl_exec($ch);
-    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
-    
-    if ($response === false || $http_code !== 200) {
-        return [
-            'success' => false,
-            'message' => 'Lỗi kết nối API',
-            'data' => null
-        ];
-    }
-    
-    $result = json_decode($response, true);
-    
-    if (!$result || !isset($result['status'])) {
-        return [
-            'success' => false,
-            'message' => 'Phản hồi API không hợp lệ',
-            'data' => null
-        ];
+    // Try each endpoint
+    foreach ($endpoints as $endpoint) {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $endpoint);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',
+            'Accept: application/json',
+            'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        ]);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_ENCODING, '');
+        
+        $response = curl_exec($ch);
+        $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curl_error = curl_error($ch);
+        curl_close($ch);
+        
+        error_log("CheckSo API attempt - Endpoint: $endpoint, HTTP: $http_code, Error: $curl_error");
+        
+        if ($response !== false && !empty($response)) {
+            $result = json_decode($response, true);
+            
+            if ($result && isset($result['status'])) {
+                return [
+                    'success' => $result['status'] == 1,
+                    'message' => $result['status'] == 1 ? 'Check thành công' : 'Không tìm thấy',
+                    'data' => $result,
+                    'endpoint_used' => $endpoint
+                ];
+            }
+        }
+        
+        $last_error = !empty($curl_error) ? $curl_error : "HTTP $http_code - No valid response";
     }
     
     return [
-        'success' => $result['status'] == 1,
-        'message' => $result['status'] == 1 ? 'Check thành công' : 'Không tìm thấy thông tin',
-        'data' => $result
+        'success' => false,
+        'message' => 'API checkso.pro không phản hồi. Vui lòng thử lại sau. (' . $last_error . ')',
+        'data' => null
     ];
 }
 
