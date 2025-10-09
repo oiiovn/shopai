@@ -161,12 +161,22 @@ console.log('🔍 Available tasks count:', {if $available_tasks}{$available_task
                     </div>
                   </div>
                   <div class="col-md-3">
-                    <div class="card bg-info text-white">
+                    <div class="card bg-success text-white">
                       <div class="card-body">
                         <div class="d-flex justify-content-between">
                           <div>
-                            <h4 class="mb-0">{$user_earnings|number_format:0}</h4>
-                            <p class="mb-0">Tổng thu nhập (VND)</p>
+                            <h4 class="mb-0">
+                              {if $reward_history}
+                                {assign var="dashboard_total_earnings" value=0}
+                                {foreach $reward_history as $reward}
+                                  {assign var="dashboard_total_earnings" value=$dashboard_total_earnings+$reward.reward_amount}
+                                {/foreach}
+                                {number_format($dashboard_total_earnings, 0, ',', '.')} VND
+                              {else}
+                                0 VND
+                              {/if}
+                            </h4>
+                            <p class="mb-0">Tổng thu nhập</p>
                           </div>
                           <div class="align-self-center">
                             <i class="fa fa-money-bill-wave fa-2x"></i>

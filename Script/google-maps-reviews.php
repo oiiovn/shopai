@@ -206,30 +206,28 @@ try {
         }
     }
     
-    // Get user's reward history (for reward-history view)
+    // Get user's reward history (for dashboard and reward-history view)
     $reward_history = array();
-    if ($view == 'reward-history') {
-        $get_reward_history = $db->query("
-            SELECT 
-                gmsr.sub_request_id,
-                gmsr.reward_amount,
-                gmsr.created_at,
-                gmsr.status,
-                gmsr.completed_at,
-                gmsr.verified_at,
-                gmr.place_name,
-                gmr.place_address
-            FROM google_maps_review_sub_requests gmsr
-            LEFT JOIN google_maps_review_requests gmr ON gmsr.parent_request_id = gmr.request_id
-            WHERE gmsr.assigned_user_id = '{$user->_data['user_id']}'
-            AND gmsr.status IN ('completed', 'verified')
-            ORDER BY gmsr.created_at DESC
-        ");
-        
-        if ($get_reward_history->num_rows > 0) {
-            while ($reward = $get_reward_history->fetch_assoc()) {
-                $reward_history[] = $reward;
-            }
+    $get_reward_history = $db->query("
+        SELECT 
+            gmsr.sub_request_id,
+            gmsr.reward_amount,
+            gmsr.created_at,
+            gmsr.status,
+            gmsr.completed_at,
+            gmsr.verified_at,
+            gmr.place_name,
+            gmr.place_address
+        FROM google_maps_review_sub_requests gmsr
+        LEFT JOIN google_maps_review_requests gmr ON gmsr.parent_request_id = gmr.request_id
+        WHERE gmsr.assigned_user_id = '{$user->_data['user_id']}'
+        AND gmsr.status IN ('completed', 'verified')
+        ORDER BY gmsr.created_at DESC
+    ");
+    
+    if ($get_reward_history->num_rows > 0) {
+        while ($reward = $get_reward_history->fetch_assoc()) {
+            $reward_history[] = $reward;
         }
     }
     

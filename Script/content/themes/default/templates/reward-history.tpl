@@ -146,8 +146,9 @@
             <div class="card-header bg-transparent">
               <div class="d-flex justify-content-between align-items-center">
                 <strong>Lịch sử thưởng</strong>
-                <button type="button" class="btn btn-success btn-sm" onclick="showWithdrawModal()">
-                  <i class="fa fa-money-bill-wave mr-1"></i>Rút tiền
+                <button type="button" class="btn btn-success btn-sm" onclick="showWithdrawModal()" style="display:flex;align-items:center;gap:5px;">
+                  <i class="fa fa-money-bill-wave"></i>
+                  <span>Rút tiền</span>
                 </button>
               </div>
             </div>
@@ -204,12 +205,13 @@
                           </div>
                         </div>
                         <div class="d-flex justify-content-between align-items-center">
-                          <small class="text-muted">
-                            <i class="fa fa-calendar mr-1"></i>
-                            {$reward.created_at|date_format:"%d/%m/%Y %H:%M"}
+                          <small class="text-muted" style="display:flex;align-items:center;gap:5px;">
+                            <i class="fa fa-calendar"></i>
+                            <span>{$reward.created_at|date_format:"%d/%m/%Y %H:%M"}</span>
                           </small>
-                          <small class="text-success">
-                            <i class="fa fa-check-circle mr-1"></i>Hoàn thành
+                          <small class="text-success" style="display:flex;align-items:center;gap:5px;">
+                            <i class="fa fa-check-circle"></i>
+                            <span>Hoàn thành</span>
                           </small>
                         </div>
                       </div>
@@ -221,8 +223,9 @@
                   <i class="fa fa-history fa-4x text-muted mb-3"></i>
                   <h5 class="text-muted">Chưa có lịch sử thưởng</h5>
                   <p class="text-muted">Hoàn thành các nhiệm vụ đánh giá để nhận thưởng</p>
-                  <a href="{$system['system_url']}/google-maps-reviews/my-reviews" class="btn btn-primary">
-                    <i class="fa fa-star mr-2"></i>Xem nhiệm vụ
+                  <a href="{$system['system_url']}/google-maps-reviews/my-reviews" class="btn btn-primary" style="display:flex;align-items:center;gap:5px;">
+                    <i class="fa fa-star"></i>
+                    <span>Xem nhiệm vụ</span>
                   </a>
                 </div>
               {/if}
@@ -234,92 +237,155 @@
   </div>
 </div>
 
-<!-- Modal: Tính năng Rút Tiền -->
-<div class="modal fade" id="withdrawModal" tabindex="-1" role="dialog" aria-hidden="true">
+<!-- Modal: Rút Tiền -->
+<div class="modal fade" id="withdrawModal" tabindex="-1" role="dialog" aria-labelledby="withdrawModalTitle" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content" style="border-radius: 16px; border: none; overflow: hidden;">
-      <div class="modal-header" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border: none;">
-        <h5 class="modal-title text-white font-weight-bold">
-          <i class="fa fa-money-bill-wave mr-2"></i>Rút Tiền
+    <div class="modal-content withdraw-modal">
+      <div class="modal-header withdraw-modal__header">
+        <h5 class="modal-title" id="withdrawModalTitle" style="display:flex;align-items:center;gap:5px;">
+          <i class="fa fa-money-bill-wave"></i>
+          <span>Rút tiền</span>
         </h5>
-        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+
+        <!-- Close (BS5 + BS4) -->
+        <button type="button" class="btn-close d-inline-block" aria-label="Close"
+                data-bs-dismiss="modal" data-dismiss="modal"></button>
+        <!-- Fallback cho BS4 nếu thiếu .btn-close (hiện dấu ×) -->
+        <button type="button" class="close d-none" aria-label="Close"
+                data-bs-dismiss="modal" data-dismiss="modal">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <div class="modal-body p-4">
-        <!-- Icon Coming Soon -->
-        <div class="text-center mb-4">
-          <div class="d-inline-block p-4 rounded-circle" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-            <i class="fa fa-hammer fa-3x text-white"></i>
-          </div>
+
+      <div class="modal-body withdraw-modal__body">
+        <!-- Icon -->
+        <div class="withdraw-modal__icon">
+          <i class="fa fa-hammer"></i>
         </div>
-        
+
         <!-- Thông báo -->
-        <div class="text-center mb-4">
+        <div class="text-center mb-3">
           <h4 class="font-weight-bold mb-2">Tính năng đang phát triển</h4>
-          <p class="text-muted mb-0">
-            Chúng tôi đang hoàn thiện tính năng rút tiền. Vui lòng quay lại sau!
-          </p>
+          <p class="text-muted mb-0">Chúng tôi đang hoàn thiện tính năng rút tiền. Vui lòng quay lại sau!</p>
         </div>
-        
-        <!-- Chính sách rút tiền -->
-        <div class="alert alert-info" style="border-radius: 12px; background: linear-gradient(180deg, #eef5ff, #ffffff); border: 1px solid #dbe7ff;">
-          <h6 class="font-weight-bold mb-3">
-            <i class="fa fa-info-circle mr-2"></i>Chính sách rút tiền
+
+        <!-- Chính sách -->
+        <div class="withdraw-modal__policy">
+          <h6 class="font-weight-bold mb-3" style="display:flex;align-items:center;gap:5px;">
+            <i class="fa fa-info-circle"></i>
+            <span>Chính sách rút tiền</span>
           </h6>
-          <ul class="mb-0 pl-3" style="list-style: none;">
-            <li class="mb-2">
-              <i class="fa fa-check-circle text-success mr-2"></i>
-              <strong>Số tiền tối thiểu:</strong> 50.000 VNĐ
-            </li>
-            <li class="mb-0">
-              <i class="fa fa-clock text-primary mr-2"></i>
-              <strong>Giới hạn:</strong> 1 lần/24 giờ
-            </li>
+          <ul class="mb-0 pl-0">
+            <li style="display:flex;align-items:center;gap:5px;"><i class="fa fa-check-circle"></i><span><strong>Min:</strong> 50.000&nbsp;VNĐ</span></li>
+            <li style="display:flex;align-items:center;gap:5px;"><i class="fa fa-clock"></i><span><strong>Giới hạn:</strong> 1 lần / 24 giờ</span></li>
           </ul>
         </div>
-        
-        <!-- Note -->
+
         <div class="text-center mt-3">
-          <small class="text-muted">
-            <i class="fa fa-bell mr-1"></i>
-            Bạn sẽ được thông báo khi tính năng sẵn sàng
+          <small class="text-muted" style="display:flex;align-items:center;gap:5px;">
+            <i class="fa fa-bell"></i>
+            <span>Bạn sẽ được thông báo khi tính năng sẵn sàng</span>
           </small>
         </div>
       </div>
-      <div class="modal-footer border-0 pt-0">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">
-          <i class="fa fa-times mr-1"></i>Đóng
-        </button>
+
+      <div class="modal-footer withdraw-modal__footer">
+<button class="btn btn-light" data-bs-dismiss="modal" style="display:flex;align-items:center;gap:5px;">
+  <i class="fa fa-times"></i>
+  <span>Đóng</span>
+</button>
+
       </div>
     </div>
   </div>
 </div>
 
-<script>
-function showWithdrawModal() {
-  // Bootstrap 4/5 compatible
-  var modal = document.getElementById('withdrawModal');
-  if (typeof bootstrap !== 'undefined') {
-    // Bootstrap 5
-    var bsModal = new bootstrap.Modal(modal);
-    bsModal.show();
-  } else if (typeof $ !== 'undefined' && $.fn.modal) {
-    // Bootstrap 4 (jQuery)
-    $('#withdrawModal').modal('show');
-  } else {
-    alert('Modal library not loaded');
+<style>
+  :root{
+    --wd-primary:#4F46E5; /* indigo-600 */
+    --wd-accent:#7C3AED;  /* violet-600 */
+    --wd-success:#16A34A; /* green-600 */
+    --wd-bg:#ffffff;
+    --wd-soft:#f6f7ff;
+    --wd-border:#e5e7eb;
   }
-}
+  .withdraw-modal{
+    border:0; border-radius:16px; overflow:hidden; background:var(--wd-bg);
+    box-shadow:0 20px 45px rgba(0,0,0,.15);
+  }
+  .withdraw-modal__header{
+    background:linear-gradient(135deg, var(--wd-primary), var(--wd-accent));
+    color:#fff; border:0; align-items:center;
+  }
+  .withdraw-modal__header .modal-title{
+    font-weight:700; display:flex; align-items:center;
+  }
+  .withdraw-modal__body{
+    padding:24px;
+    background:linear-gradient(180deg, #FAFBFF 0%, #FFF 100%);
+  }
+  .withdraw-modal__icon{
+    width:84px; height:84px; border-radius:50%;
+    margin:0 auto 16px auto;
+    display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(135deg, #EEF2FF, #EDE9FE);
+    color:var(--wd-primary); font-size:34px;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.7), 0 6px 16px rgba(79,70,229,.15);
+  }
+  .withdraw-modal__policy{
+    border:1px solid var(--wd-border);
+    border-radius:12px;
+    background:linear-gradient(180deg, #F8FAFF, #FFFFFF);
+    padding:16px 16px 12px;
+  }
+  .withdraw-modal__policy ul{ list-style:none; }
+  .withdraw-modal__policy li{ margin-bottom:8px; }
+  .withdraw-modal__policy i{ color:var(--wd-success); }
+  .withdraw-modal__footer{ border:0; padding:16px 20px; }
+  /* Fallback: nếu .btn-close không có icon hệ thống, ẩn nó và show .close */
+  .btn-close:not(:hover){ outline:none; box-shadow:none; }
+  .btn-close{ width: 1em; height:1em; background:transparent; border:0; filter: invert(1); opacity: 0.8; }
+  .btn-close:hover{ opacity: 1; }
+  .btn-close + .close{ display:none; } /* nếu .btn-close render ok thì ẩn .close cũ */
+</style>
 
-// Đảm bảo modal có thể đóng bằng backdrop click
-$(document).ready(function() {
-  $('#withdrawModal').on('click', function(e) {
-    if (e.target === this) {
+<script>
+  // Helper: detect Bootstrap version availability
+  function hasBS5(){ return typeof bootstrap !== 'undefined' && bootstrap.Modal; }
+  function hasJQModal(){ return typeof $ !== 'undefined' && $.fn && $.fn.modal; }
+
+  // Open
+  function showWithdrawModal() {
+    var el = document.getElementById('withdrawModal');
+    if (!el) return;
+
+    if (hasBS5()) {
+      var inst = bootstrap.Modal.getOrCreateInstance(el, {ldelim}backdrop: true, keyboard: true{rdelim});
+      inst.show();
+    } else if (hasJQModal()) {
+      $('#withdrawModal').modal({ldelim}backdrop: true, keyboard: true, show: true{rdelim});
+    } else {
+      alert('Modal library not loaded');
+    }
+  }
+
+  // Close (cho mọi nút có data-(bs-)dismiss="modal")
+  function closeWithdrawModal() {
+    var el = document.getElementById('withdrawModal');
+    if (!el) return;
+
+    if (hasBS5()) {
+      var inst = bootstrap.Modal.getInstance(el) || bootstrap.Modal.getOrCreateInstance(el);
+      inst.hide();
+    } else if (hasJQModal()) {
       $('#withdrawModal').modal('hide');
     }
+  }
+
+  // Bật ESC (BS5 tự có; BS4 cũng có nếu keyboard:true)
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape') closeWithdrawModal();
   });
-});
 </script>
 
 {include file='_footer.tpl'}
