@@ -538,73 +538,94 @@ console.log('🔍 Available tasks count:', {if $available_tasks}{$available_task
                 <strong>Tạo chiến dịch đánh giá</strong>
               </div>
               <div class="card-body">
-                <!-- Hiển thị số dư hiện tại -->
-                <div class="alert alert-info text-center mb-4">
-                  <strong>Số dư hiện tại: <span id="currentBalance">{number_format($user_wallet_balance, 0, ',', '.')}</span> VND</strong>
+
+                <!-- Số dư Wallet Card -->
+                <div class="mf-wallet-card mb-4">
+                  <div class="d-flex align-items-center justify-content-between flex-wrap">
+                    <div class="d-flex align-items-center mb-2 mb-md-0">
+                      <div class="mf-wallet-icon">
+                        <i class="fa fa-wallet"></i>
+                      </div>
+                      <div class="ml-4">
+                        <small class="d-block mb-2" style="font-size: 0.85rem; opacity: 0.9;">Số dư ví của bạn</small>
+                        <h3 class="mb-0 font-weight-bold" style="letter-spacing: 0.5px;">
+                          <span id="currentBalance">{number_format($user_wallet_balance, 0, ',', '.')}</span> <small style="font-size: 0.65em; font-weight: 500; opacity: 0.9;">VNĐ</small>
+                        </h3>
+                      </div>
+                    </div>
+                    <div class="ml-md-4">
+                      <a href="{$system['system_url']}/shop-ai/recharge" class="btn btn-sm btn-outline-primary" style="border-radius: 20px; padding: 0.5rem 1.5rem; min-width: 110px;">
+                        <i class="fa fa-plus-circle mr-2"></i>Nạp tiền
+                      </a>
+                    </div>
+                  </div>
                 </div>
-                
-                <form id="createRequestForm">
-                  <div class="row">
+
+                <!-- THÊM class form-modern -->
+                <form id="createRequestForm" class="form-modern">
+                  <div class="row g-16">
                     <div class="col-md-6">
-                      <div class="form-group">
+                      <div class="mf-group">
+                        <input type="text" class="form-control" id="place_name" name="place_name" placeholder=" " required>
                         <label for="place_name">Tên địa điểm</label>
-                        <input type="text" class="form-control" id="place_name" name="place_name" required>
+                        <small class="mf-hint">Tên hiển thị trên Google Maps</small>
                       </div>
                     </div>
+
                     <div class="col-md-6">
-                      <div class="form-group">
-                        <label for="place_url">URL địa điểm (Tùy chọn)</label>
-                        <input type="url" class="form-control" id="place_url" name="place_url">
+                      <div class="mf-group">
+                        <input type="url" class="form-control" id="place_url" name="place_url" placeholder=" " required>
+                        <label for="place_url">URL địa điểm</label>
+                        <small class="mf-hint">Dán liên kết Google Maps/Place</small>
                       </div>
                     </div>
                   </div>
-                  
-                  <div class="form-group">
+
+                  <div class="mf-group">
+                    <textarea class="form-control" id="place_address" name="place_address" rows="2" placeholder=" " required></textarea>
                     <label for="place_address">Địa chỉ</label>
-                    <textarea class="form-control" id="place_address" name="place_address" rows="2" required></textarea>
                   </div>
-                  
-                  <div class="form-group">
+
+                  <div class="mf-group">
+                    <textarea class="form-control" id="review_template" name="review_template" rows="4" placeholder=" "></textarea>
                     <label for="review_template">
-                      Đánh giá mẫu (gợi ý cho GPT) 
-                      <i class="fa fa-magic text-primary ml-2"></i>
+                      Đánh giá mẫu (gợi ý cho GPT)
                     </label>
-                    <textarea class="form-control" id="review_template" name="review_template" rows="4" 
-                              placeholder="Ví dụ: Nhà hàng này có không gian đẹp, món ăn ngon, phục vụ tốt. Tôi thích món bò nướng và salad tươi..."></textarea>
-                    <small class="form-text text-muted">
-                      <i class="fa fa-info-circle"></i> GPT sẽ tự động tạo đánh giá độc đáo (200-300 ký tự) dựa trên gợi ý của bạn. Mỗi người nhận task sẽ có nội dung đánh giá khác nhau.
+                    <small class="mf-hint">
+                      GPT sẽ tạo review 200–300 ký tự, mỗi người nhận task có nội dung khác nhau.
                     </small>
                   </div>
-                  
-                  <div class="row">
+
+                  <div class="row g-16">
                     <div class="col-md-4">
-                      <div class="form-group">
-                        <label for="reward_amount">Chi phí cho 1 đánh giá 5 sao</label>
-                        <input type="number" class="form-control" id="reward_amount" name="reward_amount" value="10000" readonly>
-                        <small class="form-text text-muted">Chi phí cố định cho mỗi đánh giá 5 sao</small>
+                      <div class="mf-group">
+                        <input type="number" class="form-control" id="reward_amount" name="reward_amount" value="10000" readonly placeholder=" ">
+                        <label for="reward_amount">Chi phí 1 đánh giá 5★</label>
                       </div>
                     </div>
+
                     <div class="col-md-4">
-                      <div class="form-group">
+                      <div class="mf-group">
+                        <input type="number" class="form-control" id="target_reviews" name="target_reviews" min="1" max="100" value="1" required placeholder=" " onchange="calculateTotal()">
                         <label for="target_reviews">Số lượng đánh giá</label>
-                        <input type="number" class="form-control" id="target_reviews" name="target_reviews" min="1" max="100" value="1" required onchange="calculateTotal()">
                       </div>
                     </div>
+
                     <div class="col-md-4">
-                      <div class="form-group">
+                      <div class="mf-group">
+                        <input type="datetime-local" class="form-control" id="expires_at" name="expires_at" required placeholder=" ">
                         <label for="expires_at">Hết hạn lúc</label>
-                        <input type="datetime-local" class="form-control" id="expires_at" name="expires_at" required>
                       </div>
                     </div>
                   </div>
-                  
-                  <!-- Hiển thị hóa đơn -->
-                  <div class="card bg-light mb-4">
+
+                  <!-- Hóa đơn -->
+                  <div class="mf-invoice card bg-light mb-4">
                     <div class="card-body">
                       <h6 class="card-title">Hóa đơn chiến dịch</h6>
                       <div class="row">
                         <div class="col-md-6">
-                          <p class="mb-1">Chi phí cho 1 đánh giá: <span id="rewardAmount">10,000</span> VND</p>
+                          <p class="mb-1">Chi phí 1 đánh giá: <span id="rewardAmount">10,000</span> VND</p>
                           <p class="mb-1">Số lượng đánh giá: <span id="quantity">1</span></p>
                         </div>
                         <div class="col-md-6">
@@ -614,15 +635,27 @@ console.log('🔍 Available tasks count:', {if $available_tasks}{$available_task
                       </div>
                     </div>
                   </div>
+
+                  <!-- Warning khi không đủ tiền -->
+                  <div id="balanceWarning" class="alert alert-danger mf-balance-warning mb-3" style="display:none;">
+                    <div class="d-flex align-items-center">
+                      <div class="mr-3">
+                        <i class="fa fa-exclamation-triangle fa-2x"></i>
+                      </div>
+                      <div class="flex-grow-1">
+                        <h6 class="mb-1 font-weight-bold">Số dư không đủ!</h6>
+                        <p class="mb-0" style="font-size: 0.9rem;">
+                          Bạn cần nạp thêm tiền để tạo chiến dịch này. 
+                          <a href="{$system['system_url']}/shop-ai/recharge" class="alert-link font-weight-bold">Nạp tiền ngay</a>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                   
                   <div class="text-center">
-                    <button type="submit" class="btn btn-primary" id="createButton" disabled>
-                      <i class="fa fa-plus mr5"></i>
-                      Tạo chiến dịch
+                    <button type="submit" class="btn btn-primary mf-btn btn-lg px-5" id="createButton" disabled>
+                      <i class="fa fa-rocket mr-2"></i>Tạo Chiến Dịch Ngay
                     </button>
-                    <small class="form-text text-muted d-block mt-2" id="balanceWarning" style="display: none;">
-                      Số dư không đủ để tạo chiến dịch này
-                    </small>
                   </div>
                 </form>
               </div>
@@ -1569,10 +1602,21 @@ function calculateTotal() {
   if (createButton) {
     if (remainingBalance >= 0) {
       createButton.disabled = false;
-      if (balanceWarning) balanceWarning.style.display = 'none';
+      createButton.innerHTML = '<i class="fa fa-rocket mr-2"></i>Tạo Chiến Dịch Ngay';
+      if (balanceWarning) {
+        balanceWarning.style.display = 'none';
+        balanceWarning.classList.remove('show');
+      }
     } else {
       createButton.disabled = true;
-      if (balanceWarning) balanceWarning.style.display = 'block';
+      createButton.innerHTML = '<i class="fa fa-lock mr-2"></i>Số Dư Không Đủ';
+      if (balanceWarning) {
+        balanceWarning.style.display = 'block';
+        // Trigger animation
+        setTimeout(function() {
+          balanceWarning.classList.add('show');
+        }, 10);
+      }
     }
   }
 }
@@ -2115,6 +2159,252 @@ function bindModalButton() {
     console.log('✅ Direct onclick bound');
   }
 }
+
+// ===============================
+// Modern Form Kit - Auto floating labels
+// ===============================
+document.addEventListener('DOMContentLoaded', function(){
+  if(!document.querySelector('.form-modern')) return;
+  document.querySelectorAll('.form-modern .form-control').forEach(function(el){
+    // Nếu input đã có value do server render -> đảm bảo label nổi
+    if(el.value) el.dispatchEvent(new Event('focus'));
+    el.addEventListener('blur', function(){
+      // blur để trả label về trạng thái đúng khi rời focus
+    });
+  });
+});
 </script>
+
+<style>
+/* ===============================
+   MODERN FORM KIT – Floating labels
+   Safe: không đụng id/name/JS/Backend
+   =============================== */
+
+:root{
+  --mf-radius: 12px;
+  --mf-ring: 2px;
+  --mf-border: #e5e7eb;
+  --mf-border-focus: #007bff;
+  --mf-bg: #ffffff;
+  --mf-bg-muted:#f7f8fb;
+  --mf-text:#111827;
+  --mf-muted:#6b7280;
+  --mf-valid:#22c55e;
+  --mf-invalid:#ef4444;
+  --mf-shadow: 0 8px 24px rgba(16,24,40,.06);
+}
+
+.form-modern .g-16{ row-gap:16px; }
+.form-modern .mf-btn{
+  padding:.6rem 1rem;border-radius:10px;font-weight:600;
+  box-shadow:0 6px 14px rgba(0,123,255,.18);
+}
+
+/* Group */
+.form-modern .mf-group{
+  position:relative; margin:14px 0;
+}
+
+/* Control */
+.form-modern .form-control{
+  background:var(--mf-bg);
+  border:1.5px solid var(--mf-border);
+  border-radius:var(--mf-radius);
+  padding: 18px 14px 12px 14px;
+  font-size: .95rem;
+  line-height:1.3;
+  color:var(--mf-text);
+  transition:.18s ease;
+  box-shadow:none;
+}
+.form-modern .form-control[readonly],
+.form-modern .form-control:read-only{
+  background: var(--mf-bg-muted);
+  color:#4b5563;
+  cursor:not-allowed;
+}
+.form-modern .form-control:focus{
+  outline: none;
+  border-color: var(--mf-border-focus);
+  box-shadow: 0 0 0 var(--mf-ring) rgba(0,123,255,.15);
+}
+
+/* Floating labels */
+.form-modern .mf-group > label{
+  position:absolute; left:12px; top:12px;
+  padding:0 6px;
+  background:transparent;
+  color:var(--mf-muted);
+  font-size:.93rem; line-height:1;
+  transform-origin:left top;
+  transition:.18s ease;
+  pointer-events:none;
+}
+.form-modern .form-control::placeholder{ color:transparent; }
+
+/* Khi có value hoặc focus -> nổi lên */
+.form-modern .form-control:not(:placeholder-shown) + label,
+.form-modern .form-control:focus + label,
+.form-modern .form-control:-webkit-autofill + label{
+  top:-8px;
+  background:var(--mf-bg);
+  border-radius:8px;
+  font-size:.75rem;
+  color:#3b82f6;
+  padding:0 6px;
+  box-shadow: 0 0 0 4px var(--mf-bg);
+}
+
+/* Textarea chiều cao đẹp hơn */
+.form-modern textarea.form-control{
+  min-height:110px; resize:vertical;
+  padding-top:22px;
+}
+
+/* Hint dưới mỗi field */
+.form-modern .mf-hint{
+  display:block; margin-top:6px; font-size:.8rem; color:#6b7280;
+}
+
+/* Wallet Card */
+.mf-wallet-card{
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 10px 30px rgba(102,126,234,.25);
+  color: white;
+}
+.mf-wallet-icon{
+  width: 56px;
+  height: 56px;
+  background: rgba(255,255,255,0.2);
+  backdrop-filter: blur(10px);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: white;
+}
+.mf-wallet-card h3{
+  text-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.mf-wallet-card .btn-outline-primary{
+  background: rgba(255,255,255,0.95);
+  border: none;
+  color: #667eea;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transition: all 0.3s ease;
+}
+.mf-wallet-card .btn-outline-primary:hover{
+  background: white;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+}
+
+/* Alert làm mềm */
+.modern-alert{
+  background: linear-gradient(180deg, #eef5ff, #ffffff);
+  border:1px solid #dbe7ff; border-radius:14px;
+  box-shadow: var(--mf-shadow);
+}
+
+/* Invoice card nhấn nhẹ */
+.mf-invoice{
+  border:1px dashed #cbd5e1 !important;
+  border-radius:14px;
+  background:#fbfdff !important;
+}
+
+/* Nút primary mượt */
+.form-modern .btn.btn-primary.mf-btn{
+  background: linear-gradient(135deg, #1d4ed8, #3b82f6);
+  border:0;
+  transition: all 0.3s ease;
+}
+.form-modern .btn.btn-primary.mf-btn:not(:disabled):hover{
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,123,255,.3);
+}
+
+/* Balance Warning - Nổi bật */
+.mf-balance-warning{
+  border-radius: 14px;
+  border: 2px solid #dc3545;
+  background: linear-gradient(135deg, #fff5f5 0%, #ffe5e5 100%);
+  box-shadow: 0 8px 24px rgba(220,53,69,0.2);
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 0.3s ease;
+  color: #1a1a1a !important;
+}
+.mf-balance-warning.show{
+  opacity: 1;
+  transform: translateY(0);
+  animation: shake 0.5s ease-in-out;
+}
+.mf-balance-warning i{
+  color: #dc3545;
+  filter: drop-shadow(0 2px 4px rgba(220,53,69,0.3));
+}
+.mf-balance-warning h6{
+  color: #b91c1c !important;
+  font-size: 1.1rem;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+.mf-balance-warning p{
+  color: #374151 !important;
+  font-weight: 500;
+}
+.mf-balance-warning .alert-link{
+  color: #b91c1c !important;
+  text-decoration: underline;
+  font-weight: 700;
+  transition: all 0.2s;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+.mf-balance-warning .alert-link:hover{
+  color: #991b1b !important;
+  transform: scale(1.05);
+  text-decoration: none;
+}
+
+/* Shake animation */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+/* Button khi disabled - làm rõ hơn */
+.form-modern .btn.btn-primary.mf-btn:disabled{
+  background: #cbd5e1;
+  color: #64748b;
+  box-shadow: none;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Validation states */
+.form-modern .form-control:required:user-invalid{ border-color: var(--mf-invalid); }
+.form-modern .form-control:required:user-valid{ border-color: var(--mf-valid); }
+
+/* Dark mode */
+@media (prefers-color-scheme: dark){
+  :root{
+    --mf-border:#334155; --mf-border-focus:#60a5fa;
+    --mf-bg:#0b1220; --mf-bg-muted:#0f172a;
+    --mf-text:#e5e7eb; --mf-muted:#9ca3af;
+    --mf-shadow: 0 8px 24px rgba(2,6,23,.6);
+  }
+  .modern-alert{ background:linear-gradient(180deg,#0f172a,#0b1220); border-color:#1f2a44; }
+  .mf-invoice{ background:#0f172a !important; border-color:#23304d !important; }
+  .form-modern .form-control:focus{
+    box-shadow:0 0 0 var(--mf-ring) rgba(96,165,250,.25);
+  }
+}
+</style>
 
 {include file='_footer.tpl'}

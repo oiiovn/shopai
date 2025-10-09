@@ -330,23 +330,49 @@ function createReviewRequest() {
     global $db, $user;
     
     try {
-        $place_name = isset($_POST['place_name']) ? $_POST['place_name'] : '';
-        $place_address = isset($_POST['place_address']) ? $_POST['place_address'] : '';
-        $place_url = isset($_POST['place_url']) ? $_POST['place_url'] : '';
-        $review_template = isset($_POST['review_template']) ? $_POST['review_template'] : '';
+        // Get and escape input data
+        $place_name = $db->real_escape_string(trim($_POST['place_name'] ?? ''));
+        $place_address = $db->real_escape_string(trim($_POST['place_address'] ?? ''));
+        $place_url = $db->real_escape_string(trim($_POST['place_url'] ?? ''));
+        $review_template = $db->real_escape_string(trim($_POST['review_template'] ?? ''));
         $reward_amount = 10000; // Chi phí cho người tạo chiến dịch
         $reviewer_reward = 5000; // Tiền thưởng cho người đánh giá
-        $target_reviews = isset($_POST['target_reviews']) ? $_POST['target_reviews'] : 1;
-        $expires_at = isset($_POST['expires_at']) ? $_POST['expires_at'] : '';
+        $target_reviews = intval($_POST['target_reviews'] ?? 1);
+        $expires_at = trim($_POST['expires_at'] ?? '');
         
+        // Validate required fields
         if (empty($place_name) || empty($place_address)) {
-            echo json_encode(array('error' => 'Vui lòng điền đầy đủ thông tin'));
+            echo json_encode(array('error' => 'Vui lòng điền đầy đủ thông tin bắt buộc'));
             return;
         }
         
-        // Cho phép tạo nhiều chiến dịch với cùng thông tin địa điểm
+        // Validate place_url (bắt buộc)
+        if (empty($place_url)) {
+            echo json_encode(array('error' => 'Vui lòng nhập URL địa điểm Google Maps'));
+            return;
+        }
         
-        $total_budget = $reward_amount * $target_reviews; // Tổng ngân sách = chi phí mẹ × số lượng đánh giá
+        // Validate target_reviews
+        $target_reviews = intval($target_reviews);
+        if ($target_reviews < 1 || $target_reviews > 100) {
+            echo json_encode(array('error' => 'Số lượng đánh giá phải từ 1 đến 100'));
+            return;
+        }
+        
+        // Validate expires_at
+        if (empty($expires_at)) {
+            echo json_encode(array('error' => 'Vui lòng chọn thời gian hết hạn'));
+            return;
+        }
+        
+        $expires_timestamp = strtotime($expires_at);
+        if ($expires_timestamp <= time()) {
+            echo json_encode(array('error' => 'Thời gian hết hạn phải là thời điểm trong tương lai'));
+            return;
+        }
+        
+        // Calculate total budget
+        $total_budget = $reward_amount * $target_reviews;
         
         // Check user balance from users table
         $get_balance = $db->query("SELECT user_wallet_balance FROM users WHERE user_id = '{$user->_data['user_id']}'");
@@ -381,15 +407,39 @@ function createReviewRequest() {
         // Start transaction
         $db->query("START TRANSACTION");
         
-        // Deduct balance from user
+        // Check số dư TRONG transaction để tránh race condition
+        $check_balance_again = $db->query("
+            SELECT user_wallet_balance 
+            FROM users 
+            WHERE user_id = '{$user->_data['user_id']}' 
+            FOR UPDATE
+        ");
+        
+        if ($check_balance_again && $check_balance_again->num_rows > 0) {
+            $current_balance = $check_balance_again->fetch_assoc()['user_wallet_balance'];
+            
+            if ($current_balance < $total_budget) {
+                $db->query("ROLLBACK");
+                echo json_encode([
+                    'error' => 'Số dư không đủ! Cần: ' . number_format($total_budget, 0, ',', '.') . ' VNĐ, Hiện có: ' . number_format($current_balance, 0, ',', '.') . ' VNĐ',
+                    'required_amount' => $total_budget,
+                    'current_balance' => $current_balance
+                ]);
+                return;
+            }
+        }
+        
+        // Deduct balance from user (chỉ trừ nếu đủ tiền)
         $deduct_balance = $db->query("
             UPDATE users 
             SET user_wallet_balance = user_wallet_balance - {$total_budget} 
             WHERE user_id = '{$user->_data['user_id']}'
+            AND user_wallet_balance >= {$total_budget}
         ");
         
-        if (!$deduct_balance) {
-            throw new Exception("Lỗi trừ tiền: " . $db->error);
+        if (!$deduct_balance || $db->affected_rows == 0) {
+            $db->query("ROLLBACK");
+            throw new Exception("Không thể trừ tiền. Số dư có thể đã thay đổi hoặc không đủ.");
         }
         
         // Tạo lịch sử giao dịch trong users_wallets_transactions
@@ -406,16 +456,13 @@ function createReviewRequest() {
         }
         
         
-        // Escape review_template for SQL
-        $review_template_escaped = $db->real_escape_string($review_template);
-        
-        // Create main request (chiến dịch mẹ) với review_template
+        // Create main request (chiến dịch mẹ) với review_template (đã escape ở trên)
         $insert_main = $db->query("
             INSERT INTO google_maps_review_requests 
             (requester_user_id, google_place_id, place_name, place_address, place_url, review_template,
              reward_amount, target_reviews, total_budget, expires_at, status, created_at, updated_at)
             VALUES 
-            ('{$user->_data['user_id']}', '', '{$place_name}', '{$place_address}', '{$place_url}', '{$review_template_escaped}',
+            ('{$user->_data['user_id']}', '', '{$place_name}', '{$place_address}', '{$place_url}', '{$review_template}',
              '{$reward_amount}', '{$target_reviews}', '{$total_budget}', '{$expires_at}', 'active', CONVERT_TZ(NOW(), '+00:00', '+07:00'), CONVERT_TZ(NOW(), '+00:00', '+07:00'))
         ");
         
