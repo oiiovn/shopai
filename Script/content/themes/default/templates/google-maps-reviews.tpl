@@ -248,7 +248,6 @@ console.log('🔍 Available tasks count:', {if $available_tasks}{$available_task
               <div class="card-header bg-transparent">
                 <div class="d-flex justify-content-between align-items-center">
                   <strong>Nhiệm vụ đánh giá của tôi</strong>
-                  <span class="badge badge-info">{$assigned_tasks|count} nhiệm vụ</span>
                 </div>
               </div>
               
@@ -402,8 +401,8 @@ console.log('🔍 Available tasks count:', {if $available_tasks}{$available_task
                                   <span class="text-success small font-weight-bold">
                                     <i class="fa fa-check-circle mr-1"></i>Đã hoàn thành
                                   </span>
-                                  <a href="{$system['system_url']}/google-maps-reviews/view-proof/{$task.sub_request_id}" class="btn btn-outline-success btn-sm">
-                                    <i class="fa fa-gift mr-1"></i>Xem phần thưởng
+                                  <a href="{$system['system_url']}/google-maps-reviews/reward-history" class="btn btn-outline-success btn-sm">
+                                    <i class="fa fa-gift mr-1"></i>Xem thưởng
                                   </a>
                                 </div>
                                 <small class="text-secondary" style="font-size: 0.6rem;">
