@@ -1,10 +1,87 @@
 {include file='_head.tpl'}
 {include file='_header.tpl'}
 
+<!-- Loading Overlay -->
+<div id="pageLoadingOverlay" class="loading-overlay">
+  <div class="loading-spinner">
+    <div class="spinner-border text-primary" role="status">
+      <span class="sr-only">Đang tải...</span>
+    </div>
+    <div class="loading-text mt-3">Chờ chút nha...</div>
+  </div>
+</div>
+
 <script>
 console.log('🚀 Google Maps Reviews template loaded!');
 console.log('🔍 Current view:', '{$view}');
 console.log('🔍 Available tasks count:', {if $available_tasks}{$available_tasks|count}{else}0{/if});
+
+// Hide loading overlay when page is fully loaded
+document.addEventListener('DOMContentLoaded', function() {
+  setTimeout(function() {
+    const overlay = document.getElementById('pageLoadingOverlay');
+    if (overlay) {
+      overlay.style.opacity = '0';
+      setTimeout(function() {
+        overlay.style.display = 'none';
+      }, 300);
+    }
+  }, 500);
+});
+
+// Show loading on navigation
+document.addEventListener('click', function(e) {
+  const link = e.target.closest('a[href*="google-maps-reviews"]');
+  if (link && link.href !== window.location.href) {
+    const overlay = document.getElementById('pageLoadingOverlay');
+    if (overlay) {
+      overlay.style.display = 'flex';
+      overlay.style.opacity = '1';
+    }
+  }
+});
+
+// Countup Animation
+function animateCountup(element) {
+  const target = parseInt(element.getAttribute('data-target'));
+  const duration = 1000; // 1 second
+  const increment = target / (duration / 16); // 60fps
+  let current = 0;
+  
+  const timer = setInterval(() => {
+    current += increment;
+    if (current >= target) {
+      current = target;
+      clearInterval(timer);
+    }
+    element.textContent = Math.floor(current).toLocaleString('vi-VN');
+  }, 16);
+}
+
+// Initialize animations when page loads
+document.addEventListener('DOMContentLoaded', function() {
+  // Animate dashboard cards
+  setTimeout(() => {
+    const countupElements = document.querySelectorAll('[data-animate="countup"]');
+    countupElements.forEach((element, index) => {
+      setTimeout(() => {
+        animateCountup(element);
+      }, index * 100);
+    });
+  }, 600);
+  
+  // Add stagger animation to dashboard cards
+  const dashboardCards = document.querySelectorAll('#dashboardCards .col-md-3 .card');
+  dashboardCards.forEach((card, index) => {
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(30px)';
+    setTimeout(() => {
+      card.style.transition = 'all 0.6s ease-out';
+      card.style.opacity = '1';
+      card.style.transform = 'translateY(0)';
+    }, index * 150 + 300);
+  });
+});
 </script>
 
 <!-- page content -->
@@ -31,7 +108,7 @@ console.log('🔍 Available tasks count:', {if $available_tasks}{$available_task
             <li {if $view == 'my-requests'}class="active" {/if}>
               <a href="{$system['system_url']}/google-maps-reviews/my-requests">
                 <i class="fa fa-list main-icon mr-2" style="width: 24px; height: 24px; font-size: 18px;"></i>
-                Yêu cầu của tôi
+                Chiến dịch đã tạo
               </a>
             </li>
             <li {if $view == 'my-reviews'}class="active" {/if}>
@@ -43,7 +120,7 @@ console.log('🔍 Available tasks count:', {if $available_tasks}{$available_task
             <li {if $view == 'create-request'}class="active" {/if}>
               <a href="{$system['system_url']}/google-maps-reviews/create-request">
                 <i class="fa fa-plus main-icon mr-2" style="width: 24px; height: 24px; font-size: 18px;"></i>
-                Tạo yêu cầu
+                Tạo chiến dịch
               </a>
             </li>
             <li>
@@ -67,42 +144,48 @@ console.log('🔍 Available tasks count:', {if $available_tasks}{$available_task
     <!-- content panel -->
     <div class="col-12 col-md-8 col-lg-9 sg-offcanvas-mainbar shop-ai-mainbar">
 
-      <!-- tabs (mobile only) -->
-      <div class="content-tabs rounded-sm shadow-sm clearfix d-block d-md-none">
-        <ul>
-          <li {if $view == 'dashboard'}class="active" {/if}>
-            <a href="{$system['system_url']}/google-maps-reviews/dashboard">
-              Bảng điều khiển
-            </a>
-          </li>
-          <li {if $view == 'my-requests'}class="active" {/if}>
-            <a href="{$system['system_url']}/google-maps-reviews/my-requests">
-              Yêu cầu
-            </a>
-          </li>
-          <li {if $view == 'my-reviews'}class="active" {/if}>
-            <a href="{$system['system_url']}/google-maps-reviews/my-reviews">
-              Đánh giá
-            </a>
-          </li>
-          <li {if $view == 'create-request'}class="active" {/if}>
-            <a href="{$system['system_url']}/google-maps-reviews/create-request">
-              Tạo mới
-            </a>
-          </li>
-          <li>
-            <a href="{$system['system_url']}/shop-ai/recharge">
-              Nạp tiền
-            </a>
-          </li>
-          <li {if $view == 'reward-history'}class="active" {/if}>
-            <a href="{$system['system_url']}/google-maps-reviews/reward-history">
-              Lịch sử thưởng
-            </a>
-          </li>
-        </ul>
+      <!-- mobile pills navigation (mobile only) -->
+      <div class="mobile-pills-nav d-block d-md-none mb-4">
+        <div class="d-flex flex-wrap gap-2 justify-content-center">
+          <a href="{$system['system_url']}/google-maps-reviews/dashboard" 
+             class="btn btn-sm {if $view == 'dashboard'}btn-primary{else}btn-outline-primary{/if} rounded-pill px-3" 
+             style="display:flex;align-items:center;gap:5px;">
+            <i class="fa fa-tachometer-alt"></i>
+            <span>Dashboard</span>
+          </a>
+          <a href="{$system['system_url']}/google-maps-reviews/my-requests" 
+             class="btn btn-sm {if $view == 'my-requests'}btn-primary{else}btn-outline-primary{/if} rounded-pill px-3" 
+             style="display:flex;align-items:center;gap:5px;">
+            <i class="fa fa-list"></i>
+            <span>Chiến dịch</span>
+          </a>
+          <a href="{$system['system_url']}/google-maps-reviews/my-reviews" 
+             class="btn btn-sm {if $view == 'my-reviews'}btn-primary{else}btn-outline-primary{/if} rounded-pill px-3" 
+             style="display:flex;align-items:center;gap:5px;">
+            <i class="fa fa-star"></i>
+            <span>Đánh giá</span>
+          </a>
+          <a href="{$system['system_url']}/google-maps-reviews/create-request" 
+             class="btn btn-sm {if $view == 'create-request'}btn-primary{else}btn-outline-primary{/if} rounded-pill px-3" 
+             style="display:flex;align-items:center;gap:5px;">
+            <i class="fa fa-plus"></i>
+            <span>Tạo mới</span>
+          </a>
+          <a href="{$system['system_url']}/shop-ai/recharge" 
+             class="btn btn-sm btn-outline-success rounded-pill px-3" 
+             style="display:flex;align-items:center;gap:5px;">
+            <i class="fa fa-credit-card"></i>
+            <span>Nạp tiền</span>
+          </a>
+          <a href="{$system['system_url']}/google-maps-reviews/reward-history" 
+             class="btn btn-sm {if $view == 'reward-history'}btn-primary{else}btn-outline-primary{/if} rounded-pill px-3" 
+             style="display:flex;align-items:center;gap:5px;">
+            <i class="fa fa-history"></i>
+            <span>Thưởng</span>
+          </a>
+        </div>
       </div>
-      <!-- tabs -->
+      <!-- mobile pills -->
 
       <!-- content -->
       <div class="row">
@@ -114,14 +197,14 @@ console.log('🔍 Available tasks count:', {if $available_tasks}{$available_task
                 <strong>Bảng điều khiển</strong>
               </div>
               <div class="card-body">
-                <div class="row">
+                <div class="row" id="dashboardCards">
                   <div class="col-md-3">
                     <div class="card bg-primary text-white">
                       <div class="card-body">
                         <div class="d-flex justify-content-between">
                           <div>
-                            <h4 class="mb-0">{$user_requests|count}</h4>
-                            <p class="mb-0">Yêu cầu của tôi</p>
+                            <h4 class="mb-0" data-animate="countup" data-target="{$user_requests|count}">{$user_requests|count}</h4>
+                            <p class="mb-0">Chiến dịch đã tạo</p>
                           </div>
                           <div class="align-self-center">
                             <i class="fa fa-list fa-2x"></i>
@@ -135,7 +218,7 @@ console.log('🔍 Available tasks count:', {if $available_tasks}{$available_task
                       <div class="card-body">
                         <div class="d-flex justify-content-between">
                           <div>
-                            <h4 class="mb-0">{$user_reviews|count}</h4>
+                            <h4 class="mb-0" data-animate="countup" data-target="{$user_reviews|count}">{$user_reviews|count}</h4>
                             <p class="mb-0">Đánh giá của tôi</p>
                           </div>
                           <div class="align-self-center">
@@ -150,7 +233,7 @@ console.log('🔍 Available tasks count:', {if $available_tasks}{$available_task
                       <div class="card-body">
                         <div class="d-flex justify-content-between">
                           <div>
-                            <h4 class="mb-0">{$available_tasks|count}</h4>
+                            <h4 class="mb-0" data-animate="countup" data-target="{$available_tasks|count}">{$available_tasks|count}</h4>
                             <p class="mb-0">Nhiệm vụ có sẵn</p>
                           </div>
                           <div class="align-self-center">
@@ -161,11 +244,11 @@ console.log('🔍 Available tasks count:', {if $available_tasks}{$available_task
                     </div>
                   </div>
                   <div class="col-md-3">
-                    <div class="card bg-success text-white">
+                    <div class="card bg-info text-white">
                       <div class="card-body">
                         <div class="d-flex justify-content-between">
                           <div>
-                            <h4 class="mb-0">
+                            <h4 class="mb-0" data-animate="countup" data-target="{if $reward_history}{assign var="dashboard_total_earnings" value=0}{foreach $reward_history as $reward}{assign var="dashboard_total_earnings" value=$dashboard_total_earnings+$reward.reward_amount}{/foreach}{$dashboard_total_earnings}{else}0{/if}">
                               {if $reward_history}
                                 {assign var="dashboard_total_earnings" value=0}
                                 {foreach $reward_history as $reward}
@@ -2412,6 +2495,154 @@ document.addEventListener('DOMContentLoaded', function(){
   .mf-invoice{ background:#0f172a !important; border-color:#23304d !important; }
   .form-modern .form-control:focus{
     box-shadow:0 0 0 var(--mf-ring) rgba(96,165,250,.25);
+  }
+}
+</style>
+
+<!-- Loading and Animation Styles -->
+<style>
+/* Loading Overlay */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  transition: opacity 0.3s ease;
+}
+
+.loading-spinner {
+  text-align: center;
+  color: #007bff;
+}
+
+.loading-text {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #495057;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+  border-width: 0.3em;
+}
+
+/* Countup Animation */
+@keyframes countup {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+[data-animate="countup"] {
+  animation: countup 0.6s ease-out forwards;
+  opacity: 0;
+}
+
+/* Card Hover Effects */
+.card {
+  transition: all 0.3s ease;
+  transform: translateY(0);
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+/* Stagger Animation for Dashboard Cards */
+#dashboardCards .col-md-3:nth-child(1) .card { animation-delay: 0.1s; }
+#dashboardCards .col-md-3:nth-child(2) .card { animation-delay: 0.2s; }
+#dashboardCards .col-md-3:nth-child(3) .card { animation-delay: 0.3s; }
+#dashboardCards .col-md-3:nth-child(4) .card { animation-delay: 0.4s; }
+
+/* Pulse Animation */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+/* Skeleton Loading */
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+}
+
+@keyframes skeleton-loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Mobile Pills Navigation Styles */
+.mobile-pills-nav {
+  padding: 10px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 15px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.mobile-pills-nav .gap-2 > * {
+  margin: 0.25rem;
+}
+
+.mobile-pills-nav .btn {
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border-width: 2px;
+  min-width: auto;
+  white-space: nowrap;
+}
+
+.mobile-pills-nav .btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.mobile-pills-nav .btn-primary {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  border-color: #007bff;
+  box-shadow: 0 2px 8px rgba(0,123,255,0.3);
+}
+
+.mobile-pills-nav .btn-outline-primary {
+  color: #007bff;
+  border-color: #007bff;
+  background: rgba(255,255,255,0.9);
+}
+
+.mobile-pills-nav .btn-outline-primary:hover {
+  background: #007bff;
+  color: white;
+}
+
+.mobile-pills-nav .btn-outline-success {
+  color: #28a745;
+  border-color: #28a745;
+  background: rgba(255,255,255,0.9);
+}
+
+.mobile-pills-nav .btn-outline-success:hover {
+  background: #28a745;
+  color: white;
+}
+
+@media (max-width: 576px) {
+  .mobile-pills-nav .btn {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.8rem;
+  }
+  
+  .mobile-pills-nav .btn i {
+    font-size: 0.75rem;
   }
 }
 </style>

@@ -1,6 +1,43 @@
 {include file='_head.tpl'}
 {include file='_header.tpl'}
 
+<!-- Loading Overlay -->
+<div id="pageLoadingOverlay" class="loading-overlay">
+  <div class="loading-spinner">
+    <div class="spinner-border text-primary" role="status">
+      <span class="sr-only">Đang tải...</span>
+    </div>
+    <div class="loading-text mt-3">Chờ chút nha...</div>
+  </div>
+</div>
+
+<script>
+// Hide loading overlay when page is fully loaded
+document.addEventListener('DOMContentLoaded', function() {
+  setTimeout(function() {
+    const overlay = document.getElementById('pageLoadingOverlay');
+    if (overlay) {
+      overlay.style.opacity = '0';
+      setTimeout(function() {
+        overlay.style.display = 'none';
+      }, 300);
+    }
+  }, 500);
+});
+
+// Show loading on navigation
+document.addEventListener('click', function(e) {
+  const link = e.target.closest('a[href*="google-maps-reviews"]');
+  if (link && link.href !== window.location.href) {
+    const overlay = document.getElementById('pageLoadingOverlay');
+    if (overlay) {
+      overlay.style.display = 'flex';
+      overlay.style.opacity = '1';
+    }
+  }
+});
+</script>
+
 <!-- page content -->
 <div class="container mt20">
   <div class="row">
@@ -21,7 +58,7 @@
             <li {if $view == 'my-requests'}class="active" {/if}>
               <a href="{$system['system_url']}/google-maps-reviews/my-requests">
                 <i class="fa fa-list main-icon mr-2" style="width: 24px; height: 24px; font-size: 18px;"></i>
-                Yêu cầu của tôi
+                Chiến dịch đã tạo
               </a>
             </li>
             <li {if $view == 'my-reviews'}class="active" {/if}>
@@ -33,7 +70,7 @@
             <li {if $view == 'create-request'}class="active" {/if}>
               <a href="{$system['system_url']}/google-maps-reviews/create-request">
                 <i class="fa fa-plus main-icon mr-2" style="width: 24px; height: 24px; font-size: 18px;"></i>
-                Tạo yêu cầu
+                Tạo chiến dịch
               </a>
             </li>
             <li>
@@ -57,42 +94,48 @@
     <!-- content panel -->
     <div class="col-12 col-md-8 col-lg-9 sg-offcanvas-mainbar shop-ai-mainbar">
       
-      <!-- tabs (mobile only) -->
-      <div class="content-tabs rounded-sm shadow-sm clearfix d-block d-md-none">
-        <ul>
-          <li {if $view == 'dashboard'}class="active" {/if}>
-            <a href="{$system['system_url']}/google-maps-reviews/dashboard">
-              Bảng điều khiển
-            </a>
-          </li>
-          <li {if $view == 'my-requests'}class="active" {/if}>
-            <a href="{$system['system_url']}/google-maps-reviews/my-requests">
-              Yêu cầu
-            </a>
-          </li>
-          <li {if $view == 'my-reviews'}class="active" {/if}>
-            <a href="{$system['system_url']}/google-maps-reviews/my-reviews">
-              Đánh giá
-            </a>
-          </li>
-          <li {if $view == 'create-request'}class="active" {/if}>
-            <a href="{$system['system_url']}/google-maps-reviews/create-request">
-              Tạo mới
-            </a>
-          </li>
-          <li>
-            <a href="{$system['system_url']}/shop-ai/recharge">
-              Nạp tiền
-            </a>
-          </li>
-          <li {if $view == 'reward-history'}class="active" {/if}>
-            <a href="{$system['system_url']}/google-maps-reviews/reward-history">
-              Lịch sử thưởng
-            </a>
-          </li>
-        </ul>
+      <!-- mobile pills navigation (mobile only) -->
+      <div class="mobile-pills-nav d-block d-md-none mb-4">
+        <div class="d-flex flex-wrap gap-2 justify-content-center">
+          <a href="{$system['system_url']}/google-maps-reviews/dashboard" 
+             class="btn btn-sm {if $view == 'dashboard'}btn-primary{else}btn-outline-primary{/if} rounded-pill px-3" 
+             style="display:flex;align-items:center;gap:5px;">
+            <i class="fa fa-tachometer-alt"></i>
+            <span>Dashboard</span>
+          </a>
+          <a href="{$system['system_url']}/google-maps-reviews/my-requests" 
+             class="btn btn-sm {if $view == 'my-requests'}btn-primary{else}btn-outline-primary{/if} rounded-pill px-3" 
+             style="display:flex;align-items:center;gap:5px;">
+            <i class="fa fa-list"></i>
+            <span>Chiến dịch</span>
+          </a>
+          <a href="{$system['system_url']}/google-maps-reviews/my-reviews" 
+             class="btn btn-sm {if $view == 'my-reviews'}btn-primary{else}btn-outline-primary{/if} rounded-pill px-3" 
+             style="display:flex;align-items:center;gap:5px;">
+            <i class="fa fa-star"></i>
+            <span>Đánh giá</span>
+          </a>
+          <a href="{$system['system_url']}/google-maps-reviews/create-request" 
+             class="btn btn-sm {if $view == 'create-request'}btn-primary{else}btn-outline-primary{/if} rounded-pill px-3" 
+             style="display:flex;align-items:center;gap:5px;">
+            <i class="fa fa-plus"></i>
+            <span>Tạo mới</span>
+          </a>
+          <a href="{$system['system_url']}/shop-ai/recharge" 
+             class="btn btn-sm btn-outline-success rounded-pill px-3" 
+             style="display:flex;align-items:center;gap:5px;">
+            <i class="fa fa-credit-card"></i>
+            <span>Nạp tiền</span>
+          </a>
+          <a href="{$system['system_url']}/google-maps-reviews/reward-history" 
+             class="btn btn-sm {if $view == 'reward-history'}btn-primary{else}btn-outline-primary{/if} rounded-pill px-3" 
+             style="display:flex;align-items:center;gap:5px;">
+            <i class="fa fa-history"></i>
+            <span>Thưởng</span>
+          </a>
+        </div>
       </div>
-      <!-- tabs -->
+      <!-- mobile pills -->
 
       <!-- content -->
       <div class="row">
@@ -387,5 +430,124 @@
     if (e.key === 'Escape') closeWithdrawModal();
   });
 </script>
+
+<!-- Loading and Animation Styles -->
+<style>
+/* Loading Overlay */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  transition: opacity 0.3s ease;
+}
+
+.loading-spinner {
+  text-align: center;
+  color: #007bff;
+}
+
+.loading-text {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #495057;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+  border-width: 0.3em;
+}
+
+/* Card Hover Effects */
+.card {
+  transition: all 0.3s ease;
+  transform: translateY(0);
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+/* Pulse Animation */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+/* Mobile Pills Navigation Styles */
+.mobile-pills-nav {
+  padding: 10px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 15px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.mobile-pills-nav .gap-2 > * {
+  margin: 0.25rem;
+}
+
+.mobile-pills-nav .btn {
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border-width: 2px;
+  min-width: auto;
+  white-space: nowrap;
+}
+
+.mobile-pills-nav .btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.mobile-pills-nav .btn-primary {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  border-color: #007bff;
+  box-shadow: 0 2px 8px rgba(0,123,255,0.3);
+}
+
+.mobile-pills-nav .btn-outline-primary {
+  color: #007bff;
+  border-color: #007bff;
+  background: rgba(255,255,255,0.9);
+}
+
+.mobile-pills-nav .btn-outline-primary:hover {
+  background: #007bff;
+  color: white;
+}
+
+.mobile-pills-nav .btn-outline-success {
+  color: #28a745;
+  border-color: #28a745;
+  background: rgba(255,255,255,0.9);
+}
+
+.mobile-pills-nav .btn-outline-success:hover {
+  background: #28a745;
+  color: white;
+}
+
+@media (max-width: 576px) {
+  .mobile-pills-nav .btn {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.8rem;
+  }
+  
+  .mobile-pills-nav .btn i {
+    font-size: 0.75rem;
+  }
+}
+</style>
 
 {include file='_footer.tpl'}
