@@ -271,7 +271,7 @@ console.log('🔍 Available tasks count:', {if $available_tasks}{$available_task
                   <li class="nav-item" role="presentation">
                     <button class="nav-link" id="expired-tab" data-bs-toggle="pill" data-bs-target="#expired" type="button" role="tab">
                       <i class="fa fa-times-circle mr-1"></i>Hết hạn
-                      <span class="badge badge-danger ml-1">{assign var="expired_count" value=0}{foreach $assigned_tasks as $task}{if $task.status == 'expired'}{assign var="expired_count" value=$expired_count+1}{/if}{/foreach}{$expired_count}</span>
+                      <span class="badge badge-danger ml-1">{assign var="expired_count" value=0}{foreach $assigned_tasks as $task}{if $task.status == 'expired' || $task.status == 'timeout'}{assign var="expired_count" value=$expired_count+1}{/if}{/foreach}{$expired_count}</span>
                     </button>
                   </li>
                 </ul>
@@ -423,14 +423,15 @@ console.log('🔍 Available tasks count:', {if $available_tasks}{$available_task
                                   {$task.expired_at|date_format:"%d/%m"}
                                 </small>
                               {else}
-                                <div class="d-flex flex-column">
-                                  <span class="text-danger small font-weight-bold">
-                                    <i class="fa fa-times-circle mr-1"></i>Hết hạn
-                                  </span>
-                                </div>
-                                <small class="text-secondary" style="font-size: 0.6rem;">
-                                  Hết hạn: {$task.expires_at|date_format:"%d/%m"}
-                                </small>
+                                {if $task.verification_notes}
+                                  <small class="text-muted" style="font-size: 0.75rem;">
+                                    {$task.verification_notes}
+                                  </small>
+                                {else}
+                                  <small class="text-muted" style="font-size: 0.75rem;">
+                                    Hết hạn: {$task.expires_at|date_format:"%d/%m"}
+                                  </small>
+                                {/if}
                               {/if}
                             </div>
                           </div>
@@ -1787,7 +1788,10 @@ function initTabFiltering() {
   // Phân loại tasks theo status
   allTasks.forEach(function(task) {
     var status = task.getAttribute('data-status');
-    if (tasksByStatus[status]) {
+    // Timeout cũng được xếp vào nhóm expired
+    if (status === 'timeout') {
+      tasksByStatus['expired'].push(task.outerHTML);
+    } else if (tasksByStatus[status]) {
       tasksByStatus[status].push(task.outerHTML);
     }
   });
