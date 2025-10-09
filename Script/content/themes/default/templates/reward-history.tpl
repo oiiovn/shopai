@@ -235,15 +235,15 @@
 </div>
 
 <!-- Modal: Tính năng Rút Tiền -->
-<div class="modal fade" id="withdrawModal" tabindex="-1" role="dialog">
+<div class="modal fade" id="withdrawModal" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content" style="border-radius: 16px; border: none; overflow: hidden;">
       <div class="modal-header" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border: none;">
         <h5 class="modal-title text-white font-weight-bold">
           <i class="fa fa-money-bill-wave mr-2"></i>Rút Tiền
         </h5>
-        <button type="button" class="close text-white" data-dismiss="modal">
-          <span>&times;</span>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body p-4">
@@ -298,8 +298,28 @@
 
 <script>
 function showWithdrawModal() {
-  $('#withdrawModal').modal('show');
+  // Bootstrap 4/5 compatible
+  var modal = document.getElementById('withdrawModal');
+  if (typeof bootstrap !== 'undefined') {
+    // Bootstrap 5
+    var bsModal = new bootstrap.Modal(modal);
+    bsModal.show();
+  } else if (typeof $ !== 'undefined' && $.fn.modal) {
+    // Bootstrap 4 (jQuery)
+    $('#withdrawModal').modal('show');
+  } else {
+    alert('Modal library not loaded');
+  }
 }
+
+// Đảm bảo modal có thể đóng bằng backdrop click
+$(document).ready(function() {
+  $('#withdrawModal').on('click', function(e) {
+    if (e.target === this) {
+      $('#withdrawModal').modal('hide');
+    }
+  });
+});
 </script>
 
 {include file='_footer.tpl'}
