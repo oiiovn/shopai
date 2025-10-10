@@ -146,7 +146,6 @@ try {
             )
             GROUP BY gmr.request_id
             ORDER BY gmsr.created_at DESC
-            LIMIT 3
         ");
         
         error_log("Available tasks query result: " . $get_available_tasks->num_rows . " rows");
