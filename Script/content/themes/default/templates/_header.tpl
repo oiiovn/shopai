@@ -333,7 +333,7 @@
                           <li class="dropdown float-end">
                             <a href="#" class="dropdown-toggle user-menu" data-bs-toggle="dropdown" data-display="static">
                               <img src="{$system['system_url']}/content/themes/{$system['theme']}/images/blank_profile_male.png">
-                              <span>{__("Join")}</span>
+                              <span style="color: black; font-weight: 500;">Đăng nhập</span>
                             </a>
                             <div class="dropdown-menu dropdown-menu-end">
                               <a class="dropdown-item" href="{$system['system_url']}/signin">
