@@ -28,6 +28,8 @@
                 {__("Nạp tiền")}
               </a>
             </li>
+            {* TEMPORARY HIDDEN - Rút tiền và Ngân hàng *}
+            {*
             <li {if $view == "withdrawal"}class="active" {/if}>
               <a href="{$system['system_url']}/shop-ai/withdrawal">
                 <i class="fa fa-money-bill-wave main-icon mr-2" style="width: 24px; height: 24px; font-size: 18px;"></i>
@@ -40,6 +42,7 @@
                 {__("Ngân hàng")}
               </a>
             </li>
+            *}
             <li {if $view == "transactions"}class="active" {/if}>
               <a href="{$system['system_url']}/shop-ai/transactions">
                 <i class="fa fa-history main-icon mr-2" style="width: 24px; height: 24px; font-size: 18px;"></i>
@@ -74,6 +77,8 @@
               {__("Nạp tiền")}
             </a>
           </li>
+          {* TEMPORARY HIDDEN - Rút tiền và Ngân hàng *}
+          {*
           <li {if $view == "withdrawal"}class="active" {/if}>
             <a href="{$system['system_url']}/shop-ai/withdrawal">
               {__("Rút tiền")}
@@ -84,6 +89,7 @@
               {__("Ngân hàng")}
             </a>
           </li>
+          *}
           <li {if $view == "transactions"}class="active" {/if}>
             <a href="{$system['system_url']}/shop-ai/transactions">
               {__("Giao dịch")}
