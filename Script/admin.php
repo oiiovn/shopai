@@ -571,6 +571,100 @@ try {
       $get_today_recharge_count = $db->query("SELECT COUNT(*) as count FROM users_wallets_transactions WHERE type = 'recharge' AND description REGEXP 'RZ[A-Z0-9]+' AND DATE(time) = CURDATE()") or _error('SQL_ERROR');
       $shop_ai_stats['today_recharge_count'] = $get_today_recharge_count->fetch_assoc()['count'];
 
+      // === THỐNG KÊ GOOGLE MAPS REVIEWS ===
+      // Tổng số chiến dịch (requests)
+      $get_total_gmr_campaigns = $db->query("SELECT COUNT(*) as count FROM google_maps_review_requests") or _error('SQL_ERROR');
+      $shop_ai_stats['gmr_total_campaigns'] = $get_total_gmr_campaigns->fetch_assoc()['count'];
+      
+      // Chiến dịch đang hoạt động
+      $get_active_gmr_campaigns = $db->query("SELECT COUNT(*) as count FROM google_maps_review_requests WHERE status = 'active'") or _error('SQL_ERROR');
+      $shop_ai_stats['gmr_active_campaigns'] = $get_active_gmr_campaigns->fetch_assoc()['count'];
+      
+      // Chiến dịch đã hoàn thành
+      $get_completed_gmr_campaigns = $db->query("SELECT COUNT(*) as count FROM google_maps_review_requests WHERE status = 'completed'") or _error('SQL_ERROR');
+      $shop_ai_stats['gmr_completed_campaigns'] = $get_completed_gmr_campaigns->fetch_assoc()['count'];
+      
+      // Chiến dịch hôm nay
+      $get_today_gmr_campaigns = $db->query("SELECT COUNT(*) as count FROM google_maps_review_requests WHERE DATE(created_at) = CURDATE()") or _error('SQL_ERROR');
+      $shop_ai_stats['gmr_today_campaigns'] = $get_today_gmr_campaigns->fetch_assoc()['count'];
+      
+      // Tổng số nhiệm vụ (sub-requests)
+      $get_total_gmr_tasks = $db->query("SELECT COUNT(*) as count FROM google_maps_review_sub_requests") or _error('SQL_ERROR');
+      $shop_ai_stats['gmr_total_tasks'] = $get_total_gmr_tasks->fetch_assoc()['count'];
+      
+      // Nhiệm vụ đã giao (assigned)
+      $get_assigned_gmr_tasks = $db->query("SELECT COUNT(*) as count FROM google_maps_review_sub_requests WHERE status = 'assigned'") or _error('SQL_ERROR');
+      $shop_ai_stats['gmr_assigned_tasks'] = $get_assigned_gmr_tasks->fetch_assoc()['count'];
+      
+      // Nhiệm vụ hoàn thành
+      $get_completed_gmr_tasks = $db->query("SELECT COUNT(*) as count FROM google_maps_review_sub_requests WHERE status = 'completed'") or _error('SQL_ERROR');
+      $shop_ai_stats['gmr_completed_tasks'] = $get_completed_gmr_tasks->fetch_assoc()['count'];
+      
+      // Nhiệm vụ đang xác minh
+      $get_verified_gmr_tasks = $db->query("SELECT COUNT(*) as count FROM google_maps_review_sub_requests WHERE status = 'verified'") or _error('SQL_ERROR');
+      $shop_ai_stats['gmr_verified_tasks'] = $get_verified_gmr_tasks->fetch_assoc()['count'];
+      
+      // Nhiệm vụ hết hạn
+      $get_expired_gmr_tasks = $db->query("SELECT COUNT(*) as count FROM google_maps_review_sub_requests WHERE status IN ('expired', 'timeout')") or _error('SQL_ERROR');
+      $shop_ai_stats['gmr_expired_tasks'] = $get_expired_gmr_tasks->fetch_assoc()['count'];
+      
+      // Nhiệm vụ hôm nay
+      $get_today_gmr_tasks = $db->query("SELECT COUNT(*) as count FROM google_maps_review_sub_requests WHERE DATE(created_at) = CURDATE()") or _error('SQL_ERROR');
+      $shop_ai_stats['gmr_today_tasks'] = $get_today_gmr_tasks->fetch_assoc()['count'];
+      
+      // Tổng tiền thưởng đã chi trả
+      $get_total_gmr_rewards = $db->query("SELECT COALESCE(SUM(reward_amount), 0) as total FROM google_maps_review_sub_requests WHERE status = 'completed'") or _error('SQL_ERROR');
+      $shop_ai_stats['gmr_total_rewards'] = $get_total_gmr_rewards->fetch_assoc()['total'];
+      
+      // Tiền thưởng đã chi trả hôm nay
+      $get_today_gmr_rewards = $db->query("SELECT COALESCE(SUM(reward_amount), 0) as total FROM google_maps_review_sub_requests WHERE status = 'completed' AND DATE(completed_at) = CURDATE()") or _error('SQL_ERROR');
+      $shop_ai_stats['gmr_today_rewards'] = $get_today_gmr_rewards->fetch_assoc()['total'];
+      
+      // Số người dùng đã tham gia Google Maps Reviews
+      $get_gmr_users = $db->query("SELECT COUNT(DISTINCT assigned_user_id) as count FROM google_maps_review_sub_requests WHERE assigned_user_id IS NOT NULL") or _error('SQL_ERROR');
+      $shop_ai_stats['gmr_total_users'] = $get_gmr_users->fetch_assoc()['count'];
+      
+      // Người dùng tham gia hôm nay
+      $get_gmr_today_users = $db->query("SELECT COUNT(DISTINCT assigned_user_id) as count FROM google_maps_review_sub_requests WHERE assigned_user_id IS NOT NULL AND DATE(assigned_at) = CURDATE()") or _error('SQL_ERROR');
+      $shop_ai_stats['gmr_today_users'] = $get_gmr_today_users->fetch_assoc()['count'];
+      
+      // Tổng ngân sách chiến dịch
+      $get_total_gmr_budget = $db->query("SELECT COALESCE(SUM(total_budget), 0) as total FROM google_maps_review_requests") or _error('SQL_ERROR');
+      $shop_ai_stats['gmr_total_budget'] = $get_total_gmr_budget->fetch_assoc()['total'];
+      
+      // === THỐNG KÊ 7 NGÀY GẦN NHẤT CHO GOOGLE MAPS ===
+      $gmr_chart_data = [];
+      for ($i = 6; $i >= 0; $i--) {
+        $date = date('Y-m-d', strtotime("-$i days"));
+        $day_name = date('d/m', strtotime("-$i days"));
+        
+        // Chiến dịch tạo mới
+        $get_campaigns = $db->query("SELECT COUNT(*) as count FROM google_maps_review_requests WHERE DATE(created_at) = '$date'") or _error('SQL_ERROR');
+        $campaigns_count = $get_campaigns->fetch_assoc()['count'];
+        
+        // Nhiệm vụ hoàn thành
+        $get_completed = $db->query("SELECT COUNT(*) as count FROM google_maps_review_sub_requests WHERE status = 'completed' AND DATE(completed_at) = '$date'") or _error('SQL_ERROR');
+        $completed_count = $get_completed->fetch_assoc()['count'];
+        
+        // Nhiệm vụ giao mới
+        $get_assigned = $db->query("SELECT COUNT(*) as count FROM google_maps_review_sub_requests WHERE DATE(assigned_at) = '$date'") or _error('SQL_ERROR');
+        $assigned_count = $get_assigned->fetch_assoc()['count'];
+        
+        // Tiền thưởng chi trả
+        $get_rewards = $db->query("SELECT COALESCE(SUM(reward_amount), 0) as total FROM google_maps_review_sub_requests WHERE status = 'completed' AND DATE(completed_at) = '$date'") or _error('SQL_ERROR');
+        $rewards_amount = $get_rewards->fetch_assoc()['total'];
+        
+        $gmr_chart_data[] = [
+          'date' => $date,
+          'day_name' => $day_name,
+          'campaigns' => (int)$campaigns_count,
+          'completed' => (int)$completed_count,
+          'assigned' => (int)$assigned_count,
+          'rewards' => (float)$rewards_amount
+        ];
+      }
+      $shop_ai_stats['gmr_chart_data'] = $gmr_chart_data;
+
       // assign variables
       $smarty->assign('shop_ai_stats', $shop_ai_stats);
       break;

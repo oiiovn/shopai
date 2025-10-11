@@ -163,6 +163,195 @@
     <!-- Separator -->
     <hr class="mb20">
 
+    <!-- Thống kê Google Maps Reviews -->
+    <div class="heading-small mb15">
+      <i class="fa fa-map-marked-alt mr5"></i> Thống kê Google Maps Reviews
+    </div>
+
+    <div class="row mb20">
+      <!-- Tổng Chiến Dịch -->
+      <div class="col-md-3">
+        <div class="stat-panel bg-gradient-indigo">
+          <div class="stat-inner">
+            <div class="stat-icon">
+              <i class="fa fa-bullhorn"></i>
+            </div>
+            <div class="stat-content">
+              <div class="stat-value">{$shop_ai_stats['gmr_total_campaigns']|number_format}</div>
+              <div class="stat-title">Tổng Chiến Dịch</div>
+              <div class="stat-meta">
+                <span><i class="fa fa-calendar-day"></i> Hôm nay:</span>
+                <strong>{$shop_ai_stats['gmr_today_campaigns']|number_format}</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chiến Dịch Đang Chạy -->
+      <div class="col-md-3">
+        <div class="stat-panel bg-gradient-success">
+          <div class="stat-inner">
+            <div class="stat-icon">
+              <i class="fa fa-play-circle"></i>
+            </div>
+            <div class="stat-content">
+              <div class="stat-value">{$shop_ai_stats['gmr_active_campaigns']|number_format}</div>
+              <div class="stat-title">Đang Hoạt Động</div>
+              <div class="stat-meta">
+                <span><i class="fa fa-check-circle"></i> Hoàn thành:</span>
+                <strong>{$shop_ai_stats['gmr_completed_campaigns']|number_format}</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tổng Nhiệm Vụ -->
+      <div class="col-md-3">
+        <div class="stat-panel bg-gradient-blue">
+          <div class="stat-inner">
+            <div class="stat-icon">
+              <i class="fa fa-tasks"></i>
+            </div>
+            <div class="stat-content">
+              <div class="stat-value">{$shop_ai_stats['gmr_total_tasks']|number_format}</div>
+              <div class="stat-title">Tổng Nhiệm Vụ</div>
+              <div class="stat-meta">
+                <span><i class="fa fa-calendar-day"></i> Hôm nay:</span>
+                <strong>{$shop_ai_stats['gmr_today_tasks']|number_format}</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Nhiệm Vụ Hoàn Thành -->
+      <div class="col-md-3">
+        <div class="stat-panel bg-gradient-success">
+          <div class="stat-inner">
+            <div class="stat-icon">
+              <i class="fa fa-check-double"></i>
+            </div>
+            <div class="stat-content">
+              <div class="stat-value">{$shop_ai_stats['gmr_completed_tasks']|number_format}</div>
+              <div class="stat-title">Nhiệm Vụ Hoàn Thành</div>
+              <div class="stat-meta">
+                <span><i class="fa fa-percentage"></i> Tỷ lệ:</span>
+                <strong>
+                  {if $shop_ai_stats['gmr_total_tasks'] > 0}
+                    {(($shop_ai_stats['gmr_completed_tasks'] / $shop_ai_stats['gmr_total_tasks']) * 100)|number_format:1}%
+                  {else}
+                    0%
+                  {/if}
+                </strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mb20">
+      <!-- Nhiệm Vụ Đang Giao -->
+      <div class="col-md-3">
+        <div class="stat-panel bg-gradient-warning">
+          <div class="stat-inner">
+            <div class="stat-icon">
+              <i class="fa fa-hand-paper"></i>
+            </div>
+            <div class="stat-content">
+              <div class="stat-value">{$shop_ai_stats['gmr_assigned_tasks']|number_format}</div>
+              <div class="stat-title">Đang Thực Hiện</div>
+              <div class="stat-meta">
+                <span><i class="fa fa-shield-alt"></i> Đang xác minh:</span>
+                <strong>{$shop_ai_stats['gmr_verified_tasks']|number_format}</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Nhiệm Vụ Hết Hạn -->
+      <div class="col-md-3">
+        <div class="stat-panel bg-gradient-danger">
+          <div class="stat-inner">
+            <div class="stat-icon">
+              <i class="fa fa-times-circle"></i>
+            </div>
+            <div class="stat-content">
+              <div class="stat-value">{$shop_ai_stats['gmr_expired_tasks']|number_format}</div>
+              <div class="stat-title">Nhiệm Vụ Hết Hạn</div>
+              <div class="stat-meta">
+                <span><i class="fa fa-percentage"></i> Tỷ lệ thất bại:</span>
+                <strong>
+                  {if $shop_ai_stats['gmr_total_tasks'] > 0}
+                    {(($shop_ai_stats['gmr_expired_tasks'] / $shop_ai_stats['gmr_total_tasks']) * 100)|number_format:1}%
+                  {else}
+                    0%
+                  {/if}
+                </strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Người Dùng Tham Gia -->
+      <div class="col-md-3">
+        <div class="stat-panel bg-gradient-purple">
+          <div class="stat-inner">
+            <div class="stat-icon">
+              <i class="fa fa-users"></i>
+            </div>
+            <div class="stat-content">
+              <div class="stat-value">{$shop_ai_stats['gmr_total_users']|number_format}</div>
+              <div class="stat-title">Người Tham Gia</div>
+              <div class="stat-meta">
+                <span><i class="fa fa-calendar-day"></i> Hôm nay:</span>
+                <strong>{$shop_ai_stats['gmr_today_users']|number_format}</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tổng Tiền Thưởng -->
+      <div class="col-md-3">
+        <div class="stat-panel bg-gradient-primary">
+          <div class="stat-inner">
+            <div class="stat-icon">
+              <i class="fa fa-gift"></i>
+            </div>
+            <div class="stat-content">
+              <div class="stat-value">
+                {($shop_ai_stats['gmr_total_rewards']/1000)|number_format:0}K
+              </div>
+              <div class="stat-title">Tổng Tiền Thưởng Đã Trả</div>
+              <div class="stat-meta">
+                <span><i class="fa fa-calendar-day"></i> Hôm nay:</span>
+                <strong>{($shop_ai_stats['gmr_today_rewards']/1000)|number_format:0}K VNĐ</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Biểu đồ Google Maps 7 ngày -->
+    <div class="chart-section mb30">
+      <div class="heading-small mb15">
+        <i class="fa fa-chart-line mr5"></i> Thống kê Google Maps Reviews 7 ngày gần nhất
+      </div>
+      
+      <div class="chart-container">
+        <canvas id="gmrChart" width="400" height="200"></canvas>
+      </div>
+    </div>
+
+    <!-- Separator -->
+    <hr class="mb20">
+
     <!-- Thống kê Nạp Tiền -->
     <div class="heading-small mb15">
       <i class="fa fa-wallet mr5"></i> Thống kê Nạp Tiền
@@ -225,10 +414,10 @@
           <i class="fa fa-info-circle mr5"></i>
           <strong>Ghi chú:</strong> Dữ liệu được cập nhật theo thời gian thực. 
           <ul class="mb0 mt3" style="font-size: 11px; padding-left: 18px;">
-            <li style="margin-bottom: 2px;">Số liệu check thất bại bao gồm cả status 'failed' và 'not_found'</li>
-            <li style="margin-bottom: 2px;">Tổng số check = Thành công + Đang check + Thất bại</li>
-            <li style="margin-bottom: 2px;">Người dùng được tính nếu đã thực hiện ít nhất 1 lần check số</li>
-            <li>Thống kê nạp tiền: Chỉ tính giao dịch type='recharge' có mã RZ trong description (VD: RZ12345ABC)</li>
+            <li style="margin-bottom: 2px;"><strong>Check Số:</strong> Số liệu check thất bại bao gồm cả status 'failed' và 'not_found'. Tổng số check = Thành công + Đang check + Thất bại</li>
+            <li style="margin-bottom: 2px;"><strong>Google Maps Reviews:</strong> Nhiệm vụ hết hạn bao gồm cả status 'expired' và 'timeout'. Tỷ lệ hoàn thành = Nhiệm vụ hoàn thành / Tổng nhiệm vụ</li>
+            <li style="margin-bottom: 2px;"><strong>Người Dùng:</strong> Check số - tính nếu đã check ít nhất 1 lần. Google Maps - tính nếu đã nhận ít nhất 1 nhiệm vụ</li>
+            <li><strong>Nạp Tiền:</strong> Chỉ tính giao dịch type='recharge' có mã RZ trong description (VD: RZ12345ABC)</li>
           </ul>
         </div>
       </div>
@@ -340,6 +529,8 @@
 .bg-gradient-purple  { background: linear-gradient(135deg, #6f42c1 0%, #5a32a3 100%); }
 .bg-gradient-teal    { background: linear-gradient(135deg, #20c997 0%, #17a2b8 100%); }
 .bg-gradient-cyan    { background: linear-gradient(135deg, #17a2b8 0%, #0e7c8c 100%); }
+.bg-gradient-indigo  { background: linear-gradient(135deg, #6610f2 0%, #4e0bc4 100%); }
+.bg-gradient-blue    { background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%); }
 
 /* ===== Utilities ===== */
 .mb20 { margin-bottom: 20px !important; }
@@ -462,6 +653,159 @@ document.addEventListener('DOMContentLoaded', function() {
                     },
                     grid: {
                         color: 'rgba(0,0,0,0.1)'
+                    }
+                },
+                x: {
+                    ticks: {
+                        font: {
+                            size: 11
+                        }
+                    },
+                    grid: {
+                        display: false
+                    }
+                }
+            },
+            interaction: {
+                intersect: false,
+                mode: 'index'
+            }
+        }
+    });
+    
+    // === BIỂU ĐỒ GOOGLE MAPS REVIEWS ===
+    const gmrChartData = {$shop_ai_stats['gmr_chart_data']|@json_encode};
+    
+    // Chuẩn bị dữ liệu cho Chart.js
+    const gmrLabels = gmrChartData.map(item => item.day_name);
+    const gmrCampaignsData = gmrChartData.map(item => item.campaigns);
+    const gmrCompletedData = gmrChartData.map(item => item.completed);
+    const gmrAssignedData = gmrChartData.map(item => item.assigned);
+    const gmrRewardsData = gmrChartData.map(item => item.rewards / 1000); // Chia 1000 để hiển thị theo K
+    
+    // Tạo biểu đồ Google Maps Reviews
+    const gmrCtx = document.getElementById('gmrChart').getContext('2d');
+    const gmrChart = new Chart(gmrCtx, {
+        type: 'line',
+        data: {
+            labels: gmrLabels,
+            datasets: [
+                {
+                    label: 'Chiến dịch mới',
+                    data: gmrCampaignsData,
+                    backgroundColor: 'rgba(102, 16, 242, 0.1)',
+                    borderColor: 'rgba(102, 16, 242, 1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                },
+                {
+                    label: 'Nhiệm vụ hoàn thành',
+                    data: gmrCompletedData,
+                    backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                    borderColor: 'rgba(40, 167, 69, 1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                },
+                {
+                    label: 'Nhiệm vụ giao mới',
+                    data: gmrAssignedData,
+                    backgroundColor: 'rgba(255, 193, 7, 0.1)',
+                    borderColor: 'rgba(255, 193, 7, 1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                },
+                {
+                    label: 'Tiền thưởng (K VNĐ)',
+                    data: gmrRewardsData,
+                    backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                    borderColor: 'rgba(0, 123, 255, 1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    yAxisID: 'y1'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
+                        usePointStyle: true,
+                        padding: 15,
+                        font: {
+                            size: 11
+                        }
+                    }
+                },
+                title: {
+                    display: false
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            if (context.parsed.y !== null) {
+                                if (context.dataset.label === 'Tiền thưởng (K VNĐ)') {
+                                    label += context.parsed.y.toFixed(0) + ' K VNĐ';
+                                } else {
+                                    label += context.parsed.y;
+                                }
+                            }
+                            return label;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    type: 'linear',
+                    display: true,
+                    position: 'left',
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1,
+                        font: {
+                            size: 11
+                        }
+                    },
+                    grid: {
+                        color: 'rgba(0,0,0,0.1)'
+                    }
+                },
+                y1: {
+                    type: 'linear',
+                    display: true,
+                    position: 'right',
+                    beginAtZero: true,
+                    ticks: {
+                        font: {
+                            size: 11
+                        },
+                        callback: function(value) {
+                            return value + 'K';
+                        }
+                    },
+                    grid: {
+                        drawOnChartArea: false
                     }
                 },
                 x: {
