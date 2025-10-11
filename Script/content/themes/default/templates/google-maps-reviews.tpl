@@ -1418,15 +1418,18 @@ document.addEventListener('DOMContentLoaded', function() {
 .review-task-mini-card-horizontal {
     border: 1px solid #e9ecef;
     border-radius: 6px;
-    padding: 12px;
+    padding: 16px 12px;
     background: #fff;
     display: flex;
     align-items: center;
     transition: all 0.2s ease;
     position: relative;
-    min-height: 80px;
+    height: 112px;
+    min-height: 112px;
+    max-height: 112px;
     width: 100%;
     box-sizing: border-box;
+    margin: 8px 0;
 }
 
 .review-task-mini-card-horizontal:hover {
@@ -1445,7 +1448,8 @@ document.addEventListener('DOMContentLoaded', function() {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 8px;
+    margin-top: 8px;
+    margin-bottom: 4px;
 }
 
 .review-task-mini-card-horizontal .task-details {
@@ -1456,12 +1460,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
 .review-task-mini-card-horizontal .task-avatar {
     margin-right: 8px;
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
+    flex-shrink: 0;
 }
 
 .review-task-mini-card-horizontal .task-avatar img {
-    width: 32px;
-    height: 32px;
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px;
+    min-height: 32px;
+    max-width: 32px;
+    max-height: 32px;
     border: 1px solid #e9ecef;
+    object-fit: cover;
+    display: block;
 }
 
 .review-task-mini-card-horizontal .task-title {
@@ -1510,17 +1525,31 @@ document.addEventListener('DOMContentLoaded', function() {
     padding: 6px 12px;
     height: 32px;
     line-height: 1;
+    background-color: #1877F2 !important;
+    border-color: #1877F2 !important;
+    color: #fff !important;
 }
 
-.review-task-mini-card-horizontal .badge-warning {
-    background-color: #ffc107;
-    color: #000;
-    font-weight: 600;
-    font-size: 9px;
-    padding: 2px 6px;
+.review-task-mini-card-horizontal .btn:hover {
+    background-color: #166fe5 !important;
+    border-color: #166fe5 !important;
+}
+
+/* Facebook-style sponsored badge */
+.sponsored-badge {
     position: absolute;
     top: 8px;
     right: 8px;
+    background: rgba(0, 0, 0, 0.05);
+    color: #8e8e8e;
+    font-size: 8px;
+    font-weight: 400;
+    padding: 1px 4px;
+    border-radius: 2px;
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(0, 0, 0, 0.02);
+    text-transform: none;
+    letter-spacing: 0.2px;
 }
 
 .review-task-mini-card-horizontal .verified-badge {
@@ -1534,9 +1563,20 @@ document.addEventListener('DOMContentLoaded', function() {
     display: flex;
     overflow-x: auto;
     gap: 15px;
-    padding: 10px 0;
+    padding: 0 0 9px 0;
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
+}
+
+/* Card body for review tasks */
+.review-tasks-horizontal-scroll + * .card-body,
+.card-body:has(.review-tasks-horizontal-scroll) {
+    padding: 9px !important;
+}
+
+/* Remove bottom padding for card-header with bg-transparent border-bottom-0 */
+.card-header.bg-transparent.border-bottom-0 {
+    padding-bottom: 0 !important;
 }
 
 .review-tasks-horizontal-scroll::-webkit-scrollbar {
@@ -1560,6 +1600,7 @@ document.addEventListener('DOMContentLoaded', function() {
 .review-task-item {
     flex: 0 0 350px;
     min-width: 350px;
+    height: 120px;
 }
 </style>
 

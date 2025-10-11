@@ -7,12 +7,12 @@
         {__("Nhiệm vụ đánh giá Google Maps")}
       </strong>
     </div>
-    <div class="card-body">
+    <div class="card-body" style="padding: 9px;">
       <div class="review-tasks-horizontal-scroll">
         {foreach $available_tasks as $task}
-        <div class="review-task-item">
-          <div class="review-task-mini-card-horizontal">
-            <span class="badge badge-warning">ADS</span>
+        <div class="review-task-item" style="height: 120px;">
+          <div class="review-task-mini-card-horizontal" style="border: 1px solid #e9ecef; border-radius: 6px; padding: 16px 12px; background: #fff; height: 112px; display: flex; align-items: center; margin: 8px 0;">
+            <span class="sponsored-badge">Được tài trợ</span>
             
             <div class="task-info">
               <div class="task-header">
@@ -21,19 +21,31 @@
                     {if $task.user_picture}
                       <img src="{$system['system_uploads']}/{$task.user_picture}"
                            alt=""
+                           width="32"
+                           height="32"
+                           style="width: 32px; height: 32px; object-fit: cover;"
                            class="rounded-circle">
                     {else}
                       {if $task.user_gender == '1'}
                         <img src="{$system['system_url']}/content/themes/{$system['theme']}/images/blank_profile_male.png"
                              alt=""
+                             width="32"
+                             height="32"
+                             style="width: 32px; height: 32px; object-fit: cover;"
                              class="rounded-circle">
                       {elseif $task.user_gender == '2'}
                         <img src="{$system['system_url']}/content/themes/{$system['theme']}/images/blank_profile_female.png"
                              alt=""
+                             width="32"
+                             height="32"
+                             style="width: 32px; height: 32px; object-fit: cover;"
                              class="rounded-circle">
                       {else}
                         <img src="{$system['system_url']}/content/themes/{$system['theme']}/images/blank_profile.png"
                              alt=""
+                             width="32"
+                             height="32"
+                             style="width: 32px; height: 32px; object-fit: cover;"
                              class="rounded-circle">
                       {/if}
                     {/if}
