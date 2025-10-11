@@ -163,6 +163,98 @@
     <!-- Separator -->
     <hr class="mb20">
 
+    <!-- Thống kê Rút Tiền -->
+    <div class="heading-small mb15">
+      <i class="fa fa-money-bill-wave mr5"></i> Thống kê Rút Tiền
+    </div>
+
+    <div class="row mb20">
+      <!-- Đang Chờ Xử Lý -->
+      <div class="col-md-3">
+        <div class="stat-panel bg-gradient-warning">
+          <div class="stat-inner">
+            <div class="stat-icon">
+              <i class="fa fa-clock"></i>
+            </div>
+            <div class="stat-content">
+              <div class="stat-value">{$shop_ai_stats['pending_withdrawals_count']|number_format}</div>
+              <div class="stat-title">Đang Chờ Xử Lý</div>
+              <div class="stat-meta">
+                <span><i class="fa fa-check-circle"></i> Đã hoàn thành:</span>
+                <strong>{$shop_ai_stats['completed_withdrawals']|number_format}</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tổng Đã Rút -->
+      <div class="col-md-3">
+        <div class="stat-panel bg-gradient-success">
+          <div class="stat-inner">
+            <div class="stat-icon">
+              <i class="fa fa-hand-holding-usd"></i>
+            </div>
+            <div class="stat-content">
+              <div class="stat-value">{($shop_ai_stats['total_withdrawn']/1000000)|number_format:1}M</div>
+              <div class="stat-title">Tổng Đã Rút</div>
+              <div class="stat-meta">
+                <span><i class="fa fa-calendar-day"></i> Hôm nay:</span>
+                <strong>{($shop_ai_stats['today_withdrawals_amount']/1000)|number_format:0}K</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tổng Phí Thu -->
+      <div class="col-md-3">
+        <div class="stat-panel bg-gradient-info">
+          <div class="stat-inner">
+            <div class="stat-icon">
+              <i class="fa fa-percentage"></i>
+            </div>
+            <div class="stat-content">
+              <div class="stat-value">{($shop_ai_stats['total_withdrawal_fees']/1000)|number_format:0}K</div>
+              <div class="stat-title">Tổng Phí Thu (1%)</div>
+              <div class="stat-meta">
+                <span><i class="fa fa-chart-line"></i> Lợi nhuận:</span>
+                <strong>{$shop_ai_stats['total_withdrawal_fees']|number_format:0} VNĐ</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tỷ Lệ Thành Công -->
+      <div class="col-md-3">
+        <div class="stat-panel bg-gradient-primary">
+          <div class="stat-inner">
+            <div class="stat-icon">
+              <i class="fa fa-chart-pie"></i>
+            </div>
+            <div class="stat-content">
+              <div class="stat-value">
+                {if $shop_ai_stats['total_withdrawals'] > 0}
+                  {(($shop_ai_stats['completed_withdrawals']/$shop_ai_stats['total_withdrawals'])*100)|number_format:1}%
+                {else}
+                  0%
+                {/if}
+              </div>
+              <div class="stat-title">Tỷ Lệ Thành Công</div>
+              <div class="stat-meta">
+                <span><i class="fa fa-times-circle"></i> Thất bại:</span>
+                <strong>{$shop_ai_stats['cancelled_withdrawals']|number_format}</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Separator -->
+    <hr class="mb20">
+
     <!-- Thống kê Google Maps Reviews -->
     <div class="heading-small mb15">
       <i class="fa fa-map-marked-alt mr5"></i> Thống kê Google Maps Reviews
@@ -348,6 +440,105 @@
         <canvas id="gmrChart" width="400" height="200"></canvas>
       </div>
     </div>
+
+    <!-- Separator -->
+    <hr class="mb20">
+
+    <!-- YÊU CẦU RÚT TIỀN ĐANG CHỜ XỬ LÝ -->
+    {if $pending_withdrawals_count > 0}
+    <div class="card mb30">
+      <div class="card-header with-icon bg-warning">
+        <i class="fa fa-exclamation-triangle mr10"></i>
+        <strong>Yêu cầu Rút Tiền Chờ Xử Lý</strong>
+        <span class="badge badge-danger ml10">{$pending_withdrawals_count}</span>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-striped table-hover mb-0">
+            <thead class="thead-light">
+              <tr>
+                <th width="8%">QR Code</th>
+                <th width="12%">User</th>
+                <th width="12%">Ngân Hàng</th>
+                <th width="12%">STK</th>
+                <th width="15%">Tên Chủ TK</th>
+                <th width="10%">Số Tiền</th>
+                <th width="8%">Phí</th>
+                <th width="10%">Thực Nhận</th>
+                <th width="8%">Hết Hạn</th>
+                <th width="5%">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {foreach $pending_withdrawals as $wd}
+              <tr class="{if $wd.is_urgent}table-danger{/if}">
+                <td>
+                  <code class="badge badge-primary font-weight-bold">{$wd.qr_code}</code>
+                </td>
+                <td>
+                  <div class="d-flex align-items-center">
+                    <img src="{$wd.user_picture}" class="rounded-circle mr-2" width="32" height="32">
+                    <div>
+                      <a href="{$system['system_url']}/{$wd.user_name}" target="_blank" class="font-weight-bold">
+                        {$wd.user_firstname} {$wd.user_lastname}
+                      </a>
+                      {if $wd.user_verified}
+                        <i class="fa fa-check-circle text-primary ml-1" title="Verified"></i>
+                      {/if}
+                      <br><small class="text-muted">@{$wd.user_name}</small>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <strong>{$wd.withdrawal_bank_name}</strong>
+                  <br><small class="text-muted">{$wd.withdrawal_bank_code}</small>
+                </td>
+                <td>
+                  <span class="badge badge-info font-weight-bold">{$wd.withdrawal_account_number}</span>
+                  <button class="btn btn-xs btn-outline-secondary ml-1" onclick="copyText('{$wd.withdrawal_account_number}')" title="Copy STK">
+                    <i class="fa fa-copy"></i>
+                  </button>
+                </td>
+                <td>
+                  <strong>{$wd.withdrawal_account_holder}</strong>
+                  <button class="btn btn-xs btn-outline-secondary ml-1" onclick="copyText('{$wd.withdrawal_account_holder}')" title="Copy tên">
+                    <i class="fa fa-copy"></i>
+                  </button>
+                </td>
+                <td>
+                  <span class="text-danger font-weight-bold">{$wd.amount|number_format:0}</span>
+                  <br><small class="text-muted">VNĐ</small>
+                </td>
+                <td>
+                  <span class="text-muted">{$wd.fee|number_format:0}</span>
+                  <br><small class="text-muted">VNĐ</small>
+                </td>
+                <td>
+                  <span class="text-success font-weight-bold">{$wd.actual_amount|number_format:0}</span>
+                  <br><small class="text-muted">VNĐ</small>
+                </td>
+                <td>
+                  <span class="countdown {if $wd.is_urgent}text-danger font-weight-bold{else}text-warning{/if}" 
+                        data-expires="{$wd.expires_at}" 
+                        data-qr="{$wd.qr_code}">
+                    {$wd.time_left_formatted}
+                  </span>
+                </td>
+                <td>
+                  <button class="btn btn-sm btn-primary" 
+                          onclick="showWithdrawalQR('{$wd.qr_code}', '{$wd.qr_image_url|escape}', '{$wd.withdrawal_bank_name|escape}', '{$wd.withdrawal_account_number}', '{$wd.withdrawal_account_holder|escape}', {$wd.actual_amount}, '{$wd.qr_code}')"
+                          title="Xem QR Code">
+                    <i class="fa fa-qrcode"></i>
+                  </button>
+                </td>
+              </tr>
+              {/foreach}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    {/if}
 
     <!-- Separator -->
     <hr class="mb20">
@@ -827,3 +1018,228 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+
+<!-- Modal QR Code Rút Tiền -->
+<div class="modal fade" id="withdrawalQRModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title">
+          <i class="fa fa-qrcode mr-2"></i>
+          QR Chuyển Tiền - <span id="modalQRCode"></span>
+        </h5>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body text-center">
+        <!-- QR Code Image -->
+        <div class="mb-3">
+          <img id="modalQRImage" src="" class="img-fluid" style="max-width: 350px; border: 3px solid #007bff; border-radius: 10px;">
+        </div>
+        
+        <!-- Transfer Info Card -->
+        <div class="card bg-light">
+          <div class="card-body">
+            <div class="row text-left">
+              <div class="col-md-6 mb-2">
+                <small class="text-muted">Ngân hàng:</small>
+                <br><strong id="modalBankName"></strong>
+              </div>
+              <div class="col-md-6 mb-2">
+                <small class="text-muted">Số tài khoản:</small>
+                <br>
+                <strong id="modalAccountNumber"></strong>
+                <button class="btn btn-xs btn-secondary ml-1" onclick="copyText(document.getElementById('modalAccountNumber').textContent)">
+                  <i class="fa fa-copy"></i>
+                </button>
+              </div>
+              <div class="col-md-12 mb-2">
+                <small class="text-muted">Chủ tài khoản:</small>
+                <br>
+                <strong id="modalAccountHolder"></strong>
+                <button class="btn btn-xs btn-secondary ml-1" onclick="copyText(document.getElementById('modalAccountHolder').textContent)">
+                  <i class="fa fa-copy"></i>
+                </button>
+              </div>
+              <div class="col-md-6 mb-2">
+                <small class="text-muted">Số tiền chuyển:</small>
+                <br><strong class="text-success" id="modalAmount"></strong>
+              </div>
+              <div class="col-md-6 mb-2">
+                <small class="text-muted">Nội dung CK:</small>
+                <br>
+                <code id="modalContent"></code>
+                <button class="btn btn-xs btn-secondary ml-1" onclick="copyText(document.getElementById('modalContent').textContent)">
+                  <i class="fa fa-copy"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Instructions -->
+        <div class="alert alert-info mt-3 text-left">
+          <i class="fa fa-info-circle mr-2"></i>
+          <strong>Hướng dẫn:</strong>
+          <ol class="mb-0 pl-3" style="font-size: 13px;">
+            <li>Mở app ngân hàng trên điện thoại</li>
+            <li>Scan QR code phía trên</li>
+            <li>Kiểm tra thông tin tự động điền</li>
+            <li>Xác nhận chuyển tiền</li>
+            <li>Hệ thống sẽ tự động cập nhật trong vài giây</li>
+          </ol>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="copyAllWithdrawalInfo()">
+          <i class="fa fa-copy mr-1"></i> Copy Tất Cả
+        </button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Đóng</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Global variable lưu thông tin withdrawal hiện tại
+var currentWithdrawalData = null;
+
+// Show withdrawal QR modal
+function showWithdrawalQR(qrCode, qrImageUrl, bankName, accountNumber, accountHolder, actualAmount, content) {
+    currentWithdrawalData = {
+        qrCode: qrCode,
+        qrImageUrl: qrImageUrl,
+        bankName: bankName,
+        accountNumber: accountNumber,
+        accountHolder: accountHolder,
+        actualAmount: actualAmount,
+        content: content
+    };
+    
+    document.getElementById('modalQRCode').textContent = qrCode;
+    document.getElementById('modalQRImage').src = qrImageUrl;
+    document.getElementById('modalBankName').textContent = bankName;
+    document.getElementById('modalAccountNumber').textContent = accountNumber;
+    document.getElementById('modalAccountHolder').textContent = accountHolder;
+    document.getElementById('modalAmount').textContent = numberFormat(actualAmount) + ' VNĐ';
+    document.getElementById('modalContent').textContent = content;
+    
+    $('#withdrawalQRModal').modal('show');
+}
+
+// Copy text to clipboard
+function copyText(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function() {
+            alert('Đã copy: ' + text);
+        }).catch(function(err) {
+            fallbackCopy(text);
+        });
+    } else {
+        fallbackCopy(text);
+    }
+}
+
+// Fallback copy method
+function fallbackCopy(text) {
+    var textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.position = "fixed";
+    textArea.style.top = 0;
+    textArea.style.left = 0;
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    
+    try {
+        document.execCommand('copy');
+        alert('Đã copy: ' + text);
+    } catch (err) {
+        alert('Không thể copy. Vui lòng copy thủ công: ' + text);
+    }
+    
+    document.body.removeChild(textArea);
+}
+
+// Copy all withdrawal info
+function copyAllWithdrawalInfo() {
+    if (!currentWithdrawalData) return;
+    
+    var text = 'THÔNG TIN CHUYỂN KHOẢN\n' +
+               '━━━━━━━━━━━━━━━━━━━━━━\n' +
+               'Ngân hàng: ' + currentWithdrawalData.bankName + '\n' +
+               'STK: ' + currentWithdrawalData.accountNumber + '\n' +
+               'Chủ TK: ' + currentWithdrawalData.accountHolder + '\n' +
+               'Số tiền: ' + numberFormat(currentWithdrawalData.actualAmount) + ' VNĐ\n' +
+               'Nội dung: ' + currentWithdrawalData.content + '\n' +
+               '━━━━━━━━━━━━━━━━━━━━━━';
+    
+    copyText(text);
+}
+
+// Format number
+function numberFormat(number) {
+    return new Intl.NumberFormat('vi-VN').format(number);
+}
+
+// Auto refresh countdown timer
+setInterval(function() {
+    document.querySelectorAll('.countdown').forEach(function(element) {
+        var expires = element.getAttribute('data-expires');
+        var qrCode = element.getAttribute('data-qr');
+        
+        if (!expires) return;
+        
+        var expiresTime = new Date(expires).getTime();
+        var now = new Date().getTime();
+        var timeLeft = Math.floor((expiresTime - now) / 1000);
+        
+        if (timeLeft <= 0) {
+            element.textContent = 'Đã hết hạn';
+            element.classList.add('text-danger');
+            element.classList.remove('text-warning');
+            
+            // Mark row as expired
+            var row = element.closest('tr');
+            if (row) {
+                row.classList.add('table-danger');
+                row.style.opacity = '0.6';
+            }
+        } else {
+            var minutes = Math.floor(timeLeft / 60);
+            var seconds = timeLeft % 60;
+            element.textContent = String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
+            
+            // Urgent warning
+            if (timeLeft < 300) {
+                element.classList.add('text-danger', 'font-weight-bold');
+                element.classList.remove('text-warning');
+            }
+        }
+    });
+}, 1000);
+
+// Auto reload page khi có withdrawal completed
+var lastPendingCount = {$pending_withdrawals_count|default:0};
+setInterval(function() {
+    fetch('{$system['system_url']}/includes/ajax/admin/shop-ai.php?action=check_withdrawal_updates')
+        .then(response => response.json())
+        .then(data => {
+            if (data.pending_count !== lastPendingCount) {
+                console.log('Withdrawal updates detected, reloading...');
+                location.reload();
+            }
+        })
+        .catch(err => console.error('Error checking updates:', err));
+}, 10000); // Check every 10 seconds
+</script>
+
+<style>
+.mb30 { margin-bottom: 30px !important; }
+.table-danger { background-color: #f8d7da !important; }
+.bg-warning { background-color: #ffc107 !important; color: #000 !important; }
+.thead-light th { background-color: #e9ecef; font-weight: 600; font-size: 12px; }
+.table-hover tbody tr:hover { background-color: #f1f3f5; }
+.btn-xs { padding: 2px 6px; font-size: 11px; }
+</style>

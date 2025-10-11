@@ -33,20 +33,104 @@ function extractQRCode($description) {
 
 // Hàm tìm user dựa trên QR Code
 function findUserByQRCode($qrCode) {
-    $cmd = "/opt/homebrew/bin/mysql -u root -P 3306 db_mxh -e \"SELECT user_id FROM qr_code_mapping WHERE qr_code = '$qrCode' AND status = 'active' AND expires_at > NOW() LIMIT 1;\"";
-    $output = shell_exec($cmd);
-    
-    if (preg_match('/\d+/', $output, $matches)) {
-        return intval($matches[0]);
+    try {
+        $pdo = new PDO("mysql:host=127.0.0.1;port=3306;dbname=sho73359_shopqi", "root", "");
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        
+        $stmt = $pdo->prepare("SELECT user_id, transaction_type FROM qr_code_mapping WHERE qr_code = ? AND status = 'active' AND expires_at > NOW() LIMIT 1");
+        $stmt->execute([$qrCode]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($result) {
+            return [
+                'user_id' => intval($result['user_id']),
+                'transaction_type' => $result['transaction_type']
+            ];
+        }
+        
+        return null;
+    } catch (Exception $e) {
+        writeLog("Error finding user by QR: " . $e->getMessage());
+        return null;
     }
-    
-    return null;
 }
 
-// Hàm lưu giao dịch vào database
-function saveWebhookTransaction($transaction) {
-    $cmd = "/opt/homebrew/bin/mysql -u root -P 3306 db_mxh -e \"INSERT INTO bank_transactions (transaction_id, amount, description, bank, account_number, type, status, transaction_date, created_at) VALUES ('{$transaction['transaction_id']}', {$transaction['amount']}, '{$transaction['description']}', 'ACB', '46241987', 'in', 'pending', '{$transaction['transaction_date']}', NOW());\"";
-    shell_exec($cmd);
+// Hàm xử lý giao dịch rút tiền (withdrawal)
+function processWithdrawal($qrCode, $transaction) {
+    try {
+        writeLog("Withdrawal - Processing QR: $qrCode");
+        
+        $pdo = new PDO("mysql:host=127.0.0.1;port=3306;dbname=sho73359_shopqi", "root", "");
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        
+        // Find withdrawal request
+        $stmt = $pdo->prepare("
+            SELECT qr_id, user_id, amount, fee, withdrawal_account_number 
+            FROM qr_code_mapping 
+            WHERE qr_code = ? AND transaction_type = 'withdrawal' AND status = 'active' AND expires_at > NOW()
+            LIMIT 1
+        ");
+        $stmt->execute([$qrCode]);
+        $withdrawal = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$withdrawal) {
+            writeLog("Withdrawal - Not found or expired: $qrCode");
+            return false;
+        }
+        
+        $userId = $withdrawal['user_id'];
+        $expectedAmount = $withdrawal['amount'] - $withdrawal['fee'];
+        
+        // Verify amount (Pay2S trả về số âm cho withdrawal, lấy abs)
+        $transactionAmount = abs($transaction['amount']);
+        
+        if (abs($transactionAmount - $expectedAmount) > 1) {
+            writeLog("Withdrawal - Amount mismatch: Expected $expectedAmount, Got $transactionAmount");
+            
+            // Refund vì sai số tiền
+            $stmt = $pdo->prepare("UPDATE users SET user_wallet_balance = user_wallet_balance + ? WHERE user_id = ?");
+            $stmt->execute([$withdrawal['amount'], $userId]);
+            
+            $stmt = $pdo->prepare("UPDATE qr_code_mapping SET status = 'failed', updated_at = NOW() WHERE qr_code = ?");
+            $stmt->execute([$qrCode]);
+            
+            writeLog("Withdrawal - ❌ Failed and refunded: $qrCode");
+            return false;
+        }
+        
+        // Complete withdrawal
+        $stmt = $pdo->prepare("UPDATE qr_code_mapping SET status = 'used', updated_at = NOW() WHERE qr_code = ?");
+        $stmt->execute([$qrCode]);
+        
+        // Save bank transaction
+        $stmt = $pdo->prepare("
+            INSERT INTO bank_transactions 
+            (transaction_id, amount, description, bank, account_number, type, status, transaction_date, user_id, created_at) 
+            VALUES (?, ?, ?, 'ACB', '46241987', 'out', 'completed', ?, ?, NOW())
+        ");
+        $stmt->execute([
+            $transaction['transaction_id'],
+            $transactionAmount,
+            $transaction['description'],
+            $transaction['transaction_date'] ?? date('Y-m-d H:i:s'),
+            $userId
+        ]);
+        
+        // Log withdrawal completion
+        $stmt = $pdo->prepare("
+            INSERT INTO users_wallets_transactions (user_id, type, amount, description, time) 
+            VALUES (?, 'withdraw_completed', ?, ?, NOW())
+        ");
+        $stmt->execute([$userId, $withdrawal['amount'], "Rút tiền thành công - $qrCode"]);
+        
+        writeLog("Withdrawal - ✅ Completed: $qrCode - User $userId - " . number_format($transactionAmount) . " VNĐ");
+        
+        return true;
+        
+    } catch (Exception $e) {
+        writeLog("Withdrawal - ❌ Error: " . $e->getMessage());
+        return false;
+    }
 }
 
 // Hàm xử lý giao dịch webhook
@@ -57,48 +141,71 @@ function processWebhookTransaction($transaction) {
         writeLog("Webhook - QR Code extracted: $qrCode");
         
         // Tìm user dựa trên QR Code
-        $userId = findUserByQRCode($qrCode);
+        $qrData = findUserByQRCode($qrCode);
         
-        if (!$userId) {
-            writeLog("Webhook - Không tìm thấy user cho QR Code: $qrCode");
+        if (!$qrData) {
+            writeLog("Webhook - Không tìm thấy QR Code: $qrCode");
             return false;
         }
         
-        writeLog("Webhook - Tìm thấy user $userId cho QR Code: $qrCode");
+        $userId = $qrData['user_id'];
+        $transactionType = $qrData['transaction_type'];
         
-        // Lưu giao dịch
-        saveWebhookTransaction($transaction);
+        writeLog("Webhook - Found User $userId - Type: $transactionType - QR: $qrCode");
         
-        // Cập nhật user_id cho giao dịch
-        $cmd = "/opt/homebrew/bin/mysql -u root -P 3306 db_mxh -e \"UPDATE bank_transactions SET user_id = $userId WHERE transaction_id = '{$transaction['transaction_id']}';\"";
-        shell_exec($cmd);
-        
-        // Cập nhật trạng thái giao dịch
-        $cmd = "/opt/homebrew/bin/mysql -u root -P 3306 db_mxh -e \"UPDATE bank_transactions SET status = 'matched' WHERE transaction_id = '{$transaction['transaction_id']}';\"";
-        shell_exec($cmd);
-        
-        // Lấy số dư hiện tại
-        $cmd = "/opt/homebrew/bin/mysql -u root -P 3306 db_mxh -e \"SELECT balance FROM users WHERE user_id = $userId;\"";
-        $output = shell_exec($cmd);
-        $currentBalance = 0;
-        if (preg_match('/\d+\.?\d*/', $output, $matches)) {
-            $currentBalance = floatval($matches[0]);
+        // Xử lý theo loại giao dịch
+        if ($transactionType === 'withdrawal') {
+            // Xử lý rút tiền
+            return processWithdrawal($qrCode, $transaction);
+        } else {
+            // Xử lý nạp tiền (deposit) - Logic cũ
+            return processDeposit($userId, $qrCode, $transaction);
         }
         
-        // Cập nhật số dư mới
-        $newBalance = $currentBalance + $transaction['amount'];
-        $cmd = "/opt/homebrew/bin/mysql -u root -P 3306 db_mxh -e \"UPDATE users SET balance = $newBalance WHERE user_id = $userId;\"";
-        shell_exec($cmd);
+    } catch (Exception $e) {
+        writeLog("Webhook - ❌ Lỗi xử lý: " . $e->getMessage());
+        return false;
+    }
+}
+
+// Hàm xử lý nạp tiền (deposit) - Tách ra từ logic cũ
+function processDeposit($userId, $qrCode, $transaction) {
+    try {
+        writeLog("Deposit - Processing for User $userId");
         
-        // Ghi log biến động số dư
-        $cmd = "/opt/homebrew/bin/mysql -u root -P 3306 db_mxh -e \"INSERT INTO balance_transactions (user_id, reference, transaction_type, amount, balance_before, balance_after, description, status, created_at) VALUES ($userId, '{$transaction['transaction_id']}', 'deposit', {$transaction['amount']}, $currentBalance, $newBalance, 'Nạp tiền từ Pay2S Webhook - {$transaction['description']}', 'completed', NOW());\"";
-        shell_exec($cmd);
+        $pdo = new PDO("mysql:host=127.0.0.1;port=3306;dbname=sho73359_shopqi", "root", "");
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        
+        // Save bank transaction
+        $stmt = $pdo->prepare("
+            INSERT INTO bank_transactions 
+            (transaction_id, amount, description, bank, account_number, type, status, transaction_date, user_id, created_at) 
+            VALUES (?, ?, ?, 'ACB', '46241987', 'in', 'completed', ?, ?, NOW())
+        ");
+        $stmt->execute([
+            $transaction['transaction_id'],
+            $transaction['amount'],
+            $transaction['description'],
+            $transaction['transaction_date'] ?? date('Y-m-d H:i:s'),
+            $userId
+        ]);
+        
+        // Cập nhật số dư user
+        $stmt = $pdo->prepare("UPDATE users SET user_wallet_balance = user_wallet_balance + ? WHERE user_id = ?");
+        $stmt->execute([$transaction['amount'], $userId]);
+        
+        // Log transaction
+        $stmt = $pdo->prepare("
+            INSERT INTO users_wallets_transactions (user_id, type, amount, description, time) 
+            VALUES (?, 'recharge', ?, ?, NOW())
+        ");
+        $stmt->execute([$userId, $transaction['amount'], "Nạp tiền - $qrCode"]);
         
         // Đánh dấu QR Code đã sử dụng
-        $cmd = "/opt/homebrew/bin/mysql -u root -P 3306 db_mxh -e \"UPDATE qr_code_mapping SET status = 'used' WHERE qr_code = '$qrCode';\"";
-        shell_exec($cmd);
+        $stmt = $pdo->prepare("UPDATE qr_code_mapping SET status = 'used', updated_at = NOW() WHERE qr_code = ?");
+        $stmt->execute([$qrCode]);
         
-        writeLog("Webhook - ✅ Đã xử lý giao dịch: {$transaction['transaction_id']} - " . number_format($transaction['amount']) . " VNĐ - User: $userId");
+        writeLog("Deposit - ✅ Completed: {$transaction['transaction_id']} - " . number_format($transaction['amount']) . " VNĐ - User: $userId");
         
         return true;
         

@@ -665,8 +665,79 @@ try {
       }
       $shop_ai_stats['gmr_chart_data'] = $gmr_chart_data;
 
+      // === THỐNG KÊ RÚT TIỀN (WITHDRAWAL) ===
+      // Tổng số yêu cầu rút tiền
+      $get_total_withdrawals = $db->query("SELECT COUNT(*) as count FROM qr_code_mapping WHERE transaction_type = 'withdrawal'") or _error('SQL_ERROR');
+      $shop_ai_stats['total_withdrawals'] = $get_total_withdrawals->fetch_assoc()['count'];
+      
+      // Đang chờ xử lý
+      $get_pending_withdrawals_count = $db->query("SELECT COUNT(*) as count FROM qr_code_mapping WHERE transaction_type = 'withdrawal' AND status = 'active' AND expires_at > NOW()") or _error('SQL_ERROR');
+      $shop_ai_stats['pending_withdrawals_count'] = $get_pending_withdrawals_count->fetch_assoc()['count'];
+      
+      // Đã hoàn thành
+      $get_completed_withdrawals = $db->query("SELECT COUNT(*) as count FROM qr_code_mapping WHERE transaction_type = 'withdrawal' AND status = 'used'") or _error('SQL_ERROR');
+      $shop_ai_stats['completed_withdrawals'] = $get_completed_withdrawals->fetch_assoc()['count'];
+      
+      // Đã hủy/hết hạn
+      $get_cancelled_withdrawals = $db->query("SELECT COUNT(*) as count FROM qr_code_mapping WHERE transaction_type = 'withdrawal' AND status IN ('cancelled', 'expired', 'failed')") or _error('SQL_ERROR');
+      $shop_ai_stats['cancelled_withdrawals'] = $get_cancelled_withdrawals->fetch_assoc()['count'];
+      
+      // Tổng tiền đã rút thành công
+      $get_total_withdrawn = $db->query("SELECT COALESCE(SUM(amount - fee), 0) as total FROM qr_code_mapping WHERE transaction_type = 'withdrawal' AND status = 'used'") or _error('SQL_ERROR');
+      $shop_ai_stats['total_withdrawn'] = $get_total_withdrawn->fetch_assoc()['total'];
+      
+      // Tổng phí rút tiền
+      $get_total_withdrawal_fees = $db->query("SELECT COALESCE(SUM(fee), 0) as total FROM qr_code_mapping WHERE transaction_type = 'withdrawal' AND status = 'used'") or _error('SQL_ERROR');
+      $shop_ai_stats['total_withdrawal_fees'] = $get_total_withdrawal_fees->fetch_assoc()['total'];
+      
+      // Rút tiền hôm nay
+      $get_today_withdrawals = $db->query("SELECT COUNT(*) as count, COALESCE(SUM(amount - fee), 0) as total FROM qr_code_mapping WHERE transaction_type = 'withdrawal' AND status = 'used' AND DATE(updated_at) = CURDATE()") or _error('SQL_ERROR');
+      $today_withdrawal_data = $get_today_withdrawals->fetch_assoc();
+      $shop_ai_stats['today_withdrawals_count'] = $today_withdrawal_data['count'];
+      $shop_ai_stats['today_withdrawals_amount'] = $today_withdrawal_data['total'];
+      
+      // === DANH SÁCH YÊU CẦU RÚT TIỀN ĐANG CHỜ ===
+      $pending_withdrawals = [];
+      $get_pending = $db->query("
+          SELECT 
+              qm.*,
+              (qm.amount - qm.fee) as actual_amount,
+              u.user_id,
+              u.user_name,
+              u.user_firstname,
+              u.user_lastname,
+              u.user_picture,
+              u.user_gender,
+              u.user_verified,
+              TIMESTAMPDIFF(SECOND, NOW(), qm.expires_at) as time_left_seconds
+          FROM qr_code_mapping qm
+          LEFT JOIN users u ON qm.user_id = u.user_id
+          WHERE qm.transaction_type = 'withdrawal' 
+          AND qm.status = 'active' 
+          AND qm.expires_at > NOW()
+          ORDER BY qm.created_at ASC
+      ") or _error('SQL_ERROR');
+      
+      while ($withdrawal = $get_pending->fetch_assoc()) {
+          // Format time left
+          $timeLeft = intval($withdrawal['time_left_seconds']);
+          $minutes = floor($timeLeft / 60);
+          $seconds = $timeLeft % 60;
+          $withdrawal['time_left_formatted'] = sprintf("%02d:%02d", $minutes, $seconds);
+          
+          // Get user picture
+          $withdrawal['user_picture'] = get_picture($withdrawal['user_picture'], $withdrawal['user_gender']);
+          
+          // Add urgency flag
+          $withdrawal['is_urgent'] = ($timeLeft < 300); // < 5 minutes
+          
+          $pending_withdrawals[] = $withdrawal;
+      }
+
       // assign variables
       $smarty->assign('shop_ai_stats', $shop_ai_stats);
+      $smarty->assign('pending_withdrawals', $pending_withdrawals);
+      $smarty->assign('pending_withdrawals_count', count($pending_withdrawals));
       break;
 
     case 'users':

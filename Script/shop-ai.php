@@ -123,14 +123,16 @@ function generateVietQR($amount, $content) {
 
 // Function to get user balance using PDO - chỉ dùng user_wallet_balance
 function getUserBalance($user_id) {
+    global $db;
     try {
-        $pdo = new PDO("mysql:host=" . DB_HOST . ";port=" . DB_PORT . ";dbname=" . DB_NAME, DB_USER, DB_PASSWORD);
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $stmt = $pdo->prepare("SELECT user_wallet_balance FROM users WHERE user_id = ?");
-        $stmt->execute([$user_id]);
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $result ? floatval($result['user_wallet_balance']) : 0;
-    } catch (PDOException $e) {
+        $get_balance = $db->query(sprintf("SELECT user_wallet_balance FROM users WHERE user_id = %s", secure($user_id, 'int')));
+        if ($get_balance && $get_balance->num_rows > 0) {
+            $result = $get_balance->fetch_assoc();
+            return floatval($result['user_wallet_balance']);
+        }
+        return 0;
+    } catch (Exception $e) {
+        error_log("Error getting user balance: " . $e->getMessage());
         return 0;
     }
 }
@@ -472,6 +474,39 @@ function handleAPIRequest() {
             
         case 'save_qr_mapping':
             handleSaveQRMapping();
+            break;
+            
+        // === WITHDRAWAL SYSTEM APIs ===
+        case 'add_bank_account':
+            handleAddBankAccount();
+            break;
+            
+        case 'list_bank_accounts':
+            handleListBankAccounts();
+            break;
+            
+        case 'delete_bank_account':
+            handleDeleteBankAccount();
+            break;
+            
+        case 'set_default_bank':
+            handleSetDefaultBank();
+            break;
+            
+        case 'create_withdrawal':
+            handleCreateWithdrawal();
+            break;
+            
+        case 'check_withdrawal_status':
+            handleCheckWithdrawalStatus();
+            break;
+            
+        case 'cancel_withdrawal':
+            handleCancelWithdrawal();
+            break;
+            
+        case 'get_withdrawal_history':
+            handleGetWithdrawalHistory();
             break;
             
         default:
@@ -1102,6 +1137,119 @@ try {
       ]);
       break;
 
+    case 'bank-accounts':
+      // LOG: Check if this case is reached
+      error_log("=== BANK-ACCOUNTS VIEW ===");
+      error_log("User logged in: " . ($user->_logged_in ? 'YES' : 'NO'));
+      if ($user->_logged_in) {
+        error_log("User ID: " . $user->_data['user_id']);
+      }
+      
+      // page header
+      page_header(__("Quản Lý Ngân Hàng") . ' | ' . __($system['system_title']));
+      
+      $user_banks = [];
+      $vietnam_banks = [];
+      
+      // Only proceed if user is logged in
+      if ($user->_logged_in) {
+        $user_id = $user->_data['user_id'];
+        error_log("Fetching banks for user: " . $user_id);
+        
+        // Get user's bank accounts using global $db
+        $get_banks = $db->query(sprintf("SELECT * FROM user_bank_accounts WHERE user_id = %s AND status = 'active' ORDER BY is_default DESC, created_at DESC", secure($user_id, 'int')));
+        if ($get_banks && $get_banks->num_rows > 0) {
+          while ($bank = $get_banks->fetch_assoc()) {
+            $user_banks[] = $bank;
+          }
+          error_log("Found " . count($user_banks) . " user banks");
+        } else {
+          error_log("No user banks found");
+        }
+      } else {
+        error_log("User not logged in - skipping user banks query");
+      }
+      
+      // Get list of Vietnam banks (available for all users)
+      $get_vn_banks = $db->query("SELECT * FROM vietnam_banks WHERE is_active = 1 ORDER BY display_order ASC");
+      if ($get_vn_banks && $get_vn_banks->num_rows > 0) {
+        while ($bank = $get_vn_banks->fetch_assoc()) {
+          $vietnam_banks[] = $bank;
+        }
+        error_log("Found " . count($vietnam_banks) . " Vietnam banks");
+      } else {
+        error_log("No Vietnam banks found");
+      }
+      
+      $smarty->assign('user_banks', $user_banks);
+      $smarty->assign('vietnam_banks', $vietnam_banks);
+      error_log("=== END BANK-ACCOUNTS VIEW ===");
+      break;
+
+    case 'withdrawal':
+      // LOG: Check if this case is reached
+      error_log("=== WITHDRAWAL VIEW ===");
+      error_log("User logged in: " . ($user->_logged_in ? 'YES' : 'NO'));
+      if ($user->_logged_in) {
+        error_log("User ID: " . $user->_data['user_id']);
+      }
+      
+      // page header
+      page_header(__("Rút Tiền") . ' | ' . __($system['system_title']));
+      
+      $current_balance = 0;
+      $user_banks = [];
+      $pending_withdrawal = false;
+      
+      // Only proceed if user is logged in
+      if ($user->_logged_in) {
+        $user_id = $user->_data['user_id'];
+        error_log("Fetching balance for user: " . $user_id);
+        
+        // Get user balance using global $db
+        $get_balance = $db->query(sprintf("SELECT user_wallet_balance FROM users WHERE user_id = %s", secure($user_id, 'int')));
+        if ($get_balance && $get_balance->num_rows > 0) {
+          $result = $get_balance->fetch_assoc();
+          $current_balance = floatval($result['user_wallet_balance']);
+          error_log("User balance: " . $current_balance);
+        } else {
+          error_log("No balance found for user");
+        }
+        
+        // Get user's bank accounts using global $db
+        $get_banks = $db->query(sprintf("SELECT * FROM user_bank_accounts WHERE user_id = %s AND status = 'active' ORDER BY is_default DESC, created_at DESC", secure($user_id, 'int')));
+        if ($get_banks && $get_banks->num_rows > 0) {
+          while ($bank = $get_banks->fetch_assoc()) {
+            $user_banks[] = $bank;
+          }
+          error_log("Found " . count($user_banks) . " user banks");
+        } else {
+          error_log("No user banks found");
+        }
+        
+        // Check if has pending withdrawal
+        $get_pending = $db->query(sprintf("
+            SELECT * FROM qr_code_mapping 
+            WHERE user_id = %s AND transaction_type = 'withdrawal' AND status = 'active' AND expires_at > NOW()
+            ORDER BY created_at DESC LIMIT 1
+        ", secure($user_id, 'int')));
+        
+        if ($get_pending && $get_pending->num_rows > 0) {
+          $pending_withdrawal = $get_pending->fetch_assoc();
+          error_log("Found pending withdrawal: " . $pending_withdrawal['qr_code']);
+        } else {
+          error_log("No pending withdrawal");
+        }
+      } else {
+        error_log("User not logged in - skipping data fetch");
+      }
+      
+      $smarty->assign('current_balance', $current_balance);
+      $smarty->assign('user_banks', $user_banks);
+      $smarty->assign('pending_withdrawal', $pending_withdrawal);
+      error_log("=== END WITHDRAWAL VIEW ===");
+      break;
+
     case 'pricing':
       // page header
       page_header(__("Bảng Giá Check Số Điện Thoại") . ' | ' . __($system['system_title']));
@@ -1184,6 +1332,586 @@ try {
   $smarty->assign('widgets', array());
 } catch (Exception $e) {
   _error(__("Error"), $e->getMessage());
+}
+
+// =============================================================================
+// WITHDRAWAL SYSTEM - API FUNCTIONS
+// =============================================================================
+
+/**
+ * Thêm tài khoản ngân hàng của user
+ */
+function handleAddBankAccount() {
+    global $user;
+    
+    try {
+        if (!$user->_logged_in) {
+            echo json_encode(['success' => false, 'error' => 'Unauthorized']);
+            return;
+        }
+        
+        $json = file_get_contents('php://input');
+        $data = json_decode($json, true);
+        
+        if (!$data) {
+            $data = $_POST;
+        }
+        
+        $userId = $user->_data['user_id'];
+        $bankCode = trim($data['bank_code'] ?? '');
+        $bankName = trim($data['bank_name'] ?? '');
+        $accountNumber = trim($data['account_number'] ?? '');
+        $accountHolder = strtoupper(trim($data['account_holder'] ?? ''));
+        $accountNickname = trim($data['account_nickname'] ?? '');
+        
+        // Validation
+        if (empty($bankCode) || empty($accountNumber) || empty($accountHolder)) {
+            echo json_encode(['success' => false, 'error' => 'Missing required fields']);
+            return;
+        }
+        
+        // Validate account number
+        if (!preg_match('/^[0-9]{6,20}$/', $accountNumber)) {
+            echo json_encode(['success' => false, 'error' => 'Số tài khoản không hợp lệ (6-20 chữ số)']);
+            return;
+        }
+        
+        // Connect database
+        $pdo = new PDO("mysql:host=" . DB_HOST . ";port=" . DB_PORT . ";dbname=" . DB_NAME, DB_USER, DB_PASSWORD);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        
+        // Check if bank already exists
+        $stmt = $pdo->prepare("SELECT account_id FROM user_bank_accounts WHERE user_id = ? AND bank_code = ? AND account_number = ?");
+        $stmt->execute([$userId, $bankCode, $accountNumber]);
+        
+        if ($stmt->fetch()) {
+            echo json_encode(['success' => false, 'error' => 'Tài khoản ngân hàng này đã tồn tại']);
+            return;
+        }
+        
+        // If this is first bank, make it default
+        $stmt = $pdo->prepare("SELECT COUNT(*) as count FROM user_bank_accounts WHERE user_id = ?");
+        $stmt->execute([$userId]);
+        $count = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
+        $isDefault = ($count == 0) ? 1 : 0;
+        
+        // Insert bank account
+        $stmt = $pdo->prepare("
+            INSERT INTO user_bank_accounts 
+            (user_id, bank_code, bank_name, account_number, account_holder, account_nickname, is_default, status) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, 'active')
+        ");
+        
+        $stmt->execute([$userId, $bankCode, $bankName, $accountNumber, $accountHolder, $accountNickname, $isDefault]);
+        
+        echo json_encode([
+            'success' => true,
+            'message' => 'Thêm tài khoản ngân hàng thành công',
+            'account_id' => $pdo->lastInsertId()
+        ]);
+        
+    } catch (Exception $e) {
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+    }
+}
+
+/**
+ * Lấy danh sách tài khoản ngân hàng của user
+ */
+function handleListBankAccounts() {
+    global $user;
+    
+    try {
+        if (!$user->_logged_in) {
+            echo json_encode(['success' => false, 'error' => 'Unauthorized']);
+            return;
+        }
+        
+        $userId = $user->_data['user_id'];
+        
+        $pdo = new PDO("mysql:host=" . DB_HOST . ";port=" . DB_PORT . ";dbname=" . DB_NAME, DB_USER, DB_PASSWORD);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        
+        $stmt = $pdo->prepare("
+            SELECT * FROM user_bank_accounts 
+            WHERE user_id = ? AND status = 'active' 
+            ORDER BY is_default DESC, created_at DESC
+        ");
+        $stmt->execute([$userId]);
+        $accounts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        echo json_encode([
+            'success' => true,
+            'accounts' => $accounts
+        ]);
+        
+    } catch (Exception $e) {
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+    }
+}
+
+/**
+ * Xóa tài khoản ngân hàng
+ */
+function handleDeleteBankAccount() {
+    global $user;
+    
+    try {
+        if (!$user->_logged_in) {
+            echo json_encode(['success' => false, 'error' => 'Unauthorized']);
+            return;
+        }
+        
+        $json = file_get_contents('php://input');
+        $data = json_decode($json, true);
+        
+        if (!$data) {
+            $data = $_POST;
+        }
+        
+        $userId = $user->_data['user_id'];
+        $accountId = intval($data['account_id'] ?? 0);
+        
+        if ($accountId <= 0) {
+            echo json_encode(['success' => false, 'error' => 'Invalid account ID']);
+            return;
+        }
+        
+        $pdo = new PDO("mysql:host=" . DB_HOST . ";port=" . DB_PORT . ";dbname=" . DB_NAME, DB_USER, DB_PASSWORD);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        
+        // Verify ownership
+        $stmt = $pdo->prepare("SELECT account_id FROM user_bank_accounts WHERE account_id = ? AND user_id = ?");
+        $stmt->execute([$accountId, $userId]);
+        
+        if (!$stmt->fetch()) {
+            echo json_encode(['success' => false, 'error' => 'Account not found or unauthorized']);
+            return;
+        }
+        
+        // Soft delete
+        $stmt = $pdo->prepare("UPDATE user_bank_accounts SET status = 'inactive', updated_at = NOW() WHERE account_id = ?");
+        $stmt->execute([$accountId]);
+        
+        echo json_encode(['success' => true, 'message' => 'Xóa tài khoản ngân hàng thành công']);
+        
+    } catch (Exception $e) {
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+    }
+}
+
+/**
+ * Set tài khoản ngân hàng mặc định
+ */
+function handleSetDefaultBank() {
+    global $user;
+    
+    try {
+        if (!$user->_logged_in) {
+            echo json_encode(['success' => false, 'error' => 'Unauthorized']);
+            return;
+        }
+        
+        $json = file_get_contents('php://input');
+        $data = json_decode($json, true);
+        
+        if (!$data) {
+            $data = $_POST;
+        }
+        
+        $userId = $user->_data['user_id'];
+        $accountId = intval($data['account_id'] ?? 0);
+        
+        if ($accountId <= 0) {
+            echo json_encode(['success' => false, 'error' => 'Invalid account ID']);
+            return;
+        }
+        
+        $pdo = new PDO("mysql:host=" . DB_HOST . ";port=" . DB_PORT . ";dbname=" . DB_NAME, DB_USER, DB_PASSWORD);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        
+        // Verify ownership
+        $stmt = $pdo->prepare("SELECT account_id FROM user_bank_accounts WHERE account_id = ? AND user_id = ?");
+        $stmt->execute([$accountId, $userId]);
+        
+        if (!$stmt->fetch()) {
+            echo json_encode(['success' => false, 'error' => 'Account not found']);
+            return;
+        }
+        
+        // Unset all defaults
+        $stmt = $pdo->prepare("UPDATE user_bank_accounts SET is_default = 0 WHERE user_id = ?");
+        $stmt->execute([$userId]);
+        
+        // Set new default
+        $stmt = $pdo->prepare("UPDATE user_bank_accounts SET is_default = 1, updated_at = NOW() WHERE account_id = ?");
+        $stmt->execute([$accountId]);
+        
+        echo json_encode(['success' => true, 'message' => 'Đã cập nhật tài khoản mặc định']);
+        
+    } catch (Exception $e) {
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+    }
+}
+
+/**
+ * Tạo yêu cầu rút tiền
+ */
+function handleCreateWithdrawal() {
+    global $user, $db;
+    
+    try {
+        if (!$user->_logged_in) {
+            echo json_encode(['success' => false, 'error' => 'Unauthorized']);
+            return;
+        }
+        
+        $json = file_get_contents('php://input');
+        $data = json_decode($json, true);
+        
+        if (!$data) {
+            $data = $_POST;
+        }
+        
+        $userId = $user->_data['user_id'];
+        $accountId = intval($data['account_id'] ?? 0);
+        $amount = floatval($data['amount'] ?? 0);
+        
+        // Validation
+        if ($amount < 50000) {
+            echo json_encode(['success' => false, 'error' => 'Số tiền tối thiểu 50,000 VNĐ']);
+            return;
+        }
+        
+        if ($amount > 50000000) {
+            echo json_encode(['success' => false, 'error' => 'Số tiền tối đa 50,000,000 VNĐ/lần']);
+            return;
+        }
+        
+        // Get user balance
+        $get_balance = $db->query(sprintf("SELECT user_wallet_balance FROM users WHERE user_id = %s", secure($userId, 'int')));
+        $balance_data = $get_balance->fetch_assoc();
+        $currentBalance = floatval($balance_data['user_wallet_balance']);
+        
+        if ($amount > $currentBalance) {
+            echo json_encode(['success' => false, 'error' => 'Số dư không đủ']);
+            return;
+        }
+        
+        // Get bank account info
+        $pdo = new PDO("mysql:host=" . DB_HOST . ";port=" . DB_PORT . ";dbname=" . DB_NAME, DB_USER, DB_PASSWORD);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        
+        $stmt = $pdo->prepare("SELECT * FROM user_bank_accounts WHERE account_id = ? AND user_id = ? AND status = 'active'");
+        $stmt->execute([$accountId, $userId]);
+        $bankAccount = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$bankAccount) {
+            echo json_encode(['success' => false, 'error' => 'Tài khoản ngân hàng không tồn tại']);
+            return;
+        }
+        
+        // Calculate fee (1%)
+        $fee = $amount * 0.01;
+        $actualAmount = $amount - $fee;
+        
+        // Generate QR code with WD prefix
+        $qrCode = 'WD' . strtoupper(substr(md5(uniqid() . $userId . time()), 0, 6));
+        $transferContent = $qrCode . " - Rut tien Shop AI";
+        
+        // Hold balance immediately
+        $db->query(sprintf("UPDATE users SET user_wallet_balance = user_wallet_balance - %s WHERE user_id = %s", 
+            secure($amount, 'float'), 
+            secure($userId, 'int')
+        )) or _error('SQL_ERROR');
+        
+        // Generate VietQR for admin to scan
+        $qrImageUrl = generateWithdrawalQR($actualAmount, $qrCode, $bankAccount['account_number'], $bankAccount['bank_code'], $bankAccount['account_holder']);
+        
+        // Save to qr_code_mapping
+        $stmt = $pdo->prepare("
+            INSERT INTO qr_code_mapping 
+            (qr_code, user_id, amount, fee, status, transaction_type, 
+             withdrawal_bank_code, withdrawal_bank_name, withdrawal_account_number, withdrawal_account_holder,
+             expires_at, description, transfer_content, qr_image_url, created_at, updated_at) 
+            VALUES (?, ?, ?, ?, 'active', 'withdrawal', ?, ?, ?, ?, DATE_ADD(NOW(), INTERVAL 15 MINUTE), ?, ?, ?, NOW(), NOW())
+        ");
+        
+        $stmt->execute([
+            $qrCode, $userId, $amount, $fee,
+            $bankAccount['bank_code'], $bankAccount['bank_name'], 
+            $bankAccount['account_number'], $bankAccount['account_holder'],
+            'Shop-AI Withdrawal Request', $transferContent, $qrImageUrl
+        ]);
+        
+        // Update last_used_at
+        $stmt = $pdo->prepare("UPDATE user_bank_accounts SET last_used_at = NOW() WHERE account_id = ?");
+        $stmt->execute([$accountId]);
+        
+        // Log transaction
+        $db->query(sprintf("
+            INSERT INTO users_wallets_transactions (user_id, type, amount, description, time) 
+            VALUES (%s, 'withdraw_request', %s, 'Yêu cầu rút tiền - %s', NOW())
+        ", secure($userId, 'int'), secure($amount, 'float'), secure($qrCode)));
+        
+        echo json_encode([
+            'success' => true,
+            'message' => 'Tạo yêu cầu rút tiền thành công',
+            'data' => [
+                'qr_code' => $qrCode,
+                'qr_image_url' => $qrImageUrl,
+                'amount' => $amount,
+                'fee' => $fee,
+                'actual_amount' => $actualAmount,
+                'bank_name' => $bankAccount['bank_name'],
+                'account_number' => $bankAccount['account_number'],
+                'account_holder' => $bankAccount['account_holder'],
+                'expires_at' => date('Y-m-d H:i:s', strtotime('+15 minutes'))
+            ]
+        ]);
+        
+    } catch (Exception $e) {
+        // Rollback balance nếu có lỗi
+        if (isset($userId) && isset($amount)) {
+            global $db;
+            $db->query(sprintf("UPDATE users SET user_wallet_balance = user_wallet_balance + %s WHERE user_id = %s", 
+                secure($amount, 'float'), 
+                secure($userId, 'int')
+            ));
+        }
+        
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+    }
+}
+
+/**
+ * Generate VietQR for withdrawal (admin scan to transfer to user)
+ */
+function generateWithdrawalQR($amount, $qr_code, $recipient_account, $recipient_bank_code, $recipient_name = '') {
+    // VietQR API - Tạo QR để admin scan, tự động điền thông tin chuyển khoản cho user
+    $vietqr_api_url = 'https://api.vietqr.io/v2/generate';
+    $vietqr_data = array(
+        'accountNo' => $recipient_account,
+        'accountName' => !empty($recipient_name) ? $recipient_name : 'Recipient',
+        'acqId' => $recipient_bank_code,
+        'amount' => intval($amount),
+        'addInfo' => $qr_code,
+        'format' => 'text',
+        'template' => 'compact'
+    );
+    
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $vietqr_api_url);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($vietqr_data));
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+    
+    $response = curl_exec($ch);
+    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    
+    if ($http_code == 200 && $response) {
+        $result = json_decode($response, true);
+        if (isset($result['data']['qrDataURL'])) {
+            return $result['data']['qrDataURL'];
+        }
+    }
+    
+    // Fallback to image URL
+    $timestamp = time();
+    return "https://img.vietqr.io/image/{$recipient_bank_code}-{$recipient_account}-{$amount}-" . urlencode($qr_code) . ".jpg?t={$timestamp}";
+}
+
+/**
+ * Kiểm tra trạng thái rút tiền
+ */
+function handleCheckWithdrawalStatus() {
+    global $user;
+    
+    try {
+        if (!$user->_logged_in) {
+            echo json_encode(['success' => false, 'error' => 'Unauthorized']);
+            return;
+        }
+        
+        $json = file_get_contents('php://input');
+        $data = json_decode($json, true);
+        
+        if (!$data) {
+            $data = $_POST;
+        }
+        
+        $userId = $user->_data['user_id'];
+        $qrCode = trim($data['qr_code'] ?? '');
+        
+        if (empty($qrCode)) {
+            echo json_encode(['success' => false, 'error' => 'Missing QR code']);
+            return;
+        }
+        
+        $pdo = new PDO("mysql:host=" . DB_HOST . ";port=" . DB_PORT . ";dbname=" . DB_NAME, DB_USER, DB_PASSWORD);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        
+        $stmt = $pdo->prepare("
+            SELECT *, TIMESTAMPDIFF(SECOND, NOW(), expires_at) as time_left 
+            FROM qr_code_mapping 
+            WHERE qr_code = ? AND user_id = ? AND transaction_type = 'withdrawal'
+            ORDER BY created_at DESC 
+            LIMIT 1
+        ");
+        $stmt->execute([$qrCode, $userId]);
+        $withdrawal = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$withdrawal) {
+            echo json_encode(['success' => false, 'error' => 'Withdrawal not found']);
+            return;
+        }
+        
+        // Check status
+        $status = $withdrawal['status'];
+        $timeLeft = intval($withdrawal['time_left']);
+        
+        if ($timeLeft <= 0 && $status === 'active') {
+            $status = 'expired';
+        }
+        
+        echo json_encode([
+            'success' => true,
+            'status' => $status,
+            'time_left' => max(0, $timeLeft),
+            'amount' => $withdrawal['amount'],
+            'fee' => $withdrawal['fee'],
+            'actual_amount' => $withdrawal['amount'] - $withdrawal['fee'],
+            'created_at' => $withdrawal['created_at'],
+            'expires_at' => $withdrawal['expires_at']
+        ]);
+        
+    } catch (Exception $e) {
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+    }
+}
+
+/**
+ * Hủy yêu cầu rút tiền
+ */
+function handleCancelWithdrawal() {
+    global $user, $db;
+    
+    try {
+        if (!$user->_logged_in) {
+            echo json_encode(['success' => false, 'error' => 'Unauthorized']);
+            return;
+        }
+        
+        $json = file_get_contents('php://input');
+        $data = json_decode($json, true);
+        
+        if (!$data) {
+            $data = $_POST;
+        }
+        
+        $userId = $user->_data['user_id'];
+        $qrCode = trim($data['qr_code'] ?? '');
+        
+        if (empty($qrCode)) {
+            echo json_encode(['success' => false, 'error' => 'Missing QR code']);
+            return;
+        }
+        
+        $pdo = new PDO("mysql:host=" . DB_HOST . ";port=" . DB_PORT . ";dbname=" . DB_NAME, DB_USER, DB_PASSWORD);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        
+        // Get withdrawal info
+        $stmt = $pdo->prepare("
+            SELECT * FROM qr_code_mapping 
+            WHERE qr_code = ? AND user_id = ? AND transaction_type = 'withdrawal' AND status = 'active'
+            LIMIT 1
+        ");
+        $stmt->execute([$qrCode, $userId]);
+        $withdrawal = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$withdrawal) {
+            echo json_encode(['success' => false, 'error' => 'Withdrawal not found or already processed']);
+            return;
+        }
+        
+        // Refund balance
+        $db->query(sprintf("UPDATE users SET user_wallet_balance = user_wallet_balance + %s WHERE user_id = %s", 
+            secure($withdrawal['amount'], 'float'), 
+            secure($userId, 'int')
+        )) or _error('SQL_ERROR');
+        
+        // Update status to cancelled
+        $stmt = $pdo->prepare("UPDATE qr_code_mapping SET status = 'cancelled', updated_at = NOW() WHERE qr_code = ?");
+        $stmt->execute([$qrCode]);
+        
+        // Log transaction
+        $db->query(sprintf("
+            INSERT INTO users_wallets_transactions (user_id, type, amount, description, time) 
+            VALUES (%s, 'withdraw_cancelled', %s, 'Hủy rút tiền - %s', NOW())
+        ", secure($userId, 'int'), secure($withdrawal['amount'], 'float'), secure($qrCode)));
+        
+        echo json_encode([
+            'success' => true,
+            'message' => 'Đã hủy yêu cầu rút tiền và hoàn lại số dư',
+            'refunded_amount' => $withdrawal['amount']
+        ]);
+        
+    } catch (Exception $e) {
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+    }
+}
+
+/**
+ * Lấy lịch sử rút tiền
+ */
+function handleGetWithdrawalHistory() {
+    global $user;
+    
+    try {
+        if (!$user->_logged_in) {
+            echo json_encode(['success' => false, 'error' => 'Unauthorized']);
+            return;
+        }
+        
+        $userId = $user->_data['user_id'];
+        $limit = intval($_GET['limit'] ?? 50);
+        $offset = intval($_GET['offset'] ?? 0);
+        
+        $pdo = new PDO("mysql:host=" . DB_HOST . ";port=" . DB_PORT . ";dbname=" . DB_NAME, DB_USER, DB_PASSWORD);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        
+        $stmt = $pdo->prepare("
+            SELECT 
+                qr_code,
+                amount,
+                fee,
+                (amount - fee) as actual_amount,
+                withdrawal_bank_name,
+                withdrawal_account_number,
+                status,
+                created_at,
+                updated_at,
+                expires_at
+            FROM qr_code_mapping 
+            WHERE user_id = ? AND transaction_type = 'withdrawal'
+            ORDER BY created_at DESC 
+            LIMIT ? OFFSET ?
+        ");
+        $stmt->execute([$userId, $limit, $offset]);
+        $history = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        echo json_encode([
+            'success' => true,
+            'history' => $history,
+            'total' => count($history)
+        ]);
+        
+    } catch (Exception $e) {
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+    }
 }
 
 // page footer

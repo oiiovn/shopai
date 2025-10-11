@@ -28,6 +28,18 @@
                 {__("Nạp tiền")}
               </a>
             </li>
+            <li {if $view == "withdrawal"}class="active" {/if}>
+              <a href="{$system['system_url']}/shop-ai/withdrawal">
+                <i class="fa fa-money-bill-wave main-icon mr-2" style="width: 24px; height: 24px; font-size: 18px;"></i>
+                {__("Rút tiền")}
+              </a>
+            </li>
+            <li {if $view == "bank-accounts"}class="active" {/if}>
+              <a href="{$system['system_url']}/shop-ai/bank-accounts">
+                <i class="fa fa-university main-icon mr-2" style="width: 24px; height: 24px; font-size: 18px;"></i>
+                {__("Ngân hàng")}
+              </a>
+            </li>
             <li {if $view == "transactions"}class="active" {/if}>
               <a href="{$system['system_url']}/shop-ai/transactions">
                 <i class="fa fa-history main-icon mr-2" style="width: 24px; height: 24px; font-size: 18px;"></i>
@@ -60,6 +72,16 @@
           <li {if $view == "recharge"}class="active" {/if}>
             <a href="{$system['system_url']}/shop-ai/recharge">
               {__("Nạp tiền")}
+            </a>
+          </li>
+          <li {if $view == "withdrawal"}class="active" {/if}>
+            <a href="{$system['system_url']}/shop-ai/withdrawal">
+              {__("Rút tiền")}
+            </a>
+          </li>
+          <li {if $view == "bank-accounts"}class="active" {/if}>
+            <a href="{$system['system_url']}/shop-ai/bank-accounts">
+              {__("Ngân hàng")}
             </a>
           </li>
           <li {if $view == "transactions"}class="active" {/if}>
@@ -3321,6 +3343,14 @@
               </script>
             {/if}
             
+            {if $view == "bank-accounts"}
+              {include file='shop-ai-bank-accounts.tpl'}
+            {/if}
+            
+            {if $view == "withdrawal"}
+              {include file='shop-ai-withdrawal.tpl'}
+            {/if}
+            
             {if $view == "pricing"}
               <div class="card-header bg-transparent">
                 <strong>{__("Bảng Giá Check Số Điện Thoại Shopee")}</strong>
@@ -4236,7 +4266,6 @@ function generateVietQR(amount, content) {
     }
   }
 </style>
-
 
 {include file='_footer.tpl'}
 
