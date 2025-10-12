@@ -167,7 +167,7 @@ function initialize() {
   // run readmore plugin
   $('.js_readmore').each(function () {
     var _this = $(this);
-    var height = _this.attr('data-height') || 110;
+    var height = _this.attr('data-height') || 200;
     /* return if the plugin already running  */
     if (_this.attr('data-readmore') !== undefined) {
       return;
