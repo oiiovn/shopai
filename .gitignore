@@ -1,0 +1,47 @@
+# Config files with sensitive data
+includes/config.php
+
+# Cache and temporary files
+content/cache/*
+content/themes/*/templates_compiled/*
+content/uploads/*
+
+# Node modules
+node_modules/
+package-lock.json
+
+# Composer
+vendor/
+composer.lock
+composer.phar
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Backup files
+*.bak
+*.backup
+*.sql
+*.zip
+
+# Test files
+test_*.php
+check.php
+

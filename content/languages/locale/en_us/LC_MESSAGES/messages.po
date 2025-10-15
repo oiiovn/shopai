@@ -1,0 +1,26 @@
+# English language file
+msgid ""
+msgstr ""
+"Language: en_US\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "Welcome to"
+msgstr "Welcome to"
+
+msgid "Sign In to your Account"
+msgstr "Sign In to your Account"
+
+msgid "Email or Username"
+msgstr "Email or Username"
+
+msgid "Password"
+msgstr "Password"
+
+msgid "Sign In"
+msgstr "Sign In"
+
+msgid "Sign Up"
+msgstr "Sign Up"
+
+msgid "English"
+msgstr "English"

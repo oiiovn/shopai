@@ -1,0 +1,26 @@
+# Cron Job Configuration cho Bank Transaction System
+# Chạy mỗi 5 phút để kiểm tra giao dịch mới
+
+# Cài đặt cron job (chạy lệnh này trên server):
+# crontab -e
+
+# Thêm dòng sau vào crontab:
+# */5 * * * * /usr/bin/php /Applications/XAMPP/xamppfiles/htdocs/TCSN/Script/cron-bank-transactions.php >/dev/null 2>&1
+
+# Hoặc với logging chi tiết:
+# */5 * * * * /usr/bin/php /Applications/XAMPP/xamppfiles/htdocs/TCSN/Script/cron-bank-transactions.php >> /Applications/XAMPP/xamppfiles/htdocs/TCSN/Script/logs/cron.log 2>&1
+
+# Các tần suất khác:
+# Mỗi phút: * * * * *
+# Mỗi 5 phút: */5 * * * *
+# Mỗi 10 phút: */10 * * * *
+# Mỗi 30 phút: */30 * * * *
+# Mỗi giờ: 0 * * * *
+# Mỗi ngày lúc 2:00 AM: 0 2 * * *
+
+# Kiểm tra cron job đang chạy:
+# crontab -l
+
+# Xem log:
+# tail -f /Applications/XAMPP/xamppfiles/htdocs/TCSN/Script/logs/cron-bank-transactions.log
+
