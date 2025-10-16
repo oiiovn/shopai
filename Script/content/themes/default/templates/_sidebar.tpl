@@ -290,17 +290,7 @@
         </li>
       {/if}
 
-      <!-- My System -->
-      {if $user->_is_admin}
-        <li {if $page == "my-system"}class="active" {/if}>
-          <a href="{$system['system_url']}/my-system">
-            <i class="fa fa-cogs fa-fw mr10" style="width: 24px; height: 24px; font-size: 18px;"></i>
-            {__("My System")}
-          </a>
-        </li>
-      {/if}
-
-      <!-- explore -->
+  <!-- explore -->
     </ul>
   </div>
 </div>
