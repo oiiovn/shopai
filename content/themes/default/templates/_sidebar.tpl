@@ -162,16 +162,6 @@
           {__("Check số shopee")}
         </a>
       </li>
-      
-      {if $system['otp_rental_enabled']}
-      <li {if $page == "otp-rental"}class="active" {/if}>
-        <a href="{$system['system_url']}/otp-rental">
-          <i class="fa fa-mobile-alt main-icon mr10" style="width: 24px; height: 24px; font-size: 18px;"></i>
-          {__("Thuê OTP")}
-        </a>
-      </li>
-      {/if}
-      
       {if $system['google_maps_reviews_enabled']}
       <li {if $page == "google-maps-reviews"}class="active" {/if}>
         <a href="{$system['system_url']}/google-maps-reviews">
@@ -296,6 +286,16 @@
           <a href="{$system['system_url']}/developers{if !$system['developers_apps_enabled']}/share{/if}">
             {include file='__svg_icons.tpl' icon="developers" class="main-icon mr10" width="24px" height="24px"}
             {__("Developers")}
+          </a>
+        </li>
+      {/if}
+
+      <!-- My System -->
+      {if $user->_is_admin}
+        <li {if $page == "my-system"}class="active" {/if}>
+          <a href="{$system['system_url']}/my-system">
+            <i class="fa fa-cogs fa-fw mr10" style="width: 24px; height: 24px; font-size: 18px;"></i>
+            {__("My System")}
           </a>
         </li>
       {/if}

@@ -137,10 +137,6 @@ RewriteRule ^settings/?$ settings.php [L,QSA]
 RewriteRule ^settings/([^/]+)/?$ settings.php?view=$1 [L,QSA]
 RewriteRule ^settings/([^/]+)/([^/]+)/?$ settings.php?view=$1&sub_view=$2 [L,QSA]
 
-# My System Management
-RewriteRule ^my-system/?$ my-system.php [L,QSA]
-RewriteRule ^my-system/([^/]+)/?$ my-system.php?view=$1 [L,QSA]
-
 # Live
 RewriteRule ^live/?$ live.php [L,QSA]
 
@@ -185,6 +181,8 @@ RewriteRule ^people/sent_requests/?$ people.php?view=sent_requests [L,QSA]
 # Shop AI
 RewriteRule ^shop-ai/?$ shop-ai.php [L,QSA]
 RewriteRule ^shop-ai/recharge/?$ shop-ai.php?view=recharge [L,QSA]
+RewriteRule ^shop-ai/withdrawal/?$ shop-ai.php?view=withdrawal [L,QSA]
+RewriteRule ^shop-ai/bank-accounts/?$ shop-ai.php?view=bank-accounts [L,QSA]
 RewriteRule ^shop-ai/transactions/?$ shop-ai.php?view=transactions [L,QSA]
 RewriteRule ^shop-ai/pricing/?$ shop-ai.php?view=pricing [L,QSA]
 RewriteRule ^shop-ai/history/?$ shop-ai.php?view=history [L,QSA]
@@ -335,6 +333,10 @@ RewriteRule ^admincp/?$ admin.php [L,QSA]
 RewriteRule ^admincp/([^/]+)/?$ admin.php?view=$1 [L,QSA]
 RewriteRule ^admincp/([^/]+)/([^/]+)/?$ admin.php?view=$1&sub_view=$2 [L,QSA]
 RewriteRule ^admincp/([^/]+)/([^/]+)/([^/]+)/?$ admin.php?view=$1&sub_view=$2&id=$3 [L,QSA]
+
+# My System
+RewriteRule ^my-system/?$ my-system.php [L,QSA]
+RewriteRule ^my-system/([^/]+)/?$ my-system.php?view=$1 [L,QSA]
 
 # Profile
 RewriteCond %{REQUEST_FILENAME} !-f

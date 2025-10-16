@@ -290,7 +290,7 @@
                                   {__("Admin Panel")}
                                 </a>
                                 <a class="dropdown-item" href="{$system['system_url']}/my-system">
-                                  <i class="fa fa-cogs main-icon mr10" style="color: #17a2b8;"></i>
+                                  <i class="fa fa-cogs mr10" style="width: 20px; height: 20px; font-size: 16px;"></i>
                                   {__("My System")}
                                 </a>
                               {elseif $user->_is_moderator}
