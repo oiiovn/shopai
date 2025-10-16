@@ -12,10 +12,10 @@
 define('DB_NAME', 'sho73359_shopqi');
 
 /** MySQL database username */
-define('DB_USER', 'sho73359_shopqi');
+define('DB_USER', 'root');
 
 /** MySQL database password */
-define('DB_PASSWORD', 'NuvLc68Mx4UHqHMayqb3');
+define('DB_PASSWORD', '');
 
 /** MySQL hostname */
 define('DB_HOST', 'localhost');
@@ -24,7 +24,7 @@ define('DB_HOST', 'localhost');
 define('DB_PORT', '3306');
 
 /** System URL */
-define('SYS_URL', 'https://shop-ai.vn'); // e.g (http://example.com)
+define('SYS_URL', 'http://localhost/shopai-fresh'); // e.g (http://example.com)
 
 /** System locale */
 define('DEFAULT_LOCALE', 'vi_vn');
@@ -33,7 +33,7 @@ define('DEFAULT_LOCALE', 'vi_vn');
 define('SYSTEM_TIMEZONE', 'Asia/Ho_Chi_Minh');
 
 /** System debug mode */
-define('DEBUGGING', false);
+define('DEBUGGING', true);
 
 /** System error reporting */
 define('DEBUGGING_REPORT_ERRORS', false);
