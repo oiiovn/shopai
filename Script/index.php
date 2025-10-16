@@ -124,7 +124,8 @@ try {
         // Loại bỏ các chiến dịch mà user đã tạo và đã nhận
         $available_tasks = array();
         $get_available_tasks = $db->query("
-            SELECT gmsr.*, gmr.place_name, gmr.place_address, gmr.place_url, gmr.expires_at as parent_expires_at,
+            SELECT gmsr.sub_request_id, gmsr.parent_request_id, gmsr.assigned_user_id, gmsr.status, gmsr.created_at, gmsr.expires_at, gmsr.completed_at, gmsr.verified_at, gmsr.reward_amount, gmsr.proof_data, gmsr.generated_review_content, gmsr.verification_notes, gmsr.updated_at,
+                   gmr.place_name, gmr.place_address, gmr.place_url, gmr.expires_at as parent_expires_at,
                    u.user_firstname, u.user_lastname, u.user_picture, u.user_verified
             FROM google_maps_review_sub_requests gmsr
             LEFT JOIN google_maps_review_requests gmr ON gmsr.parent_request_id = gmr.request_id
@@ -144,7 +145,7 @@ try {
                 WHERE gmt.user_id = '{$user->_data['user_id']}'
                 AND gmt.requester_user_id = gmr.requester_user_id
             )
-            GROUP BY gmr.request_id
+            GROUP BY gmsr.sub_request_id, gmsr.parent_request_id, gmsr.assigned_user_id, gmsr.status, gmsr.created_at, gmsr.expires_at, gmsr.completed_at, gmsr.verified_at, gmsr.reward_amount, gmsr.proof_data, gmsr.generated_review_content, gmsr.verification_notes, gmsr.updated_at, gmr.place_name, gmr.place_address, gmr.place_url, gmr.expires_at, u.user_firstname, u.user_lastname, u.user_picture, u.user_verified
             ORDER BY gmsr.created_at DESC
         ");
         

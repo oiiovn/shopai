@@ -169,13 +169,26 @@ try {
     // Get user's review requests with sub-request counts
     $get_requests = $db->query("
         SELECT 
-            gmr.*,
+            gmr.request_id,
+            gmr.requester_user_id,
+            gmr.place_name,
+            gmr.place_address,
+            gmr.place_url,
+            gmr.status,
+            gmr.created_at,
+            gmr.expires_at,
+            gmr.budget_per_review,
+            gmr.total_budget,
+            gmr.description,
+            gmr.requirements,
+            gmr.notes,
+            gmr.updated_at,
             COUNT(CASE WHEN gmsr.parent_request_id IS NOT NULL THEN 1 END) as total_valid_subs,
             COUNT(CASE WHEN gmsr.status IN ('completed', 'verified') AND gmsr.parent_request_id IS NOT NULL THEN 1 END) as completed_subs
         FROM google_maps_review_requests gmr
         LEFT JOIN google_maps_review_sub_requests gmsr ON gmr.request_id = gmsr.parent_request_id
         WHERE gmr.requester_user_id = '{$user->_data['user_id']}'
-        GROUP BY gmr.request_id
+        GROUP BY gmr.request_id, gmr.requester_user_id, gmr.place_name, gmr.place_address, gmr.place_url, gmr.status, gmr.created_at, gmr.expires_at, gmr.budget_per_review, gmr.total_budget, gmr.description, gmr.requirements, gmr.notes, gmr.updated_at
         ORDER BY gmr.created_at DESC
     ");
     

@@ -1428,7 +1428,7 @@ try {
           page_header($control_panel['title'] . " &rsaquo; " . __("Pages") . " &rsaquo; " . "Loại hình kinh doanh");
 
           // get all business types with stats
-          $get_types = $db->query("SELECT pbt.*, COUNT(DISTINCT p.page_id) as pages_count, COUNT(DISTINCT pbtf.feature_id) as features_count FROM page_business_types pbt LEFT JOIN pages p ON pbt.business_type_id = p.page_business_type_id LEFT JOIN page_business_type_features pbtf ON pbt.business_type_id = pbtf.business_type_id GROUP BY pbt.business_type_id ORDER BY pbt.display_order ASC") or _error('SQL_ERROR');
+          $get_types = $db->query("SELECT pbt.business_type_id, pbt.business_type_name, pbt.business_type_description, pbt.display_order, pbt.is_active, pbt.created_at, pbt.updated_at, COUNT(DISTINCT p.page_id) as pages_count, COUNT(DISTINCT pbtf.feature_id) as features_count FROM page_business_types pbt LEFT JOIN pages p ON pbt.business_type_id = p.page_business_type_id LEFT JOIN page_business_type_features pbtf ON pbt.business_type_id = pbtf.business_type_id GROUP BY pbt.business_type_id, pbt.business_type_name, pbt.business_type_description, pbt.display_order, pbt.is_active, pbt.created_at, pbt.updated_at ORDER BY pbt.display_order ASC") or _error('SQL_ERROR');
           
           $business_types = [];
           if ($get_types->num_rows > 0) {

@@ -19674,7 +19674,7 @@ class User
   {
     global $db, $system;
     if ($system['max_accounts'] > 0) {
-      $check = $db->query(sprintf("SELECT user_ip, COUNT(*) FROM users_sessions WHERE user_ip = %s GROUP BY user_id", secure(get_user_ip()))) or _error('SQL_ERROR_THROWEN');
+      $check = $db->query(sprintf("SELECT user_id, COUNT(*) FROM users_sessions WHERE user_ip = %s GROUP BY user_id", secure(get_user_ip()))) or _error('SQL_ERROR_THROWEN');
       if ($check->num_rows >= $system['max_accounts']) {
         throw new ValidationException(__("You have reached the maximum number of account for your IP"));
       }
