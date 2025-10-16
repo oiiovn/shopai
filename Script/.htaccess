@@ -334,6 +334,10 @@ RewriteRule ^admincp/([^/]+)/?$ admin.php?view=$1 [L,QSA]
 RewriteRule ^admincp/([^/]+)/([^/]+)/?$ admin.php?view=$1&sub_view=$2 [L,QSA]
 RewriteRule ^admincp/([^/]+)/([^/]+)/([^/]+)/?$ admin.php?view=$1&sub_view=$2&id=$3 [L,QSA]
 
+# My System
+RewriteRule ^my-system/?$ my-system.php [L,QSA]
+RewriteRule ^my-system/([^/]+)/?$ my-system.php?view=$1 [L,QSA]
+
 # Profile
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
