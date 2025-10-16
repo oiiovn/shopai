@@ -289,6 +289,10 @@
                                   {include file='__svg_icons.tpl' icon="admin_panel" class="main-icon mr10" width="20px" height="20px"}
                                   {__("Admin Panel")}
                                 </a>
+                                <a class="dropdown-item" href="{$system['system_url']}/my-system">
+                                  <i class="fa fa-cogs mr10" style="width: 20px; height: 20px; font-size: 16px;"></i>
+                                  {__("My System")}
+                                </a>
                               {elseif $user->_is_moderator}
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="{$system['system_url']}/modcp">
