@@ -3,6 +3,8 @@
 /storage/
 /bootstrap/cache/
 /content/uploads/
+/content/themes/default/templates_compiled/
+/Script/content/themes/default/templates_compiled/
 /logs/
 /backups/
 error_log

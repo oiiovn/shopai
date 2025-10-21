@@ -24,7 +24,7 @@ define('DB_HOST', 'localhost');
 define('DB_PORT', '3306');
 
 /** System URL */
-define('SYS_URL', 'http://localhost/shopai-fresh'); // e.g (http://example.com)
+define('SYS_URL', 'http://localhost/shopai1'); // e.g (http://example.com)
 
 /** System locale */
 define('DEFAULT_LOCALE', 'vi_vn');

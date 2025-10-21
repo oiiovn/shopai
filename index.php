@@ -129,7 +129,14 @@ try {
             FROM google_maps_review_sub_requests gmsr
             LEFT JOIN google_maps_review_requests gmr ON gmsr.parent_request_id = gmr.request_id
             LEFT JOIN users u ON gmr.requester_user_id = u.user_id
-            WHERE gmsr.status = 'available' 
+            WHERE gmsr.sub_request_id IN (
+                SELECT MIN(sub_request_id)
+                FROM google_maps_review_sub_requests
+                WHERE status = 'available' 
+                AND expires_at > CONVERT_TZ(NOW(), '+00:00', '+07:00')
+                GROUP BY parent_request_id
+            )
+            AND gmsr.status = 'available' 
             AND gmsr.expires_at > CONVERT_TZ(NOW(), '+00:00', '+07:00')
             AND gmr.status = 'active'
             AND gmr.requester_user_id != '{$user->_data['user_id']}'
@@ -144,7 +151,6 @@ try {
                 WHERE gmt.user_id = '{$user->_data['user_id']}'
                 AND gmt.requester_user_id = gmr.requester_user_id
             )
-            GROUP BY gmr.request_id
             ORDER BY gmsr.created_at DESC
         ");
         
