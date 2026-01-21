@@ -162,6 +162,12 @@
           {__("Check số shopee")}
         </a>
       </li>
+      <li {if $page == "otp-rental"}class="active" {/if}>
+        <a href="{$system['system_url']}/otp-rental?view=rent">
+          {include file='__svg_icons.tpl' icon="sim" class="main-icon mr10" width="24px" height="24px"}
+          Thuê OTP
+        </a>
+      </li>
       {if $system['google_maps_reviews_enabled']}
       <li {if $page == "google-maps-reviews"}class="active" {/if}>
         <a href="{$system['system_url']}/google-maps-reviews">

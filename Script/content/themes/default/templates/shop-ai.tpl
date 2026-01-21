@@ -352,8 +352,10 @@
                         <tbody>
                           {assign var="running_balance" value=$current_balance}
                           {foreach $shop_ai_transactions as $transaction}
+                            {* Xác định loại giao dịch: cộng tiền hay trừ tiền *}
+                            {assign var="is_credit" value=($transaction.type == 'recharge' || $transaction.type == 'otp_refund')}
                             {* Calculate balance after this transaction *}
-                            {if $transaction.type == 'recharge'}
+                            {if $is_credit}
                               {assign var="balance_after" value=$running_balance}
                               {assign var="running_balance" value=$running_balance-$transaction.amount}
                             {else}
@@ -363,13 +365,13 @@
                             <tr>
                               <td>#{$transaction.transaction_id}</td>
                               <td>
-                                <strong class="{if $transaction.type == 'recharge'}text-success{else}text-danger{/if}">
-                                  {if $transaction.type == 'recharge'}+{else}-{/if}{number_format($transaction.amount, 0, ',', '.')} VNĐ
+                                <strong class="{if $is_credit}text-success{else}text-danger{/if}">
+                                  {if $is_credit}+{else}-{/if}{number_format($transaction.amount, 0, ',', '.')} VNĐ
                                 </strong>
                               </td>
                               <td>
-                                <span class="badge {if $transaction.type == 'recharge'}bg-success{else}bg-danger{/if}">
-                                  {if $transaction.type == 'recharge'}{__("Nạp Tiền")}{else}{__("Trừ tiền")}{/if}
+                                <span class="badge {if $is_credit}bg-success{else}bg-danger{/if}">
+                                  {if $is_credit}{__("Nạp Tiền")}{else}{__("Trừ tiền")}{/if}
                                 </span>
                               </td>
                               <td>
@@ -412,8 +414,10 @@
                     <div class="d-block d-md-none">
                       {assign var="running_balance_mobile" value=$current_balance}
                       {foreach $shop_ai_transactions as $transaction}
+                        {* Xác định loại giao dịch: cộng tiền hay trừ tiền *}
+                        {assign var="is_credit_mobile" value=($transaction.type == 'recharge' || $transaction.type == 'otp_refund')}
                         {* Calculate balance after this transaction *}
-                        {if $transaction.type == 'recharge'}
+                        {if $is_credit_mobile}
                           {assign var="balance_after_mobile" value=$running_balance_mobile}
                           {assign var="running_balance_mobile" value=$running_balance_mobile-$transaction.amount}
                         {else}
@@ -425,13 +429,13 @@
                             <div class="row align-items-center">
                               <div class="col-8">
                                 <div class="d-flex align-items-center mb-2">
-                                  <span class="badge {if $transaction.type == 'recharge'}bg-success{else}bg-danger{/if} mr10">
-                                    {if $transaction.type == 'recharge'}Nạp Tiền{else}Trừ tiền{/if}
+                                  <span class="badge {if $is_credit_mobile}bg-success{else}bg-danger{/if} mr10">
+                                    {if $is_credit_mobile}Nạp Tiền{else}Trừ tiền{/if}
                                   </span>
                                   <small class="text-muted">#{$transaction.transaction_id}</small>
                                 </div>
-                                <h6 class="mb-1 {if $transaction.type == 'recharge'}text-success{else}text-danger{/if} font-weight-bold">
-                                  {if $transaction.type == 'recharge'}+{else}-{/if}{number_format($transaction.amount, 0, ',', '.')} VNĐ
+                                <h6 class="mb-1 {if $is_credit_mobile}text-success{else}text-danger{/if} font-weight-bold">
+                                  {if $is_credit_mobile}+{else}-{/if}{number_format($transaction.amount, 0, ',', '.')} VNĐ
                                 </h6>
                                 <p class="text-muted small mb-1">
                                   {if $transaction.description}
@@ -639,10 +643,13 @@
                     var statusText = transaction.status === 'completed' ? '{__("Hoàn thành")}' :
                                    transaction.status === 'pending' ? '{__("Đang xử lý")}' : '{__("Thất bại")}';
                     
+                    // Xác định loại giao dịch: cộng tiền (recharge, otp_refund) hay trừ tiền
+                    var isCredit = (transaction.type === 'recharge' || transaction.type === 'otp_refund');
+                    
                     html += '<tr>';
                     html += '<td>' + transaction.created_at + '</td>';
-                    html += '<td><span class="badge badge-' + (transaction.type === 'recharge' ? 'success' : 'danger') + '">' + 
-                           (transaction.type === 'recharge' ? '{__("Nạp tiền")}' : '{__("Trừ tiền")}') + '</span></td>';
+                    html += '<td><span class="badge badge-' + (isCredit ? 'success' : 'danger') + '">' + 
+                           (isCredit ? '{__("Nạp tiền")}' : '{__("Trừ tiền")}') + '</span></td>';
                     html += '<td class="text-right">' + formatMoney(transaction.amount) + ' VNĐ</td>';
                     html += '<td class="text-right"><strong>' + formatMoney(transaction.balance_after) + ' VNĐ</strong></td>';
                     html += '<td>' + transaction.description + '</td>';
@@ -664,10 +671,12 @@
                     var statusText = transaction.status === 'completed' ? '{__("Hoàn thành")}' :
                                    transaction.status === 'pending' ? '{__("Đang xử lý")}' : '{__("Thất bại")}';
                     
-                    var typeClass = transaction.type === 'recharge' ? 'success' : 'danger';
-                    var typeText = transaction.type === 'recharge' ? '{__("Nạp tiền")}' : '{__("Trừ tiền")}';
-                    var amountClass = transaction.type === 'recharge' ? 'text-success' : 'text-danger';
-                    var amountPrefix = transaction.type === 'recharge' ? '+' : '-';
+                    // Xác định loại giao dịch: cộng tiền (recharge, otp_refund) hay trừ tiền
+                    var isCredit = (transaction.type === 'recharge' || transaction.type === 'otp_refund');
+                    var typeClass = isCredit ? 'success' : 'danger';
+                    var typeText = isCredit ? '{__("Nạp tiền")}' : '{__("Trừ tiền")}';
+                    var amountClass = isCredit ? 'text-success' : 'text-danger';
+                    var amountPrefix = isCredit ? '+' : '-';
                     
                     html += '<div class="card mb-3 transaction-card">';
                     html += '  <div class="card-body p-3">';

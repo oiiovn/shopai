@@ -352,6 +352,10 @@
 
     {include file='../images/svg/market.svg'}
 
+  {elseif $icon == "sim"}
+
+    {include file='../images/svg/sim.svg'}
+
   {elseif $icon == "products"}
 
     {include file='../images/svg/products.svg'}

@@ -188,6 +188,14 @@ RewriteRule ^shop-ai/pricing/?$ shop-ai.php?view=pricing [L,QSA]
 RewriteRule ^shop-ai/history/?$ shop-ai.php?view=history [L,QSA]
 RewriteRule ^shop-ai/rank-check/?$ shop-ai.php?view=rank-check [L,QSA]
 
+# OTP Rental
+RewriteRule ^otp-rental/?$ otp-rental.php [L,QSA]
+RewriteRule ^otp-rental/services/?$ otp-rental.php?view=services [L,QSA]
+RewriteRule ^otp-rental/rent/?$ otp-rental.php?view=rent [L,QSA]
+RewriteRule ^otp-rental/rent/([0-9]+)/?$ otp-rental.php?view=rent&service_id=$1 [L,QSA]
+RewriteRule ^otp-rental/active/([0-9]+)/?$ otp-rental.php?view=active&request_id=$1 [L,QSA]
+RewriteRule ^otp-rental/history/?$ otp-rental.php?view=history [L,QSA]
+
 # Google Maps Reviews
 RewriteRule ^google-maps-reviews/?$ google-maps-reviews.php [L,QSA]
 RewriteRule ^google-maps-reviews/dashboard/?$ google-maps-reviews.php?view=dashboard [L,QSA]
