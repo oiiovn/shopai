@@ -237,7 +237,7 @@ function init_db_connection($db_host = null, $db_user = null, $db_password = nul
   $db_password = (isset($db_password)) ? $db_password : DB_PASSWORD;
   $db_name = (isset($db_name)) ? $db_name : DB_NAME;
   $db_port = (isset($db_port)) ? $db_port : DB_PORT;
-  $db = new mysqli('localhost', $db_user, $db_password, $db_name, $db_port, '/tmp/mysql.sock');
+  $db = new mysqli('localhost', $db_user, $db_password, $db_name, $db_port, '/Applications/XAMPP/xamppfiles/var/mysql/mysql.sock');
   if (mysqli_connect_error()) {
     throw new Exception("DB_ERROR");
   }

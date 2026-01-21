@@ -54,12 +54,24 @@ function fetchPay2STransactions() {
         ];
         
         // Headers theo tài liệu - sử dụng base64 của secret key
+        // Thử dùng pay2s_token từ config trước, nếu không có thì encode lại từ secret_key
+        $pay2sToken = $config['pay2s_token'] ?? '';
+        if (empty($pay2sToken) && isset($config['secret_key'])) {
+            $pay2sToken = base64_encode($config['secret_key']);
+        }
+        if (empty($pay2sToken) && isset($config['webhook_secret'])) {
+            $pay2sToken = base64_encode($config['webhook_secret']);
+        }
+        
         $headers = [
             'Content-Type: application/json',
-            'pay2s-token: ' . $config['pay2s_token']  // Base64 của secret key
+            'pay2s-token: ' . $pay2sToken,
+            'Accept: application/json'
         ];
         
         writeLog("🔄 Gọi Pay2S API: $url");
+        writeLog("📋 Request Params: " . json_encode($params));
+        writeLog("🔑 Token (first 50 chars): " . substr($pay2sToken, 0, 50) . "...");
         
         // CURL request
         $ch = curl_init();
@@ -78,20 +90,37 @@ function fetchPay2STransactions() {
         $error = curl_error($ch);
         curl_close($ch);
         
+        writeLog("📡 HTTP Code: " . $httpCode);
+        writeLog("📥 Response (first 500 chars): " . substr($response, 0, 500));
+        
         if ($error) {
             writeLog("❌ CURL Error: " . $error);
             return [];
         }
         
         if ($httpCode !== 200) {
-            writeLog("❌ HTTP Error: " . $httpCode . " - " . substr($response, 0, 200));
+            writeLog("❌ HTTP Error: " . $httpCode . " - Full Response: " . $response);
             return [];
         }
         
         $data = json_decode($response, true);
         
-        if (!$data || !$data['status']) {
-            writeLog("❌ Pay2S API Error: " . ($data['messages'] ?? 'Unknown error'));
+        if (!$data) {
+            writeLog("❌ JSON Decode Error - Response: " . $response);
+            return [];
+        }
+        
+        if (!isset($data['status']) || !$data['status']) {
+            $errorMsg = isset($data['messages']) ? (is_array($data['messages']) ? json_encode($data['messages']) : $data['messages']) : 'Unknown error';
+            writeLog("❌ Pay2S API Error: " . $errorMsg);
+            writeLog("📋 Full API Response: " . json_encode($data));
+            
+            // Nếu lỗi là "No active plan or plan expired", báo rõ ràng
+            if (strpos(strtolower($errorMsg), 'no active plan') !== false || strpos(strtolower($errorMsg), 'plan expired') !== false) {
+                writeLog("⚠️ CẢNH BÁO: Tài khoản Pay2S chưa có gói dịch vụ đang hoạt động hoặc đã hết hạn!");
+                writeLog("⚠️ Vui lòng đăng nhập vào https://my.pay2s.vn để kích hoạt gói dịch vụ!");
+            }
+            
             return [];
         }
         
