@@ -2,8 +2,14 @@
 {include file='_header.tpl'}
 
 <!-- page content -->
-<div class="{if $system['fluid_design']}container-fluid{else}container{/if} mt20">
+<div class="{if $system['fluid_design']}container-fluid{else}container{/if} mt20 sg-offcanvas">
   <div class="row">
+
+    <!-- side panel (mobile only) -->
+    <div class="col-12 d-block d-md-none sg-offcanvas-sidebar">
+      {include file='_sidebar.tpl'}
+    </div>
+    <!-- side panel -->
 
     <!-- shop-ai sidebar (desktop only) -->
     <div class="col-md-4 col-lg-3 sg-offcanvas-sidebar js_sticky-sidebar shop-ai-sidebar d-none d-md-block">
@@ -22,6 +28,21 @@
                 {__("Nạp tiền")}
               </a>
             </li>
+            {* TEMPORARY HIDDEN - Rút tiền và Ngân hàng *}
+            {*
+            <li {if $view == "withdrawal"}class="active" {/if}>
+              <a href="{$system['system_url']}/shop-ai/withdrawal">
+                <i class="fa fa-money-bill-wave main-icon mr-2" style="width: 24px; height: 24px; font-size: 18px;"></i>
+                {__("Rút tiền")}
+              </a>
+            </li>
+            <li {if $view == "bank-accounts"}class="active" {/if}>
+              <a href="{$system['system_url']}/shop-ai/bank-accounts">
+                <i class="fa fa-university main-icon mr-2" style="width: 24px; height: 24px; font-size: 18px;"></i>
+                {__("Ngân hàng")}
+              </a>
+            </li>
+            *}
             <li {if $view == "transactions"}class="active" {/if}>
               <a href="{$system['system_url']}/shop-ai/transactions">
                 <i class="fa fa-history main-icon mr-2" style="width: 24px; height: 24px; font-size: 18px;"></i>
@@ -56,6 +77,19 @@
               {__("Nạp tiền")}
             </a>
           </li>
+          {* TEMPORARY HIDDEN - Rút tiền và Ngân hàng *}
+          {*
+          <li {if $view == "withdrawal"}class="active" {/if}>
+            <a href="{$system['system_url']}/shop-ai/withdrawal">
+              {__("Rút tiền")}
+            </a>
+          </li>
+          <li {if $view == "bank-accounts"}class="active" {/if}>
+            <a href="{$system['system_url']}/shop-ai/bank-accounts">
+              {__("Ngân hàng")}
+            </a>
+          </li>
+          *}
           <li {if $view == "transactions"}class="active" {/if}>
             <a href="{$system['system_url']}/shop-ai/transactions">
               {__("Giao dịch")}
@@ -2087,7 +2121,7 @@
                         <!-- Thông tin số dư và giá check -->
                         <div class="alert alert-info mb-3" style="border-radius: 8px;">
                           <div class="row">
-                            <div class="col-6">
+                            <div class="col-4">
                               <div class="text-center">
                                 <i class="fa fa-wallet fa-lg mb-2" style="color: #28a745;"></i>
                                 <div class="small text-muted">Số dư hiện tại</div>
@@ -2100,7 +2134,7 @@
                                 </div>
                               </div>
                             </div>
-                            <div class="col-6">
+                            <div class="col-4">
                               <div class="text-center">
                                 <i class="fa fa-tag fa-lg mb-2" style="color: #007bff;"></i>
                                 <div class="small text-muted">Giá check</div>
@@ -2109,6 +2143,19 @@
                                     {number_format($user_rank.check_price, 0, ',', '.')} VNĐ
                                   {else}
                                     30.000 VNĐ
+                                  {/if}
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-4">
+                              <div class="text-center">
+                                <i class="fa fa-chart-line fa-lg mb-2" style="color: #fd7e14;"></i>
+                                <div class="small text-muted">Tổng đã chi</div>
+                                <div class="h6 mb-0 font-weight-bold" style="color: #fd7e14;">
+                                  {if isset($user_rank) && isset($user_rank.user_total_spent)}
+                                    {number_format($user_rank.user_total_spent, 0, ',', '.')} VNĐ
+                                  {else}
+                                    0 VNĐ
                                   {/if}
                                 </div>
                               </div>
@@ -3302,6 +3349,14 @@
               </script>
             {/if}
             
+            {if $view == "bank-accounts"}
+              {include file='shop-ai-bank-accounts.tpl'}
+            {/if}
+            
+            {if $view == "withdrawal"}
+              {include file='shop-ai-withdrawal.tpl'}
+            {/if}
+            
             {if $view == "pricing"}
               <div class="card-header bg-transparent">
                 <strong>{__("Bảng Giá Check Số Điện Thoại Shopee")}</strong>
@@ -4217,7 +4272,6 @@ function generateVietQR(amount, content) {
     }
   }
 </style>
-
 
 {include file='_footer.tpl'}
 

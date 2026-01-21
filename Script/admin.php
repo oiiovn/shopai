@@ -470,6 +470,276 @@ try {
       }
       break;
 
+    case 'shop-ai':
+      // check admin permission
+      if ($user->_is_moderator) {
+        _error(__('System Message'), __("You don't have the right permission to access this"));
+      }
+
+      // page header
+      page_header($control_panel['title'] . " &rsaquo; " . __("Shop-AI Admin"));
+
+      // Get Shop-AI statistics
+      $shop_ai_stats = [];
+      
+      // === THỐNG KÊ CHECK SỐ ===
+      // Tổng số check thành công (tất cả thời gian)
+      $get_total_success = $db->query("SELECT COUNT(*) as count FROM phone_check_history WHERE status = 'success'") or _error('SQL_ERROR');
+      $shop_ai_stats['total_success'] = $get_total_success->fetch_assoc()['count'];
+      
+      // Tổng số đang check (pending)
+      $get_total_pending = $db->query("SELECT COUNT(*) as count FROM phone_check_history WHERE status = 'pending'") or _error('SQL_ERROR');
+      $shop_ai_stats['total_pending'] = $get_total_pending->fetch_assoc()['count'];
+      
+      // Tổng số thất bại (bao gồm cả 'failed' và 'not_found')
+      $get_total_failed = $db->query("SELECT COUNT(*) as count FROM phone_check_history WHERE status IN ('failed', 'not_found')") or _error('SQL_ERROR');
+      $shop_ai_stats['total_failed'] = $get_total_failed->fetch_assoc()['count'];
+      
+      // Số check thành công hôm nay - lấy theo ngày tạo thực tế
+      $get_today_success = $db->query("SELECT COUNT(*) as count FROM phone_check_history WHERE status = 'success' AND DATE(created_at) = CURDATE()") or _error('SQL_ERROR');
+      $shop_ai_stats['today_success'] = $get_today_success->fetch_assoc()['count'];
+      
+      // Số đang check hôm nay
+      $get_today_pending = $db->query("SELECT COUNT(*) as count FROM phone_check_history WHERE status = 'pending' AND DATE(created_at) = CURDATE()") or _error('SQL_ERROR');
+      $shop_ai_stats['today_pending'] = $get_today_pending->fetch_assoc()['count'];
+      
+      // Số thất bại hôm nay (bao gồm cả 'failed' và 'not_found')
+      $get_today_failed = $db->query("SELECT COUNT(*) as count FROM phone_check_history WHERE status IN ('failed', 'not_found') AND DATE(created_at) = CURDATE()") or _error('SQL_ERROR');
+      $shop_ai_stats['today_failed'] = $get_today_failed->fetch_assoc()['count'];
+      
+      // === THỐNG KÊ NGƯỜI DÙNG ===
+      // Tổng số người dùng đã sử dụng Shop-AI (đã check số ít nhất 1 lần)
+      $get_total_users = $db->query("SELECT COUNT(DISTINCT checker_user_id) as count FROM phone_check_history") or _error('SQL_ERROR');
+      $shop_ai_stats['total_users'] = $get_total_users->fetch_assoc()['count'];
+      
+      // Số người dùng check hôm nay
+      $get_today_users = $db->query("SELECT COUNT(DISTINCT checker_user_id) as count FROM phone_check_history WHERE DATE(created_at) = CURDATE()") or _error('SQL_ERROR');
+      $shop_ai_stats['today_users'] = $get_today_users->fetch_assoc()['count'];
+      
+      // Số người dùng đã nạp tiền
+      $get_users_recharged = $db->query("SELECT COUNT(DISTINCT user_id) as count FROM users_wallets_transactions WHERE type = 'recharge' AND description REGEXP 'RZ[A-Z0-9]+'") or _error('SQL_ERROR');
+      $shop_ai_stats['users_recharged'] = $get_users_recharged->fetch_assoc()['count'];
+      
+      // === THỐNG KÊ 7 NGÀY GẦN NHẤT ===
+      $chart_data = [];
+      for ($i = 6; $i >= 0; $i--) {
+        $date = date('Y-m-d', strtotime("-$i days"));
+        $day_name = date('d/m', strtotime("-$i days"));
+        
+        // Check thành công
+        $get_success = $db->query("SELECT COUNT(*) as count FROM phone_check_history WHERE status = 'success' AND DATE(created_at) = '$date'") or _error('SQL_ERROR');
+        $success_count = $get_success->fetch_assoc()['count'];
+        
+        // Check thất bại
+        $get_failed = $db->query("SELECT COUNT(*) as count FROM phone_check_history WHERE status IN ('failed', 'not_found') AND DATE(created_at) = '$date'") or _error('SQL_ERROR');
+        $failed_count = $get_failed->fetch_assoc()['count'];
+        
+        // Đang check
+        $get_pending = $db->query("SELECT COUNT(*) as count FROM phone_check_history WHERE status = 'pending' AND DATE(created_at) = '$date'") or _error('SQL_ERROR');
+        $pending_count = $get_pending->fetch_assoc()['count'];
+        
+        // Tiền nạp
+        $get_recharge = $db->query("SELECT COALESCE(SUM(amount), 0) as total FROM users_wallets_transactions WHERE type = 'recharge' AND description REGEXP 'RZ[A-Z0-9]+' AND DATE(time) = '$date'") or _error('SQL_ERROR');
+        $recharge_amount = $get_recharge->fetch_assoc()['total'];
+        
+        $chart_data[] = [
+          'date' => $date,
+          'day_name' => $day_name,
+          'success' => (int)$success_count,
+          'failed' => (int)$failed_count,
+          'pending' => (int)$pending_count,
+          'recharge' => (float)$recharge_amount
+        ];
+      }
+      $shop_ai_stats['chart_data'] = $chart_data;
+      
+      // === THỐNG KÊ NẠP TIỀN ===
+      // Tổng tiền nạp (tất cả thời gian) - từ bảng users_wallets_transactions
+      // Chỉ lấy giao dịch có type='recharge' và description chứa mã RZ (RZ + chữ số)
+      $get_total_recharge = $db->query("SELECT COALESCE(SUM(amount), 0) as total FROM users_wallets_transactions WHERE type = 'recharge' AND description REGEXP 'RZ[A-Z0-9]+'") or _error('SQL_ERROR');
+      $shop_ai_stats['total_recharge'] = $get_total_recharge->fetch_assoc()['total'];
+      
+      // Tổng tiền nạp hôm nay
+      $get_today_recharge = $db->query("SELECT COALESCE(SUM(amount), 0) as total FROM users_wallets_transactions WHERE type = 'recharge' AND description REGEXP 'RZ[A-Z0-9]+' AND DATE(time) = CURDATE()") or _error('SQL_ERROR');
+      $shop_ai_stats['today_recharge'] = $get_today_recharge->fetch_assoc()['total'];
+      
+      // Số lượng giao dịch nạp tiền (tất cả thời gian)
+      $get_total_recharge_count = $db->query("SELECT COUNT(*) as count FROM users_wallets_transactions WHERE type = 'recharge' AND description REGEXP 'RZ[A-Z0-9]+'") or _error('SQL_ERROR');
+      $shop_ai_stats['total_recharge_count'] = $get_total_recharge_count->fetch_assoc()['count'];
+      
+      // Số lượng giao dịch nạp tiền hôm nay
+      $get_today_recharge_count = $db->query("SELECT COUNT(*) as count FROM users_wallets_transactions WHERE type = 'recharge' AND description REGEXP 'RZ[A-Z0-9]+' AND DATE(time) = CURDATE()") or _error('SQL_ERROR');
+      $shop_ai_stats['today_recharge_count'] = $get_today_recharge_count->fetch_assoc()['count'];
+
+      // === THỐNG KÊ GOOGLE MAPS REVIEWS ===
+      // Tổng số chiến dịch (requests)
+      $get_total_gmr_campaigns = $db->query("SELECT COUNT(*) as count FROM google_maps_review_requests") or _error('SQL_ERROR');
+      $shop_ai_stats['gmr_total_campaigns'] = $get_total_gmr_campaigns->fetch_assoc()['count'];
+      
+      // Chiến dịch đang hoạt động
+      $get_active_gmr_campaigns = $db->query("SELECT COUNT(*) as count FROM google_maps_review_requests WHERE status = 'active'") or _error('SQL_ERROR');
+      $shop_ai_stats['gmr_active_campaigns'] = $get_active_gmr_campaigns->fetch_assoc()['count'];
+      
+      // Chiến dịch đã hoàn thành
+      $get_completed_gmr_campaigns = $db->query("SELECT COUNT(*) as count FROM google_maps_review_requests WHERE status = 'completed'") or _error('SQL_ERROR');
+      $shop_ai_stats['gmr_completed_campaigns'] = $get_completed_gmr_campaigns->fetch_assoc()['count'];
+      
+      // Chiến dịch hôm nay
+      $get_today_gmr_campaigns = $db->query("SELECT COUNT(*) as count FROM google_maps_review_requests WHERE DATE(created_at) = CURDATE()") or _error('SQL_ERROR');
+      $shop_ai_stats['gmr_today_campaigns'] = $get_today_gmr_campaigns->fetch_assoc()['count'];
+      
+      // Tổng số nhiệm vụ (sub-requests)
+      $get_total_gmr_tasks = $db->query("SELECT COUNT(*) as count FROM google_maps_review_sub_requests") or _error('SQL_ERROR');
+      $shop_ai_stats['gmr_total_tasks'] = $get_total_gmr_tasks->fetch_assoc()['count'];
+      
+      // Nhiệm vụ đã giao (assigned)
+      $get_assigned_gmr_tasks = $db->query("SELECT COUNT(*) as count FROM google_maps_review_sub_requests WHERE status = 'assigned'") or _error('SQL_ERROR');
+      $shop_ai_stats['gmr_assigned_tasks'] = $get_assigned_gmr_tasks->fetch_assoc()['count'];
+      
+      // Nhiệm vụ hoàn thành
+      $get_completed_gmr_tasks = $db->query("SELECT COUNT(*) as count FROM google_maps_review_sub_requests WHERE status = 'completed'") or _error('SQL_ERROR');
+      $shop_ai_stats['gmr_completed_tasks'] = $get_completed_gmr_tasks->fetch_assoc()['count'];
+      
+      // Nhiệm vụ đang xác minh
+      $get_verified_gmr_tasks = $db->query("SELECT COUNT(*) as count FROM google_maps_review_sub_requests WHERE status = 'verified'") or _error('SQL_ERROR');
+      $shop_ai_stats['gmr_verified_tasks'] = $get_verified_gmr_tasks->fetch_assoc()['count'];
+      
+      // Nhiệm vụ hết hạn
+      $get_expired_gmr_tasks = $db->query("SELECT COUNT(*) as count FROM google_maps_review_sub_requests WHERE status IN ('expired', 'timeout')") or _error('SQL_ERROR');
+      $shop_ai_stats['gmr_expired_tasks'] = $get_expired_gmr_tasks->fetch_assoc()['count'];
+      
+      // Nhiệm vụ hôm nay
+      $get_today_gmr_tasks = $db->query("SELECT COUNT(*) as count FROM google_maps_review_sub_requests WHERE DATE(created_at) = CURDATE()") or _error('SQL_ERROR');
+      $shop_ai_stats['gmr_today_tasks'] = $get_today_gmr_tasks->fetch_assoc()['count'];
+      
+      // Tổng tiền thưởng đã chi trả
+      $get_total_gmr_rewards = $db->query("SELECT COALESCE(SUM(reward_amount), 0) as total FROM google_maps_review_sub_requests WHERE status = 'completed'") or _error('SQL_ERROR');
+      $shop_ai_stats['gmr_total_rewards'] = $get_total_gmr_rewards->fetch_assoc()['total'];
+      
+      // Tiền thưởng đã chi trả hôm nay
+      $get_today_gmr_rewards = $db->query("SELECT COALESCE(SUM(reward_amount), 0) as total FROM google_maps_review_sub_requests WHERE status = 'completed' AND DATE(completed_at) = CURDATE()") or _error('SQL_ERROR');
+      $shop_ai_stats['gmr_today_rewards'] = $get_today_gmr_rewards->fetch_assoc()['total'];
+      
+      // Số người dùng đã tham gia Google Maps Reviews
+      $get_gmr_users = $db->query("SELECT COUNT(DISTINCT assigned_user_id) as count FROM google_maps_review_sub_requests WHERE assigned_user_id IS NOT NULL") or _error('SQL_ERROR');
+      $shop_ai_stats['gmr_total_users'] = $get_gmr_users->fetch_assoc()['count'];
+      
+      // Người dùng tham gia hôm nay
+      $get_gmr_today_users = $db->query("SELECT COUNT(DISTINCT assigned_user_id) as count FROM google_maps_review_sub_requests WHERE assigned_user_id IS NOT NULL AND DATE(assigned_at) = CURDATE()") or _error('SQL_ERROR');
+      $shop_ai_stats['gmr_today_users'] = $get_gmr_today_users->fetch_assoc()['count'];
+      
+      // Tổng ngân sách chiến dịch
+      $get_total_gmr_budget = $db->query("SELECT COALESCE(SUM(total_budget), 0) as total FROM google_maps_review_requests") or _error('SQL_ERROR');
+      $shop_ai_stats['gmr_total_budget'] = $get_total_gmr_budget->fetch_assoc()['total'];
+      
+      // === THỐNG KÊ 7 NGÀY GẦN NHẤT CHO GOOGLE MAPS ===
+      $gmr_chart_data = [];
+      for ($i = 6; $i >= 0; $i--) {
+        $date = date('Y-m-d', strtotime("-$i days"));
+        $day_name = date('d/m', strtotime("-$i days"));
+        
+        // Chiến dịch tạo mới
+        $get_campaigns = $db->query("SELECT COUNT(*) as count FROM google_maps_review_requests WHERE DATE(created_at) = '$date'") or _error('SQL_ERROR');
+        $campaigns_count = $get_campaigns->fetch_assoc()['count'];
+        
+        // Nhiệm vụ hoàn thành
+        $get_completed = $db->query("SELECT COUNT(*) as count FROM google_maps_review_sub_requests WHERE status = 'completed' AND DATE(completed_at) = '$date'") or _error('SQL_ERROR');
+        $completed_count = $get_completed->fetch_assoc()['count'];
+        
+        // Nhiệm vụ giao mới
+        $get_assigned = $db->query("SELECT COUNT(*) as count FROM google_maps_review_sub_requests WHERE DATE(assigned_at) = '$date'") or _error('SQL_ERROR');
+        $assigned_count = $get_assigned->fetch_assoc()['count'];
+        
+        // Tiền thưởng chi trả
+        $get_rewards = $db->query("SELECT COALESCE(SUM(reward_amount), 0) as total FROM google_maps_review_sub_requests WHERE status = 'completed' AND DATE(completed_at) = '$date'") or _error('SQL_ERROR');
+        $rewards_amount = $get_rewards->fetch_assoc()['total'];
+        
+        $gmr_chart_data[] = [
+          'date' => $date,
+          'day_name' => $day_name,
+          'campaigns' => (int)$campaigns_count,
+          'completed' => (int)$completed_count,
+          'assigned' => (int)$assigned_count,
+          'rewards' => (float)$rewards_amount
+        ];
+      }
+      $shop_ai_stats['gmr_chart_data'] = $gmr_chart_data;
+
+      // === THỐNG KÊ RÚT TIỀN (WITHDRAWAL) ===
+      // Tổng số yêu cầu rút tiền
+      $get_total_withdrawals = $db->query("SELECT COUNT(*) as count FROM qr_code_mapping WHERE transaction_type = 'withdrawal'") or _error('SQL_ERROR');
+      $shop_ai_stats['total_withdrawals'] = $get_total_withdrawals->fetch_assoc()['count'];
+      
+      // Đang chờ xử lý
+      $get_pending_withdrawals_count = $db->query("SELECT COUNT(*) as count FROM qr_code_mapping WHERE transaction_type = 'withdrawal' AND status = 'active' AND expires_at > NOW()") or _error('SQL_ERROR');
+      $shop_ai_stats['pending_withdrawals_count'] = $get_pending_withdrawals_count->fetch_assoc()['count'];
+      
+      // Đã hoàn thành
+      $get_completed_withdrawals = $db->query("SELECT COUNT(*) as count FROM qr_code_mapping WHERE transaction_type = 'withdrawal' AND status = 'used'") or _error('SQL_ERROR');
+      $shop_ai_stats['completed_withdrawals'] = $get_completed_withdrawals->fetch_assoc()['count'];
+      
+      // Đã hủy/hết hạn
+      $get_cancelled_withdrawals = $db->query("SELECT COUNT(*) as count FROM qr_code_mapping WHERE transaction_type = 'withdrawal' AND status IN ('cancelled', 'expired', 'failed')") or _error('SQL_ERROR');
+      $shop_ai_stats['cancelled_withdrawals'] = $get_cancelled_withdrawals->fetch_assoc()['count'];
+      
+      // Tổng tiền đã rút thành công
+      $get_total_withdrawn = $db->query("SELECT COALESCE(SUM(amount - fee), 0) as total FROM qr_code_mapping WHERE transaction_type = 'withdrawal' AND status = 'used'") or _error('SQL_ERROR');
+      $shop_ai_stats['total_withdrawn'] = $get_total_withdrawn->fetch_assoc()['total'];
+      
+      // Tổng phí rút tiền
+      $get_total_withdrawal_fees = $db->query("SELECT COALESCE(SUM(fee), 0) as total FROM qr_code_mapping WHERE transaction_type = 'withdrawal' AND status = 'used'") or _error('SQL_ERROR');
+      $shop_ai_stats['total_withdrawal_fees'] = $get_total_withdrawal_fees->fetch_assoc()['total'];
+      
+      // Rút tiền hôm nay
+      $get_today_withdrawals = $db->query("SELECT COUNT(*) as count, COALESCE(SUM(amount - fee), 0) as total FROM qr_code_mapping WHERE transaction_type = 'withdrawal' AND status = 'used' AND DATE(updated_at) = CURDATE()") or _error('SQL_ERROR');
+      $today_withdrawal_data = $get_today_withdrawals->fetch_assoc();
+      $shop_ai_stats['today_withdrawals_count'] = $today_withdrawal_data['count'];
+      $shop_ai_stats['today_withdrawals_amount'] = $today_withdrawal_data['total'];
+      
+      // === DANH SÁCH YÊU CẦU RÚT TIỀN ĐANG CHỜ ===
+      $pending_withdrawals = [];
+      $get_pending = $db->query("
+          SELECT 
+              qm.*,
+              (qm.amount - qm.fee) as actual_amount,
+              u.user_id,
+              u.user_name,
+              u.user_firstname,
+              u.user_lastname,
+              u.user_picture,
+              u.user_gender,
+              u.user_verified,
+              TIMESTAMPDIFF(SECOND, NOW(), qm.expires_at) as time_left_seconds
+          FROM qr_code_mapping qm
+          LEFT JOIN users u ON qm.user_id = u.user_id
+          WHERE qm.transaction_type = 'withdrawal' 
+          AND qm.status = 'active' 
+          AND qm.expires_at > NOW()
+          ORDER BY qm.created_at ASC
+      ") or _error('SQL_ERROR');
+      
+      while ($withdrawal = $get_pending->fetch_assoc()) {
+          // Format time left
+          $timeLeft = intval($withdrawal['time_left_seconds']);
+          $minutes = floor($timeLeft / 60);
+          $seconds = $timeLeft % 60;
+          $withdrawal['time_left_formatted'] = sprintf("%02d:%02d", $minutes, $seconds);
+          
+          // Get user picture
+          $withdrawal['user_picture'] = get_picture($withdrawal['user_picture'], $withdrawal['user_gender']);
+          
+          // Add urgency flag
+          $withdrawal['is_urgent'] = ($timeLeft < 300); // < 5 minutes
+          
+          $pending_withdrawals[] = $withdrawal;
+      }
+
+      // assign variables
+      $smarty->assign('shop_ai_stats', $shop_ai_stats);
+      $smarty->assign('pending_withdrawals', $pending_withdrawals);
+      $smarty->assign('pending_withdrawals_count', count($pending_withdrawals));
+      break;
+
     case 'users':
       // check admin|moderator permission
       if ($user->_is_moderator) {
@@ -1158,7 +1428,7 @@ try {
           page_header($control_panel['title'] . " &rsaquo; " . __("Pages") . " &rsaquo; " . "Loại hình kinh doanh");
 
           // get all business types with stats
-          $get_types = $db->query("SELECT pbt.*, COUNT(DISTINCT p.page_id) as pages_count, COUNT(DISTINCT pbtf.feature_id) as features_count FROM page_business_types pbt LEFT JOIN pages p ON pbt.business_type_id = p.page_business_type_id LEFT JOIN page_business_type_features pbtf ON pbt.business_type_id = pbtf.business_type_id GROUP BY pbt.business_type_id ORDER BY pbt.display_order ASC") or _error('SQL_ERROR');
+          $get_types = $db->query("SELECT pbt.business_type_id, pbt.business_type_name, pbt.business_type_description, pbt.display_order, pbt.is_active, pbt.created_at, pbt.updated_at, COUNT(DISTINCT p.page_id) as pages_count, COUNT(DISTINCT pbtf.feature_id) as features_count FROM page_business_types pbt LEFT JOIN pages p ON pbt.business_type_id = p.page_business_type_id LEFT JOIN page_business_type_features pbtf ON pbt.business_type_id = pbtf.business_type_id GROUP BY pbt.business_type_id, pbt.business_type_name, pbt.business_type_description, pbt.display_order, pbt.is_active, pbt.created_at, pbt.updated_at ORDER BY pbt.display_order ASC") or _error('SQL_ERROR');
           
           $business_types = [];
           if ($get_types->num_rows > 0) {

@@ -119,6 +119,46 @@ try {
         $posts = ($selected_country) ? $user->get_posts(['country' => $selected_country['country_id']]) : $user->get_posts();
         /* assign variables */
         $smarty->assign('posts', $posts);
+
+        // get available review tasks (hiển thị 1 nhiệm vụ con từ mỗi chiến dịch mẹ khác nhau)
+        // Loại bỏ các chiến dịch mà user đã tạo và đã nhận
+        $available_tasks = array();
+        $get_available_tasks = $db->query("
+            SELECT gmsr.sub_request_id, gmsr.parent_request_id, gmsr.assigned_user_id, gmsr.status, gmsr.created_at, gmsr.expires_at, gmsr.completed_at, gmsr.verified_at, gmsr.reward_amount, gmsr.proof_data, gmsr.generated_review_content, gmsr.verification_notes, gmsr.updated_at,
+                   gmr.place_name, gmr.place_address, gmr.place_url, gmr.expires_at as parent_expires_at,
+                   u.user_firstname, u.user_lastname, u.user_picture, u.user_verified
+            FROM google_maps_review_sub_requests gmsr
+            LEFT JOIN google_maps_review_requests gmr ON gmsr.parent_request_id = gmr.request_id
+            LEFT JOIN users u ON gmr.requester_user_id = u.user_id
+            WHERE gmsr.status = 'available' 
+            AND gmsr.expires_at > CONVERT_TZ(NOW(), '+00:00', '+07:00')
+            AND gmr.status = 'active'
+            AND gmr.requester_user_id != '{$user->_data['user_id']}'
+            AND gmr.request_id NOT IN (
+                SELECT DISTINCT parent_request_id 
+                FROM google_maps_review_sub_requests 
+                WHERE assigned_user_id = '{$user->_data['user_id']}' 
+                AND status IN ('assigned', 'completed')
+            )
+            AND NOT EXISTS (
+                SELECT 1 FROM google_maps_user_requester_tracking gmt
+                WHERE gmt.user_id = '{$user->_data['user_id']}'
+                AND gmt.requester_user_id = gmr.requester_user_id
+            )
+            GROUP BY gmsr.sub_request_id, gmsr.parent_request_id, gmsr.assigned_user_id, gmsr.status, gmsr.created_at, gmsr.expires_at, gmsr.completed_at, gmsr.verified_at, gmsr.reward_amount, gmsr.proof_data, gmsr.generated_review_content, gmsr.verification_notes, gmsr.updated_at, gmr.place_name, gmr.place_address, gmr.place_url, gmr.expires_at, u.user_firstname, u.user_lastname, u.user_picture, u.user_verified
+            ORDER BY gmsr.created_at DESC
+        ");
+        
+        error_log("Available tasks query result: " . $get_available_tasks->num_rows . " rows");
+        
+        if ($get_available_tasks->num_rows > 0) {
+            while ($task = $get_available_tasks->fetch_assoc()) {
+                $available_tasks[] = $task;
+                error_log("Task found: " . $task['place_name']);
+            }
+        }
+        /* assign variables */
+        $smarty->assign('available_tasks', $available_tasks);
         break;
 
       case 'popular':

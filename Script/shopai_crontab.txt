@@ -1,0 +1,20 @@
+# Shop-AI Cron Jobs Configuration
+# Các cron job tự động cho hệ thống Shop-AI
+
+# 1. Shop-AI Recharge Checker - Chạy mỗi phút để kiểm tra giao dịch Pay2S
+* * * * * /opt/homebrew/opt/php@8.2/bin/php /Applications/XAMPP/xamppfiles/htdocs/shopai/Script/cron-shop-ai-recharge-checker.php >> /Applications/XAMPP/xamppfiles/htdocs/shopai/Script/logs/cron-shop-ai-recharge.log 2>&1
+
+# 2. Bank Transactions Checker - Chạy mỗi 5 phút để kiểm tra giao dịch ngân hàng
+*/5 * * * * /opt/homebrew/opt/php@8.2/bin/php /Applications/XAMPP/xamppfiles/htdocs/shopai/Script/cron-bank-transactions.php >> /Applications/XAMPP/xamppfiles/htdocs/shopai/Script/logs/cron-bank-transactions.log 2>&1
+
+# 3. Pay2S Integration - Chạy mỗi 10 phút để đồng bộ dữ liệu Pay2S
+*/10 * * * * /opt/homebrew/opt/php@8.2/bin/php /Applications/XAMPP/xamppfiles/htdocs/shopai/Script/cron-pay2s-integration.php >> /Applications/XAMPP/xamppfiles/htdocs/shopai/Script/logs/cron-pay2s.log 2>&1
+
+# 4. Pay2S Real API - Chạy mỗi 15 phút để xử lý giao dịch thật
+*/15 * * * * /opt/homebrew/opt/php@8.2/bin/php /Applications/XAMPP/xamppfiles/htdocs/shopai/Script/cron-pay2s-real.php >> /Applications/XAMPP/xamppfiles/htdocs/shopai/Script/logs/cron-pay2s-real.log 2>&1
+
+# 5. Cleanup logs - Chạy mỗi ngày lúc 2:00 AM để dọn dẹp log cũ
+0 2 * * * find /Applications/XAMPP/xamppfiles/htdocs/shopai/Script/logs -name "*.log" -mtime +7 -delete
+
+# 6. Database backup - Chạy mỗi ngày lúc 3:00 AM để backup database
+0 3 * * * /Applications/XAMPP/xamppfiles/bin/mysqldump -u root db_mxh > /Applications/XAMPP/xamppfiles/htdocs/shopai/Script/backups/db_mxh_$(date +\%Y\%m\%d).sql

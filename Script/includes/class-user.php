@@ -19364,8 +19364,8 @@ class User
       if (!in_array($args['birth_day'], range(1, 31))) {
         throw new ValidationException(__("Please select a valid birth day (1-31)"));
       }
-      if (!in_array($args['birth_year'], range(1905, 2017))) {
-        throw new ValidationException(__("Please select a valid birth year (1905-2017)"));
+      if (!in_array($args['birth_year'], range(1985, 2015))) {
+        throw new ValidationException(__("Please select a valid birth year (1985-2015)"));
       }
       if (date("Y") - $args['birth_year'] < $system['minimum_age']) {
         throw new ValidationException(__("Sorry, You must be") . " " . $system['minimum_age'] . " " . __("years old to register"));
@@ -19674,7 +19674,7 @@ class User
   {
     global $db, $system;
     if ($system['max_accounts'] > 0) {
-      $check = $db->query(sprintf("SELECT user_ip, COUNT(*) FROM users_sessions WHERE user_ip = %s GROUP BY user_id", secure(get_user_ip()))) or _error('SQL_ERROR_THROWEN');
+      $check = $db->query(sprintf("SELECT user_id, COUNT(*) FROM users_sessions WHERE user_ip = %s GROUP BY user_id", secure(get_user_ip()))) or _error('SQL_ERROR_THROWEN');
       if ($check->num_rows >= $system['max_accounts']) {
         throw new ValidationException(__("You have reached the maximum number of account for your IP"));
       }

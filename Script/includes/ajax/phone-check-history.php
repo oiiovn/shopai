@@ -106,6 +106,15 @@ function deductWalletBalance($user_id, $amount, $description) {
         ");
         $stmt->execute([$user_id, $amount, $description]);
         
+        // Update user rank immediately after Shop-AI transaction
+        try {
+            require_once '../../includes/class-rank.php';
+            $rankSystem = new RankSystem();
+            $rankSystem->updateUserRank($user_id);
+        } catch (Exception $e) {
+            error_log("Rank update error for user $user_id: " . $e->getMessage());
+        }
+        
         $pdo->commit();
         
         return [
@@ -242,7 +251,12 @@ function updatePhoneCheckHistory($id, $phone, $status, $result_message) {
 // Function to call checkso.pro API with real response waiting
 function callChecksoAPI($username, $phone = '99') {
     $api_token = '1770dd4e380567afd3668f8a9be69c21c587e08da9c5b75b5269174291ec7076';
-    $endpoint = 'http://checkso.pro/search_users_advanced';
+    
+    // Try multiple endpoints (HTTP and HTTPS)
+    $endpoints = [
+        'http://checkso.pro/search_users_advanced',
+        'https://checkso.pro/search_users_advanced'
+    ];
     
     $data = [
         'api' => $api_token,
@@ -250,63 +264,61 @@ function callChecksoAPI($username, $phone = '99') {
         'phone' => $phone
     ];
     
-    // Initialize cURL with proper settings for real API waiting
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $endpoint);
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-    curl_setopt($ch, CURLOPT_HTTPHEADER, [
-        'Content-Type: application/json',
-        'Content-Length: ' . strlen(json_encode($data)),
-        'User-Agent: Shop-AI/1.0'
-    ]);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 300); // 5 minutes timeout - wait as long as needed
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30); // Connection timeout
-    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    $last_error = '';
     
-    // Execute the request and wait for real response
-    $response = curl_exec($ch);
-    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    $curl_error = curl_error($ch);
-    curl_close($ch);
-    
-    // Handle cURL errors
-    if ($response === false || !empty($curl_error)) {
-        return [
-            'success' => false,
-            'message' => 'Lỗi kết nối API: ' . $curl_error,
-            'data' => null
-        ];
+    // Try each endpoint
+    foreach ($endpoints as $endpoint) {
+        // Initialize cURL with proper settings
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $endpoint);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',
+            'Accept: application/json',
+            'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        ]);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 60); // 60 seconds timeout
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15); // Connection timeout
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_ENCODING, ''); // Accept all encodings
+        
+        // Execute the request
+        $response = curl_exec($ch);
+        $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curl_error = curl_error($ch);
+        $curl_errno = curl_errno($ch);
+        curl_close($ch);
+        
+        // Log attempt
+        error_log("CheckSo API attempt - Endpoint: $endpoint, HTTP: $http_code, Error: $curl_error");
+        
+        // If we got a response, try to parse it
+        if ($response !== false && !empty($response)) {
+            $result = json_decode($response, true);
+            
+            // If valid JSON and has status field, return result
+            if ($result && isset($result['status'])) {
+                return [
+                    'success' => $result['status'] == 1,
+                    'message' => $result['status'] == 1 ? 'Check thành công' : 'Không tìm thấy',
+                    'data' => $result,
+                    'endpoint_used' => $endpoint
+                ];
+            }
+        }
+        
+        $last_error = !empty($curl_error) ? $curl_error : "HTTP $http_code - No valid response";
     }
     
-    // Handle HTTP errors
-    if ($http_code !== 200) {
-        return [
-            'success' => false,
-            'message' => 'API trả về lỗi HTTP: ' . $http_code,
-            'data' => null
-        ];
-    }
-    
-    // Parse JSON response
-    $result = json_decode($response, true);
-    
-    if (!$result || !isset($result['status'])) {
-        return [
-            'success' => false,
-            'message' => 'Phản hồi API không hợp lệ',
-            'data' => null
-        ];
-    }
-    
-    // Return real API response
+    // All endpoints failed
     return [
-        'success' => $result['status'] == 1,
-        'message' => $result['status'] == 1 ? 'Check thành công' : 'Không tìm thấy thông tin',
-        'data' => $result
+        'success' => false,
+        'message' => 'API checkso.pro không phản hồi. Vui lòng thử lại sau. (' . $last_error . ')',
+        'data' => null
     ];
 }
 
