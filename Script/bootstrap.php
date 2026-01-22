@@ -86,6 +86,9 @@ $smarty = init_smarty();
 
 // get user
 require_once(ABSPATH . 'includes/class-user.php');
+
+// fake engagement
+require_once(ABSPATH . 'includes/class-fake-engagement.php');
 try {
   $user = new User();
 } catch (Exception $e) {

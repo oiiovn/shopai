@@ -6044,6 +6044,13 @@ class User
     /* points balance */
     $this->points_balance("add", $this->_data['user_id'], "post", $post['post_id']);
 
+    /* fake engagement - đánh dấu bài viết admin (fake reactions sẽ tăng dần theo views) */
+    if (isset($system['fake_engagement_enabled']) && $system['fake_engagement_enabled']) {
+      if (FakeEngagement::is_admin($this->_data['user_id'])) {
+        FakeEngagement::mark_admin_post($post['post_id'], $this->_data['user_id']);
+      }
+    }
+
     // return
     return $post;
   }
@@ -6907,6 +6914,15 @@ class User
         $db->query(sprintf("UPDATE posts SET views = views + 1 WHERE post_id = %s", secure($post['post_id'])));
         /* points balance */
         $this->points_balance("add", $this->_data['user_id'], "post_view", $post['post_id']);
+        
+        /* fake engagement - tăng dần theo views cho bài viết của admin */
+        if (isset($system['fake_engagement_enabled']) && $system['fake_engagement_enabled']) {
+          // Kiểm tra bài viết có được đánh dấu fake engagement không
+          if (FakeEngagement::is_marked_post($post['post_id'])) {
+            $new_views = $post['views'] + 1;
+            FakeEngagement::update_fake_reactions_by_views($post['post_id'], $post['author_id'], $new_views);
+          }
+        }
       }
     }
 
@@ -6956,8 +6972,68 @@ class User
     if ($post_id != null) {
       /* where statement */
       $where_statement = ($reaction_type == "all") ? "" : sprintf("AND posts_reactions.reaction = %s", secure($reaction_type));
-      /* get users who like the post */
+      
+      /* get fake engagement status */
+      $fake_enabled = isset($system['fake_engagement_enabled']) && $system['fake_engagement_enabled'];
+      $viewer_id = $this->_logged_in ? $this->_data['user_id'] : 0;
+      
+      /* get ALL real user IDs first (to exclude from fake) */
+      $all_real_user_ids = [];
+      if ($fake_enabled) {
+        $get_all_real = $db->query(sprintf('SELECT user_id FROM posts_reactions WHERE post_id = %s', secure($post_id, 'int')));
+        while ($row = $get_all_real->fetch_assoc()) {
+          $all_real_user_ids[] = (int)$row['user_id'];
+        }
+      }
+      
+      /* get users who like the post (real reactions) with pagination */
       $get_users = $db->query(sprintf('SELECT posts_reactions.reaction, users.user_id, users.user_name, users.user_firstname, users.user_lastname, users.user_gender, users.user_picture, users.user_subscribed, users.user_verified FROM posts_reactions INNER JOIN users ON (posts_reactions.user_id = users.user_id) WHERE posts_reactions.post_id = %s ' . $where_statement . ' LIMIT %s, %s', secure($post_id, 'int'), secure($offset, 'int', false), secure($system['max_results'], 'int', false))) or _error('SQL_ERROR_THROWEN');
+      
+      /* collect real reactions */
+      if ($get_users->num_rows > 0) {
+        while ($_user = $get_users->fetch_assoc()) {
+          $_user['user_picture'] = get_picture($_user['user_picture'], $_user['user_gender']);
+          $_user['connection'] = $this->connection($_user['user_id']);
+          $_user['mutual_friends_count'] = $this->get_mutual_friends_count($_user['user_id']);
+          $users[] = $_user;
+        }
+      }
+      
+      /* get fake reactions (exclude viewer and ALL real reactors) */
+      if ($fake_enabled) {
+        $exclude_ids = array_merge($all_real_user_ids, [$viewer_id]);
+        $exclude_ids = array_unique(array_filter($exclude_ids));
+        $exclude_clause = !empty($exclude_ids) ? sprintf("AND pfr.user_id NOT IN (%s)", implode(',', array_map('intval', $exclude_ids))) : "";
+        $fake_where = ($reaction_type == "all") ? "" : sprintf("AND pfr.reaction = %s", secure($reaction_type));
+        
+        /* calculate fake offset based on real reactions count */
+        $total_real = count($all_real_user_ids);
+        $fake_offset = max(0, $offset - $total_real);
+        
+        $remaining = $system['max_results'] - count($users);
+        if ($remaining > 0 && $offset >= $total_real - $system['max_results']) {
+          $get_fake = $db->query(sprintf(
+            'SELECT pfr.reaction, u.user_id, u.user_name, u.user_firstname, u.user_lastname, u.user_gender, u.user_picture, u.user_subscribed, u.user_verified 
+             FROM posts_fake_reactions pfr 
+             INNER JOIN users u ON pfr.user_id = u.user_id 
+             WHERE pfr.post_id = %s AND pfr.user_id > 0 %s %s 
+             LIMIT %s, %s',
+            secure($post_id, 'int'), $fake_where, $exclude_clause, 
+            secure($fake_offset, 'int', false), secure($remaining, 'int', false)
+          ));
+          
+          if ($get_fake && $get_fake->num_rows > 0) {
+            while ($_user = $get_fake->fetch_assoc()) {
+              $_user['user_picture'] = get_picture($_user['user_picture'], $_user['user_gender']);
+              $_user['connection'] = $this->connection($_user['user_id']);
+              $_user['mutual_friends_count'] = $this->get_mutual_friends_count($_user['user_id']);
+              $users[] = $_user;
+            }
+          }
+        }
+      }
+      
+      return $users;
     } elseif ($photo_id != null) {
       /* where statement */
       $where_statement = ($reaction_type == "all") ? "" : sprintf("AND posts_photos_reactions.reaction = %s", secure($reaction_type));
@@ -8515,11 +8591,17 @@ class User
       /* points balance */
       $this->points_balance("delete", $this->_data['user_id'], "posts_reactions");
     }
+    /* remove from fake reactions if user is in fake list (before real react) */
+    $was_fake_reactor = FakeEngagement::is_fake_reactor($post_id, $this->_data['user_id']);
+    if ($was_fake_reactor) {
+      FakeEngagement::remove_from_fake($post_id, $this->_data['user_id']);
+    }
+    
     $db->query(sprintf("INSERT INTO posts_reactions (user_id, post_id, reaction, reaction_time) VALUES (%s, %s, %s, %s)", secure($this->_data['user_id'], 'int'), secure($post_id, 'int'), secure($reaction), secure($date))) or _error('SQL_ERROR_THROWEN');
     $reaction_id = $db->insert_id;
-    /* update post reaction counter */
-    $reaction_field = "reaction_" . $reaction . "_count";
-    $db->query(sprintf("UPDATE posts SET $reaction_field = $reaction_field + 1 WHERE post_id = %s", secure($post_id, 'int'))) or _error('SQL_ERROR_THROWEN');
+    
+    /* update post reaction counter - cập nhật lại tổng (real + fake) */
+    FakeEngagement::update_post_reaction_counts($post_id);
     /* post notification */
     $this->post_notification(array('to_user_id' => $post['author_id'], 'action' => 'react_' . $reaction, 'node_type' => 'post', 'node_url' => $post_id));
     /* points balance */
@@ -8553,9 +8635,8 @@ class User
     /* unreact the post */
     if ($post['i_react']) {
       $db->query(sprintf("DELETE FROM posts_reactions WHERE user_id = %s AND post_id = %s", secure($this->_data['user_id'], 'int'), secure($post_id, 'int'))) or _error('SQL_ERROR_THROWEN');
-      /* update post reaction counter */
-      $reaction_field = "reaction_" . $reaction . "_count";
-      $db->query(sprintf("UPDATE posts SET $reaction_field = IF($reaction_field=0,0,$reaction_field-1) WHERE post_id = %s", secure($post_id, 'int'))) or _error('SQL_ERROR_THROWEN');
+      /* update post reaction counter - cập nhật lại tổng (real + fake) */
+      FakeEngagement::update_post_reaction_counts($post_id);
       /* delete notification */
       $this->delete_notification($post['author_id'], 'react_' . $reaction, 'post', $post_id);
       /* points balance */
