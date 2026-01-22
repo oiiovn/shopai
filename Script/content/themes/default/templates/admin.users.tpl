@@ -372,6 +372,11 @@
                   <span class="input-group-text"><i class="fas fa-envelope"></i></span>
                   <input type="text" class="form-control" name="user_email" value="{$data['user_email']}">
                 </div>
+                {if $data['user_phone']}
+                  <div class="form-text mt-2">
+                    <i class="fas fa-phone mr5"></i><strong>{__("Phone Number")}:</strong> {$data['user_phone']}
+                  </div>
+                {/if}
               </div>
             </div>
 

@@ -164,7 +164,7 @@
       </li>
       <li {if $page == "otp-rental"}class="active" {/if}>
         <a href="{$system['system_url']}/otp-rental?view=rent">
-          {include file='__svg_icons.tpl' icon="sim" class="main-icon mr10" width="24px" height="24px"}
+          <img src="https://img.icons8.com/ios/50/5e72e4/sim-card.png" alt="sim-card" class="main-icon mr10" width="24" height="24">
           Thuê OTP
         </a>
       </li>
