@@ -1,0 +1,2252 @@
+AWSTATS DATA FILE 7.9 (build 20230108)
+# If you remove this file, all statistics for date 202510 will be lost/reset.
+# Last config file used to build this data file was /home/sho73359/domains/shop-ai.vn/awstats/.data/awstats.shop-ai.vn.conf.
+
+# Position (offset in bytes) in this file for beginning of each section for
+# direct I/O access. If you made changes somewhere in this file, you should
+# also remove completely the MAP section (AWStats will rewrite it at next
+# update).
+BEGIN_MAP 30
+POS_GENERAL 2132                
+POS_TIME 2824                
+POS_VISITOR 23943               
+POS_DAY 59082               
+POS_DOMAIN 3977                
+POS_LOGIN 4218                
+POS_ROBOT 4373                
+POS_WORMS 5763                
+POS_EMAILSENDER 5894                
+POS_EMAILRECEIVER 6037                
+POS_SESSION 60174               
+POS_FILESIZE 81824               
+POS_SIDER 60391               
+POS_FILETYPES 6172                
+POS_DOWNLOADS 6535                
+POS_OS 6643                
+POS_BROWSER 7080                
+POS_SCREENSIZE 9366                
+POS_UNKNOWNREFERER 9440                
+POS_UNKNOWNREFERERBROWSER 10081               
+POS_ORIGIN 10756               
+POS_SEREFERRALS 10912               
+POS_PAGEREFS 11118               
+POS_SEARCHWORDS 11464               
+POS_KEYWORDS 11616               
+POS_MISC 2487                
+POS_ERRORS 11675               
+POS_CLUSTER 4074                
+POS_SIDER_403 12000               
+POS_SIDER_400 11844               
+POS_SIDER_404 12737               
+END_MAP
+
+# LastLine    = Date of last record processed - Last record line number in last log - Last record offset in last log - Last record signature value
+# FirstTime   = Date of first visit for history file
+# LastTime    = Date of last visit for history file
+# LastUpdate  = Date of last update - Nb of parsed records - Nb of parsed old records - Nb of parsed new records - Nb of parsed corrupted - Nb of parsed dropped
+# TotalVisits = Number of visits
+# TotalUnique = Number of unique visitors
+# MonthHostsKnown   = Number of hosts known
+# MonthHostsUnKnown = Number of hosts unknown
+BEGIN_GENERAL 8
+LastLine 20251101000002 44965 11114763 15641690175354
+FirstTime 20251001000005
+LastTime 20251031235958
+LastUpdate 20251101004257 44965 0 44964 0 0
+TotalVisits 1506                
+TotalUnique 803                 
+MonthHostsKnown 0                   
+MonthHostsUnknown 833                 
+END_GENERAL
+
+# Misc ID - Pages - Hits - Bandwidth
+BEGIN_MISC 10
+JavascriptDisabled 0 0 0
+TotalMisc 0 0 0
+FlashSupport 0 0 0
+JavaEnabled 0 0 0
+RealPlayerSupport 0 0 0
+DirectorSupport 0 0 0
+WindowsMediaPlayerSupport 0 0 0
+QuickTimeSupport 0 0 0
+PDFSupport 0 0 0
+AddToFavourites 0 45 0
+END_MISC
+
+# Hour - Pages - Hits - Bandwidth - Not viewed Pages - Not viewed Hits - Not viewed Bandwidth
+BEGIN_TIME 24
+0 32718 33470 57897480 585 809 28576650
+1 40599 41528 88519407 677 1000 31186849
+2 38367 38665 21108837 483 665 21758931
+3 35869 35996 20103209 360 502 16637835
+4 34871 35136 20282732 584 821 25639320
+5 32802 33073 20201028 427 592 21560044
+6 32335 32743 50484484 350 474 14193178
+7 34820 36544 108343464 1266 1871 75535225
+8 41809 45169 210000775 1301 2254 72080801
+9 47696 50776 236597135 1561 2560 59300345
+10 65669 68212 276814189 1819 2829 67002044
+11 72299 75104 276586967 1949 3006 60571075
+12 76127 78776 300403719 2111 3314 102356780
+13 72867 76423 322412175 2520 3805 87000421
+14 57004 60218 336907427 2299 3360 76084717
+15 56558 59113 240789195 1822 2670 48681062
+16 56366 59112 320666745 2353 3377 64618284
+17 55601 58548 205617117 2305 3349 69506046
+18 49455 51144 117802120 1675 2307 34777461
+19 44294 47625 221299718 1493 2285 50633562
+20 39953 41408 142529406 1208 2132 106717547
+21 39748 42087 126626252 752 1304 35560441
+22 42614 44291 169839731 1156 2043 42726057
+23 38882 40365 122661518 856 1447 45563358
+END_TIME
+
+# Domain - Pages - Hits - Bandwidth
+# The 10 first Pages must be first (order not required for others)
+BEGIN_DOMAIN 1
+ip 1139323 1185526 4014494830
+END_DOMAIN
+
+# Cluster ID - Pages - Hits - Bandwidth
+BEGIN_CLUSTER 0
+END_CLUSTER
+
+# Login - Pages - Hits - Bandwidth - Last visit
+# The 10 first Pages must be first (order not required for others)
+BEGIN_LOGIN 0
+END_LOGIN
+
+# Robot ID - Hits - Bandwidth - Last visit - Hits on robots.txt
+# The 10 first Hits must be first (order not required for others)
+BEGIN_ROBOT 32
+Googlebot/ 5476 116441432 20251031200740 32
+facebook 832 130199666 20251031211843 0
+Mediapartners-Google 709 31693101 20251024052030 0
+facebookexternalhit/ 658 117074725 20251031171128 100
+bingbot/ 525 25172748 20251031231307 30
+cursor 358 7752692 20251013172237 0
+Googlebot\-Image/ 279 89126073 20251031200827 0
+MJ12bot/ 138 4903671 20251031140923 10
+feed 123 5295609 20251023210057 0
+dataprovider\.com 46 5011280 20251004000934 2
+Go\-http\-client/ 2 297497 20251011205951 0
+checker 12 401251 20251013003118 0
+Lightspeed 35 12374171 20251029144332 0
+ning 7 1256132 20251028122137 0
+unknown 17 11865 20251031192231 17
+curl 5 0 20251003095338 0
+TelegramBot 3 693095 20251002014442 0
+CFNetwork 14 1105960 20251028211103 0
+Wget/ 4 294881 20251003095338 0
+netcraft 2 241912 20251013071427 0
+bot[\s_+:,\.\;\/\\-] 37 138803 20251031221422 34
+BW/ 12 259971 20251018191928 1
+nutch 2 68461 20251030094054 1
+robot 1 149 20251027100556 1
+python 5 3555 20251016134140 5
+Dalvik/ 32 4722357 20251011102953 0
+[\s_+:,\.\;\/\\-]bot 14 734737 20251031195925 0
+AdsBot\-Google[\x20]\( 13 152710 20251023065939 0
+no_user_agent 10 2104354 20251027110008 0
+coccoc 15 149121 20251031193659 12
+Adsbot 1 54861 20251023053416 0
+(firefox/)([0-9]\.|[0-1][0]\.) 1 67838 20251028004343 0
+END_ROBOT
+
+# Worm ID - Hits - Bandwidth - Last visit
+# The 5 first Hits must be first (order not required for others)
+BEGIN_WORMS 0
+END_WORMS
+
+# EMail - Hits - Bandwidth - Last visit
+# The 20 first Hits must be first (order not required for others)
+BEGIN_EMAILSENDER 0
+END_EMAILSENDER
+
+# EMail - Hits - Bandwidth - Last visit
+# The 20 first hits must be first (order not required for others)
+BEGIN_EMAILRECEIVER 0
+END_EMAILRECEIVER
+
+# Files type - Hits - Bandwidth - Bandwidth without compression - Bandwidth after compression
+BEGIN_FILETYPES 14
+map 7 4124127 0 0
+mp3 10162 196890768 0 0
+php 1115130 306369868 0 0
+mp4 23 17152992 0 0
+webp 57 6672331 0 0
+spa 9 610841 0 0
+css 2586 33401486 0 0
+jpg 6803 986044932 0 0
+js 14826 105382980 0 0
+hee 1 25373 0 0
+png 11665 1908559535 0 0
+vn 34 2342323 0 0
+svg 81 262999 0 0
+Unknown 24142 446654275 0 0
+END_FILETYPES
+
+# Downloads - Hits - Bandwidth
+BEGIN_DOWNLOADS 2
+/ads.txt 2 0 1238
+/includes/assets/sounds/calling.mp3 1 0 0
+END_DOWNLOADS
+
+# OS ID - Hits
+BEGIN_OS ID - Hits - Pages 22
+os/2 2 0
+ios_iphone 47642 22352
+macosx15 363068 360018
+android10 6768 4083
+win8 36 6
+Unknown 152 82
+android12 1542 1371
+linux 271 89
+winxp 1 1
+androidnougat 1 1
+win10 760068 747690
+android 1281 542
+androidjellybean 26 1
+linuxubuntu 21 16
+android13 291 69
+macosx14 1 1
+androidmarshmallow 944 603
+android11 2790 2002
+win7 407 305
+ios_ipad 198 89
+win16 1 1
+androidoreo 15 1
+END_OS
+
+# Browser ID - Hits - Pages
+BEGIN_BROWSER 102
+safari18.6.2 54 26
+safari26.0 838 419
+safari17.2 1637 1107
+safari15.5 1 1
+chrome141.0.7390.97 43 7
+firefox139.0 2 1
+firefox143.0 32 3
+safari18.1 52 21
+firefox134.0 21 16
+chrome100.0.4896.60 5 0
+chrome135.0.0.0 16 2
+edge18 1 0
+firefox120.0 3 3
+safari10.0 3 1
+chrome125.0.0.0 85 33
+firefox19.0 26 1
+chrome74.0.3729.131 220 23
+chrome57.0.2987.108 15 1
+chrome103.0.0.0 192 141
+chrome140.0.0.0 452310 447314
+Unknown 144 72
+chrome132.0.0.0 33 3
+safari5.0 1 1
+chrome84.0.4147.105 1 1
+firefox63.0 1 1
+chrome141.0.0.0 588738 577715
+safari18.7 2095 895
+chrome142.0.0.0 41 0
+chrome32.0.1667.0 2 0
+safari18.1.1 50 21
+safari 26981 12919
+chrome76.0.3809.132 1 1
+safari17.6 1470 642
+opera122.0.0.0 96 16
+safari26.0.1 762 221
+chrome131.0.0.0 20 3
+safari16.0 544 210
+chrome105.0.0.0 6 3
+chrome99.0.3809.100 11 1
+chrome78.0.3904.108 6 6
+edge92 1 1
+firefox33.0 10 10
+chrome91.0.4472.101 16 2
+chrome141.0.7390.119 97 17
+chrome123.0.6312.118 20 4
+chrome141.0.7390.62 346 88
+safari15.0 1 1
+chrome122.0.0.0 35 7
+chrome108.0.5359.215 14 0
+safari18.0.1 102 40
+chrome58.0.3029.110 1 1
+chrome127.0.6533.120 1 1
+safari17.3 264 95
+safari15.3 1331 615
+chrome140.0.7339.204 418 191
+chrome140.0.7339.155 100 16
+chrome133.0.6831.68 580 541
+chrome78.0.3904.62 1 1
+firefox113.0 69 7
+iphone 2297 604
+chrome141.0.7390.50 381 94
+chrome116.0.0.0 4 4
+chrome133.0.0.0 36 6
+safari26.1 57 7
+chrome139.0.0.0 68757 68213
+mozilla 18 3
+chrome140.0.7339.154 61 16
+chrome138.0.0.0 16953 16663
+chrome110.0.0.0 32 3
+chrome126.0.0.0 17 3
+chrome141.0.7390.93 129 30
+chrome134.0.0.0 144 26
+safari17.1.2 1 1
+chrome136.0.0.0 90 18
+chrome141.0.7390.122 13 13
+chrome141.0.7390.43 905 582
+chrome80.0.3987.162 1 1
+chrome119.0.0.0 472 276
+chrome96.0.4664.93 33 3
+chrome117.0.0.0 2 2
+chrome109.0.0.0 445 314
+chrome112.0.5615.136 1 1
+chrome141.0.7390.107 4 4
+chrome87.0.4280.88 28 1
+safari18.5 1675 762
+chrome101.0.4951.61 1 1
+safari18.6 6326 3209
+chrome139.0.7258.158 332 271
+firefox56.0 1 1
+chrome101.0.4951.41 1 1
+safari17.4.1 48 17
+chrome129.0.0.0 321 240
+chrome137.0.0.0 809 703
+chrome114.0.5735.196 37 7
+chrome117.0.5938.132 95 9
+firefox100.0 1 1
+chrome127.0.0.0 1 1
+chrome130.0.0.0 236 111
+safari18.3.1 1169 587
+chrome140.0.7339.208 43 12
+safari16.6.1 117 39
+chrome140.0.7339.207 3466 2974
+END_BROWSER
+
+# Screen size - Hits
+BEGIN_SCREENSIZE 0
+END_SCREENSIZE
+
+# Unknown referer OS - Last visit date
+BEGIN_UNKNOWNREFERER 12
+znetwork/8.14.1 20251030142027
+NetworkingExtension/8621.4.1.10.1_Network/4277.140.33.700.1_iOS/18.7.1 20251028174859
+NetworkingExtension/8621.2.5.10.10_Network/4277.122.6_iOS/18.5 20251008201219
+got_(https://github.com/sindresorhus/got) 20251023193040
+NetworkingExtension/8621.3.11.10.3_Network/4277.140.33_iOS/18.6.2 20251023010905
+WhatsApp/2.22.23.5_i 20251019091041
+WhatsApp/2 20251031094944
+znetwork/8.12.1 20251006103900
+quic-go-HTTP/3 20251010234600
+GoogleOther 20251026213334
+Mozilla/5.0_Firefox/33.0 20251016134142
+znetwork/8.6.0 20251016134400
+END_UNKNOWNREFERER
+
+# Unknown referer Browser - Last visit date
+BEGIN_UNKNOWNREFERERBROWSER 12
+NetworkingExtension/8621.4.1.10.1_Network/4277.140.33.700.1_iOS/18.7.1 20251028174859
+znetwork/8.14.1 20251030142027
+NetworkingExtension/8621.3.11.10.3_Network/4277.140.33_iOS/18.6.2 20251023010905
+got_(https://github.com/sindresorhus/got) 20251023193040
+NetworkingExtension/8621.2.5.10.10_Network/4277.122.6_iOS/18.5 20251008201219
+WhatsApp/2.22.23.5_i 20251019091041
+WhatsApp/2 20251031094944
+NetworkingExtension/8622.1.22.10.11_Network/5569.2.3_iOS/26.0.1 20251030184659
+znetwork/8.12.1 20251006103900
+GoogleOther 20251026213334
+quic-go-HTTP/3 20251010234600
+znetwork/8.6.0 20251016134400
+END_UNKNOWNREFERERBROWSER
+
+# Origin - Pages - Hits 
+BEGIN_ORIGIN 6
+From0 1257 1769
+From1 5 5
+From2 170 172
+From3 163 163
+From4 1137728 1183417
+From5 0 0
+END_ORIGIN
+
+# Search engine referers ID - Pages - Hits
+BEGIN_SEREFERRALS 3
+www_google_com_vn 1 1
+www_bing_com 1 1
+www_google_com 168 170
+END_SEREFERRALS
+
+# External page referers - Pages - Hits
+# The 10 first Pages must be first (order not required for others)
+BEGIN_PAGEREFS 7
+http://m.facebook.com 76 76
+https://l.facebook.com 41 41
+https://lm.facebook.com 32 32
+https://chat.zalo.me 5 5
+https://l.facebook.com 4 4
+https://www.facebook.com 4 4
+https://coccoc.com/search 1 1
+END_PAGEREFS
+
+# Search keyphrases - Number of search
+# The 10 first number of search must be first (order not required for others)
+BEGIN_SEARCHWORDS 0
+END_SEARCHWORDS
+
+# Search keywords - Number of search
+# The 10 first number of search must be first (order not required for others)
+BEGIN_KEYWORDS 0
+END_KEYWORDS
+
+# Errors - Hits - Bandwidth
+BEGIN_ERRORS 6
+400 9091 1431247
+500 129 1889
+302 249 3925425
+404 29234 694447931
+301 570 604158
+403 16 4832
+END_ERRORS
+
+# URL with 400 errors - Hits - Last URL referrer
+BEGIN_SIDER_400 1
+/includes/ajax/phuong_nhi.php 9091 https://shop-ai.vn/google-maps-reviews
+END_SIDER_400
+
+# URL with 403 errors - Hits - Last URL referrer
+BEGIN_SIDER_403 9
+/node_modules/bootstrap/dist/css/ 2 -
+/google-maps-reviews/request-details/19 2 https://shop-ai.vn/google-maps-reviews/request-details/19
+/includes/ajax/posts/reaction.php 1 https://shop-ai.vn/
+/google-maps-reviews/request-details/9 1 https://shop-ai.vn/google-maps-reviews/request-details/9
+/my-system/transactions 6 https://shop-ai.vn/my-system
+/google-maps-reviews/request-details/15 1 https://shop-ai.vn/google-maps-reviews/my-requests
+/google-maps-reviews/request-details/28 1 https://shop-ai.vn/google-maps-reviews/request-details/28
+/google-maps-reviews/request-details/8 1 https://shop-ai.vn/google-maps-reviews/request-details/8
+/.git/config 1 -
+END_SIDER_403
+
+# URL with 404 errors - Hits - Last URL referrer
+BEGIN_SIDER_404 269
+/cdanh_fR8n/likes 1 -
+/google-maps-reviews/view-penalty/30 2 https://shop-ai.vn/google-maps-reviews/my-reviews
+/bac_huynh_Dgcc 1 -
+/lieu_quynh_hZzh/likes 1 -
+/content/uploads/photos/2025/10/sngine_e75943336c41eb260c95642d26600e59.png 1 http://localhost/
+/nguyen_van_ARNI/likes 2 -
+/static/src= 38 -
+/sitemap.xml 3 -
+/content/uploads/photos/2025/10/sngine_68e69c191f3e16fdd429e33a5591eee6.jpg 31 http://localhost/
+/tuyetnhi/likes 1 -
+/thao_ba_TRaw/photos 1 -
+/viotp/sessions 1111 https://shop-ai.vn/otp-shop-ai
+/admincp/pages/src= 3 https://shop-ai.vn/admincp/pages/categories
+/phong_han_SDdh/likes 1 -
+/hao_trinh_wGQr/videos 1 -
+/duong_le_tCyp/albums 1 -
+/lho_rxO7/followings 3 -
+/admincp/users/src= 35 https://shop-ai.vn/admincp/users/find
+/photos/34 1 -
+/online_vanan/likes 2 -
+/Tramnguyen/src= 5 https://shop-ai.vn/Tramnguyen/videos
+/.well-known/traffic-advice 40 -
+/nguyen_van_ARNI/photos 1 -
+/truc_au_jYAr/friends 7 -
+/posts/63 2 https://shop-ai.vn/google-maps-reviews
+/security.txt 1 -
+/anhphuc10/src= 1 https://shop-ai.vn/anhphuc10/friends
+/quoc/src= 2 -
+/phpinfo.php 1 -
+/pages/src= 118 https://shop-ai.vn/pages/maps
+/content/uploads/photos/2025/09/sngine_aab860d775212de7e3b665e3fc4bb170.png 27 http://localhost/
+/votrongvan/likes 1 -
+/minhtaieng/src= 1 -
+/ads.txt 2 -
+/monneynguyen/src= 1 -
+/events/src= 3 https://shop-ai.vn/events/2
+/google-maps-reviews/create-request 3 https://shop-ai.vn/google-maps-reviews
+/google-maps-reviews/view-penalty/51 2 https://shop-ai.vn/google-maps-reviews/my-reviews
+/vy_thieu_KA7i/likes 1 -
+/pco_A295 1 -
+/pages/Shopai.vn/src= 10 https://shop-ai.vn/pages/Shopai.vn/reviews
+/apple-touch-icon-120x120-precomposed.png 25 -
+/vi92_eOs4/photos 1 -
+/content/uploads/photos/2025/09/sngine_685783f48c98a45998f65b2f54fb6785.png 1 http://localhost/
+/an_cam_f0cO/albums 2 -
+/pco_A295/videos 1 -
+/trac_loc_bkZh 2 -
+/phong_han_SDdh/followings 2 -
+/directory/src= 3 -
+/hao_trinh_wGQr/photos 1 -
+/captcha/default 3 -
+/admincp/announcements/src= 2 https://shop-ai.vn/admincp/announcements/add
+/trac_loc_bkZh/photos 2 -
+/google-maps-reviews/view-penalty/27 2 https://shop-ai.vn/google-maps-reviews/my-reviews
+/posts/65 1 https://shop-ai.vn/posts/65
+/an_cam_f0cO/photos 1 -
+/thinh_lac_rCMm/photos 1 -
+//www.shop-ai.vn/login' 2 -
+/otp-shop-ai 448 -
+/offers/category/3/Baby-Children-s-Products 2 -
+/Kupetshop/src= 1 https://shop-ai.vn/Kupetshop/photos
+/admincp/announcements/edit/src= 2 https://shop-ai.vn/admincp/announcements/edit/3
+/pages/dalatanuong/src= 2 https://shop-ai.vn/pages/dalatanuong/settings
+/google-maps-reviews/view-penalty/src= 50 https://shop-ai.vn/google-maps-reviews/view-penalty/17
+/images/avatar.jpg 10 https://shop-ai.vn/otp-shop-ai
+/people/src= 16 https://shop-ai.vn/people/find
+/content/uploads/photos/2025/10/sngine_b0ea787b3aef961bf978f165c753e1aa.png 14 http://localhost/
+/events/2/src= 1 https://shop-ai.vn/events/2/settings
+/kha_trung_ks8F 2 -
+/tuan05_1tWb/friends 1 -
+/pages/Shopai.vn/settings/src= 1 https://shop-ai.vn/pages/Shopai.vn/settings/admins
+/du99_Fufu/followers 1 -
+/lho_rxO7/friends 18 -
+/admincp/users/edit/src= 21 https://shop-ai.vn/admincp/users/edit/125
+/settings/security/src= 2 https://shop-ai.vn/settings/security/sessions
+/groups/datdon/src= 1 https://shop-ai.vn/groups/datdon/settings
+/truc_au_jYAr/photos 1 -
+/bac_huynh_Dgcc/followers 5 -
+/enhancecp 1 -
+/Dotrongnam/src= 11 https://shop-ai.vn/Dotrongnam/friends
+/hainhon14/src= 1 -
+/dung_banh_OQBr/friends 1 -
+/hinh_vuong_WwV7/followings 4 -
+/content/uploads/photos/2025/10/sngine_79abcb2d196c2e7ba959ff9c910915d1.jpg 1 http://localhost/
+/thanhsang/likes 1 -
+/hao_trinh_wGQr/likes 1 -
+/photos/src= 28 -
+/forgot-password 2 -
+/admincp/pages/edit_page/src= 1 https://shop-ai.vn/admincp/pages/edit_page/6
+/thinh_lac_rCMm/videos 1 -
+/viotp/poll 1111 https://shop-ai.vn/otp-shop-ai
+/vy_thieu_KA7i/followers 1 -
+/hinh_vuong_WwV7/photos 3 -
+/search/thu%C3%AA%20s%E1%BB%91/src= 1 https://shop-ai.vn/search/thu%C3%AA%20s%E1%BB%91/posts
+/Haanh111/src= 9 https://shop-ai.vn/Haanh111/videos
+/content/uploads/photos/2025/10/sngine_fe69db251fdef34155651d5b24ac942a.png 1 http://localhost/
+/nghia_bang_iw4A/photos 1 -
+/apple-touch-icon.png 41 -
+/pages/checkso/src= 3 https://shop-ai.vn/pages/checkso/photos
+/hunghc2003/src= 5 https://shop-ai.vn/hunghc2003/videos
+/kha_trung_ks8F/likes 2 -
+/check-scam 16 -
+/llms.txt 2 -
+/shop-ai/src= 482 https://shop-ai.vn/shop-ai/recharge
+/Ducanhskyhihi/likes 1 -
+/cdanh_fR8n/friends 1 -
+/vo_nhung_XA5b/likes 2 -
+/shell 5 -
+/thanhsang 2 -
+/.well-known/passkey-endpoints 2 -
+/Ducanhskyhihi/src= 6 https://shop-ai.vn/Ducanhskyhihi/videos
+/nguyen_van_ARNI/followings 1 -
+/google-maps-reviews/request-details/src= 77 https://shop-ai.vn/google-maps-reviews/request-details/9
+/my-system/content/themes/default/images/avatar_default.jpg 20 https://shop-ai.vn/my-system/transactions
+/posts/61 1 -
+/gdinh_HdY5 1 -
+/register 18 -
+/google-maps-reviews/view-penalty/73 2 https://shop-ai.vn/google-maps-reviews/my-reviews
+/gdinh_HdY5/friends 1 -
+/du99_Fufu/likes 1 -
+/webshell.php 5 -
+/thekingdemon/src= 2 -
+/offers 3 -
+/luu_my_RniS/albums 2 -
+/cgiap_uSQy/photos 1 -
+/content/uploads/photos/2025/10/sngine_2865bac51bab94e39c5511fcacd72c22.png 2 http://localhost/
+/google-maps-reviews/view-penalty/17 5 https://shop-ai.vn/google-maps-reviews/my-reviews
+/hinh_vuong_WwV7/albums 1 -
+/lieu_quynh_hZzh 1 -
+//wp-includes/wlwmanifest.xml 3 -
+/apple-touch-icon-120x120.png 25 -
+/css/app.css 4 https://shop-ai.vn/otp-shop-ai
+/google-maps-reviews/src= 815 https://shop-ai.vn/google-maps-reviews/reward-history
+/cdanh_fR8n 1 -
+/webshell 5 -
+/google-maps-reviews/view-penalty/65 1 https://shop-ai.vn/google-maps-reviews/my-reviews
+/nhan_hung_B57X 1 -
+/cgiap_uSQy 1 -
+/kha_trung_ks8F/photos 2 -
+/online_vanan/src= 1 -
+/profile 11 -
+/truc_au_jYAr/followers 1 -
+/my-system/'%20.%20($transaction['user_picture']%20 5 https://shop-ai.vn/my-system/transactions
+/dung_banh_OQBr/likes 2 -
+/vy_thieu_KA7i/albums 2 -
+/src= 5989 https://shop-ai.vn/google-maps-reviews
+/tuyetnhi/src= 4 -
+/content/uploads/photos/2025/09/sngine_344aeb0abf5756c578a5b884e0d107e3.png 1 http://localhost/
+/huykaka/src= 1 https://shop-ai.vn/huykaka/friends
+/login 55 -
+/check-phone 70 -
+/hao_trinh_wGQr 1 -
+/vy_thieu_KA7i 1 -
+/content/uploads/photos/2025/10/sngine_ff127d2d56984b94abc57a6e0137d4eb.png 1 http://localhost/
+/hao_trinh_wGQr/followers 1 -
+//blog/wp-includes/wlwmanifest.xml 3 -
+/braveacc/src= 6 -
+/js/app.js 15 https://shop-ai.vn/check-phone
+/Vubui92/album/src= 1 -
+/thinh_lac_rCMm 1 -
+/gdinh_HdY5/albums 2 -
+/thao_ba_TRaw/followings 1 -
+/xuanhong/src= 1 https://shop-ai.vn/xuanhong/friends
+/vy_thieu_KA7i/videos 1 -
+/trac_loc_bkZh/albums 1 -
+/pco_A295/photos 1 -
+/sellers.json 1 -
+/nhan_hung_B57X/likes 2 -
+/photos/29 2 -
+/vi92_eOs4/videos 1 -
+/dung_banh_OQBr/followings 1 -
+/phong_han_SDdh/photos 1 -
+/offers/category/8/Financial-Services 2 -
+/.well-known/security.txt 3 -
+/luu_my_RniS/videos 1 -
+/truc_au_jYAr 1 -
+/content/uploads/photos/2025/10/sngine_321fdbe45e499865c5cc3ff627f36162.png 1 http://localhost/
+/otp-rental 2 https://shop-ai.vn/
+/shell.php 5 -
+/groups/src= 3 https://shop-ai.vn/groups/datdon
+/admincp/themes/edit/src= 2 https://shop-ai.vn/admincp/themes/edit/1
+/harcupf1/src= 6 -
+/thanh77_n7dI/followers 2 -
+/css/deposit-modal.css 4 https://shop-ai.vn/otp-shop-ai
+/content/uploads/photos/2025/10/sngine_03a0fb1d345e786cef6226e09bdced05_cropped.jpg 1 http://localhost/
+/uyenthu/likes 1 -
+/%7B%7Busername%7D%7D 2 -
+/vo_nhung_XA5b/albums 1 -
+/luu_my_RniS 1 -
+/google-maps-reviews/view-penalty/49 1 https://shop-ai.vn/google-maps-reviews/my-reviews
+/test-transactions.php 2 -
+/content/uploads/shop-ai.png 1 https://shop-ai.vn/
+/google-maps-reviews/view-penalty/122 1 https://shop-ai.vn/google-maps-reviews/my-reviews
+/phong_han_SDdh 1 -
+/.well-known/assetlinks.json 31 -
+/Vubui92/src= 23 -
+/nghia_bang_iw4A/videos 2 -
+/images/zalo-seeklogo.png 5 https://shop-ai.vn/otp-shop-ai
+/posts/src= 87 https://shop-ai.vn/posts/49
+/vi92_eOs4/friends 1 -
+/dung_banh_OQBr/albums 1 -
+/Cuong113/src= 1 https://shop-ai.vn/Cuong113/friends
+/gdinh_HdY5/photos 1 -
+/forums/src= 1 https://shop-ai.vn/forums/my-threads
+/leoslark/src= 6 -
+/dien_loc_pqCu/videos 1 -
+/duong_le_tCyp/photos 1 -
+/vi92_eOs4 1 -
+/settings/src= 82 https://shop-ai.vn/settings/privacy
+/content/uploads/photos/2025/09/sngine_f24f2763b17896ff3907df7be12a32d3.png 1 http://localhost/
+/content/uploads/photos/2025/10/sngine_8789709bae740d04dbc63233b6743ca6.png 1 http://localhost/
+/js/deposit-modal.js 4 https://shop-ai.vn/otp-shop-ai
+/luu_my_RniS/photos 1 -
+/posts/48 2 -
+//wordpress/wp-includes/wlwmanifest.xml 1 -
+/settings/profile/src= 9 https://shop-ai.vn/settings/profile/work
+/thinh_lac_rCMm/followers 1 -
+/pages 1 -
+/vi92_eOs4/followers 1 -
+/my-system/src= 249 https://shop-ai.vn/my-system/transactions
+/admincp/settings/src= 14 https://shop-ai.vn/admincp/settings/notifications
+/css/sidebar.css 4 https://shop-ai.vn/otp-shop-ai
+/nghia_bang_iw4A/albums 2 -
+/images/logo.png 84 https://shop-ai.vn/check-phone
+/lieu_quynh_hZzh/photos 1 -
+/includes/ajax/admin/shop-ai.php 3207 https://shop-ai.vn/admincp/shop-ai
+/google-maps-reviews/view-penalty/32 2 https://shop-ai.vn/google-maps-reviews/my-reviews
+/google-maps-reviews/submit-proof/src= 66 https://shop-ai.vn/google-maps-reviews/submit-proof/23
+/search/Shop-ai/src= 3 https://shop-ai.vn/search/Shop-ai/posts
+/google-maps-reviews/view-penalty/23 1 https://shop-ai.vn/google-maps-reviews/my-reviews
+/bo_nghi_zYwZ 2 -
+/thanhsang/src= 2 -
+/gdinh_HdY5/videos 1 -
+/vi92_eOs4/likes 1 -
+/admincp/pro/src= 1 https://shop-ai.vn/admincp/pro/packages
+//xmlrpc.php 3 -
+/namnguyen98/src= 2 -
+/lieu_quynh_hZzh/followings 2 -
+/votrongvan/src= 2 -
+/spsvn2011/src= 1 https://shop-ai.vn/spsvn2011/friends
+/Congtai/src= 1 https://shop-ai.vn/Congtai/photos
+/ScaredPvP/src= 1 https://shop-ai.vn/ScaredPvP/friends
+/check-phone/history 2 https://shop-ai.vn/check-phone
+/Tuantham_12345678/src= 2 -
+/nhan_hung_B57X/friends 2 -
+/index.html 1 -
+/scam-report 2 -
+/Haohao88/src= 11 https://shop-ai.vn/Haohao88/videos
+/uyenthu/src= 1 -
+/google-maps-reviews 4 https://shop-ai.vn/google-maps-reviews
+/truc_au_jYAr/videos 1 -
+/search/2510035A8QHWKN/src= 1 https://shop-ai.vn/search/2510035A8QHWKN/users
+/nguyennguyen/src= 2 -
+/content/uploads/photos/2025/10/sngine_3e22e78a7741f947775d6656ff003ca7.png 1 http://localhost/
+/dung_banh_OQBr 1 -
+/luu_my_RniS/followers 1 -
+//web/wp-includes/wlwmanifest.xml 1 -
+/check-phone/src= 2 https://shop-ai.vn/check-phone/history
+/thao_ba_TRaw/albums 2 -
+/tuan05_1tWb/likes 1 -
+/humans.txt 1 -
+/apple-touch-icon-precomposed.png 41 -
+/nguyet_thai_4nO3/followings 2 -
+/Huong37/src= 2 https://shop-ai.vn/Huong37/friends
+/cgiap_uSQy/src= 1 -
+/nhan_hung_B57X/photos 2 -
+/TCSN/Script/content/uploads/photos/2025/09/sngine_fe74c972cc54d5d8a5169d0807eb26c7_cropped.jpg 14123 https://shop-ai.vn/google-maps-reviews
+/mymymy/src= 1 https://shop-ai.vn/mymymy/photos
+/uyen324/src= 1 -
+END_SIDER_404
+
+# Host - Pages - Hits - Bandwidth - Last visit date - [Start date of last visit] - [Last page of last visit]
+# [Start date of last visit] and [Last page of last visit] are saved only if session is not finished
+# The 10 first Hits must be first (order not required for others)
+BEGIN_VISITOR 833
+123.24.255.191 239825 239988 13352653 20251008032924
+42.114.201.110 172495 173628 132304879 20251023012621
+14.177.124.21 130406 130531 8887471 20251031235958
+183.81.18.218 120996 123539 233526543 20251014111850
+113.190.171.194 108435 108579 13906965 20251024125637
+118.69.28.107 45377 45759 43023353 20251006161143
+14.240.85.207 36826 36984 6795058 20251021134054
+1.54.152.73 21836 22673 115744080 20251029001203
+14.187.65.183 17684 17752 6103251 20251009213604
+14.240.226.118 14794 14799 642369 20251004141330
+58.187.74.85 55 203 9190879 20251002175824
+171.251.233.200 7 22 247420 20251018173908
+171.241.34.96 7 38 7401286 20251025100127
+103.199.57.12 19 27 182488 20251025103905
+34.174.163.32 10 10 1728107 20251016134142
+173.75.41.167 12 44 1523824 20251024041517
+52.12.96.188 0 1 313380 
+91.231.89.20 1 1 73635 20251008052229
+113.22.47.203 13 45 9144636 20251029005047
+104.28.157.202 4 5 51194 20251030171749
+42.114.44.208 32 83 347599 20251010142710
+35.171.45.91 15 15 550772 20251023193040
+66.249.64.38 56 56 1657179 20251030221410
+27.68.138.118 235 535 19888471 20251029191124
+104.28.163.50 6 18 136231 20251031024448
+42.114.214.119 4374 4374 244944 20251006010835
+58.186.44.152 1 3 84247 20251021155643
+42.117.41.48 2 18 850778 20251027113630
+118.71.223.153 490 570 13803212 20251027113953
+113.185.40.11 3 33 1623268 20251019201033
+1.54.191.250 26 38 298573 20251015194802
+1.53.126.83 63 152 9213919 20251008215732
+14.191.99.45 6 34 11077437 20251024163430
+14.232.33.31 3 16 513163 20251031161154
+171.246.8.116 66 151 2986539 20251026194134
+1.53.53.118 84 172 1227781 20251002195258
+42.114.186.100 104 166 4241314 20251018225041
+42.117.195.55 38 102 6894475 20251030121302
+42.114.34.239 6 34 1451533 20251012225614
+103.139.178.147 1 1 31686 20251007021404
+115.77.21.239 17 34 1590297 20251031095456
+171.253.250.198 9 43 3981621 20251009091044
+171.253.36.24 13 13 102880 20251031104704
+123.25.225.27 2 18 850685 20251018094117
+104.28.163.55 19 40 3252457 20251028103120
+115.79.44.66 1071 1153 10799534 20251028142456
+113.185.76.222 36 101 2387500 20251016143626
+173.252.87.25 3 31 1556454 20251014124732
+42.114.35.189 1 1 50997 20251028132408
+27.2.199.5 6 51 3243227 20251031172206
+104.28.71.150 1 4 142840 20251007191922
+116.98.1.236 3 32 7015311 20251028145046
+116.98.254.207 29 61 1924245 20251010214110
+42.114.49.188 133 202 1715799 20251025150220
+117.5.147.176 0 2 658760 
+42.116.243.8 2 18 647545 20251006082759
+172.225.74.54 172 350 9601697 20251031161833
+173.252.127.114 3 30 1515701 20251017125539
+31.13.127.28 1 1 31041 20251007100231
+31.13.127.36 2 30 3610087 20251007100236
+116.96.45.107 9 38 11744631 20251027080337
+27.2.194.68 3 18 789397 20251023213709
+42.112.8.5 6 39 1317397 20251019162631
+115.78.0.68 45 87 3509803 20251029160346
+103.23.159.49 683 705 689099 20251007112647
+117.5.57.123 167 405 24736717 20251009202158
+14.169.251.240 2 31 1643792 20251012040117
+104.28.68.168 2 2 12 20251031163641
+104.28.160.186 144 204 2738224 20251028101209
+113.185.45.166 0 1 15639 
+173.252.87.115 2 17 550673 20251015080854
+31.13.127.1 0 1 72765 
+42.114.49.62 261 368 20022200 20251030160159
+171.225.184.86 3 24 1064866 20251027203116
+42.112.228.167 58 117 5029623 20251002132908
+104.28.158.56 588 655 4255452 20251021160356
+1.53.168.29 18 49 1784408 20251012095355
+42.112.181.162 34 80 5339888 20251022162759
+42.117.10.74 3 18 585965 20251002191504
+27.78.5.163 44 86 1094262 20251008123304
+171.250.163.207 5 48 15505034 20251029013920
+113.185.74.35 9 35 3370325 20251009135648
+171.253.38.104 178 372 16977333 20251027232716
+1.53.3.166 2281 2340 12575004 20251031014316
+171.253.181.223 121 141 425528 20251021195008
+1.52.168.30 1 3 91581 20251008000225
+104.28.71.171 1 1 31040 20251007231621
+42.114.200.228 9 96 11164917 20251005181850
+115.73.200.89 13 41 1687411 20251017014932
+42.116.196.11 323 742 19936562 20251030003905
+171.253.128.81 126 266 5424794 20251007175850
+104.164.126.52 2 2 54146 20251011163119
+203.119.9.50 1 1 152955 20251001120812
+116.96.46.217 5 33 1588702 20251017122505
+42.113.246.200 75 115 1053083 20251016073607
+118.102.2.29 0 2 1287382 
+91.134.35.95 1 1 67894 20251023052509
+171.232.204.182 3 19 900045 20251022223742
+42.117.10.71 3 20 809676 20251011094109
+171.227.223.223 271 332 5423331 20251005100401
+171.253.9.210 85 169 9510514 20251030113549
+14.244.186.3 1 2 111563 20251007093230
+171.255.133.93 20 20 181063 20251009132344
+104.28.163.94 3 3 30 20251015092738
+149.56.160.207 1 1 155167 20251004000902
+14.231.190.86 6 22 699685 20251002101745
+112.197.13.72 6 35 1170401 20251020114243
+104.28.68.171 10 18 398477 20251031162244
+14.237.45.117 26 85 24992446 20251026143400
+58.187.228.220 1564 1612 4100423 20251027113801
+113.185.40.173 1 1 0 20251005090857
+27.67.14.121 3 3 90135 20251003094855
+66.249.64.37 70 70 2109520 20251023122645
+222.252.30.105 6 34 1605662 20251014093504
+59.153.224.177 132 144 2106807 20251012185019
+171.229.212.113 3 19 601666 20251012105820
+91.231.89.100 3 3 294453 20251009031842
+171.232.201.186 6 32 3463973 20251001235208
+104.28.156.221 40 94 1713708 20251013194646
+42.113.246.215 29 63 1061464 20251005144438
+42.116.147.69 2800 2878 6775049 20251017141948
+14.162.158.195 305 363 5305080 20251011171127
+1.53.8.123 504 596 14292030 20251031095544
+104.28.71.172 189 410 15119637 20251031163127
+42.114.85.167 6260 6337 8684591 20251015172027
+103.199.57.71 41 92 1463457 20251017075020
+14.246.2.178 23 53 3838811 20251006161714
+112.197.13.68 3 17 586113 20251030124837
+42.114.44.21 114 155 1121350 20251018143631
+193.186.4.138 1 1 54014 20251030122051
+5.133.192.136 1 2 117684 20251008053723
+42.117.10.68 6 55 5033639 20251008084511
+1.52.222.241 5 41 4513350 20251009134356
+118.68.133.211 231 306 2683323 20251010212630
+171.255.187.137 5 5 107994 20251019162310
+116.96.44.66 2 17 550779 20251026213334
+171.224.180.244 697 776 8691916 20251009023448
+72.14.201.156 3 3 100126 20251029134219
+27.115.124.53 1 15 457847 20251002181933
+113.178.210.142 0 1 108142 
+116.98.222.175 32 117 5701511 20251011154719
+42.114.171.195 2 19 882630 20251009151715
+123.20.58.238 2 16 477807 20251027092836
+171.229.241.254 69 206 9669621 20251007184646
+183.80.95.133 104 104 1340298 20251030204022
+113.189.30.67 136 215 7477361 20251001082116
+171.255.200.73 3 18 585774 20251012013756
+117.5.147.222 4 21 8138114 20251029144927
+42.114.15.68 4 18 6351506 20251029152157
+103.199.33.234 70 107 1631488 20251018112831
+14.248.223.213 245 326 4817784 20251028212401
+112.197.9.6 3 17 584464 20251023103529
+171.255.75.148 118 248 6045060 20251024180043
+104.164.126.104 1 1 27076 20251011163113
+104.28.68.172 10 39 1273282 20251031195036
+42.114.39.67 6 34 1605619 20251016113047
+14.224.151.13 3 8 150633 20251001094414
+14.181.22.117 9 25 667094 20251010090512
+42.113.203.103 18 69 1424028 20251008154312
+116.101.69.142 5879 5892 1609515 20251023051224
+125.235.124.142 123 262 6198734 20251003142052
+104.28.254.74 91 138 2594976 20251028042045
+66.249.82.101 6 24 291254 20251027232447
+42.113.248.195 4 4 1084 20251013161849
+14.182.26.61 1592 1655 5778645 20251005131942
+117.5.146.135 4 4 224 20251014184453
+42.119.191.55 45 154 14705195 20251024145432
+42.115.192.178 36 96 4981227 20251005124830
+42.117.10.75 6 35 1171914 20251027111642
+222.254.21.241 6 32 1398391 20251012123222
+14.243.143.213 75 194 10496969 20251001180318
+171.246.10.92 7 7 62636 20251002110256
+113.161.161.145 416 447 7204952 20251030125123
+193.186.4.157 6 6 269659 20251028123604
+58.187.12.8 77 150 4073529 20251011125640
+118.68.122.225 70 88 712873 20251026164449
+104.28.71.167 0 1 15639 
+116.96.47.99 11 85 24525650 20251029072333
+66.249.64.36 64 64 1803313 20251026123800
+192.178.15.1 5 24 364574 20251013142530
+42.114.49.94 4 8 92340 20251029113552
+149.57.180.26 1 1 68618 20251024000940
+46.205.196.168 0 5 414395 
+14.185.19.28 6 55 2725378 20251018200646
+173.252.95.21 3 33 1879382 20251023175512
+113.177.118.34 9 38 3760081 20251006093109
+119.12.180.63 3 32 3721651 20251006162024
+116.111.184.31 255 350 1763642 20251024140317
+14.169.234.74 131 277 6560426 20251029161911
+1.53.242.46 465 483 3783314 20251010093909
+113.185.77.197 3 3 49196 20251016210638
+104.28.71.165 11 11 527 20251031162327
+42.114.44.163 48 68 487204 20251015064734
+23.27.145.213 1 13 1606295 20251024015354
+117.2.115.83 3 3 35645 20251002195808
+66.249.71.71 18 18 535859 20251029162437
+123.24.63.226 0 26 1412115 
+42.113.248.10 10 46 1434715 20251013093403
+42.116.162.189 2 2 53021 20251012152715
+123.16.62.162 3 26 1310597 20251016190020
+173.252.87.15 2 16 535039 20251023075237
+139.59.95.155 1 2 83793 20251015170951
+104.28.68.164 12 20 398367 20251031161910
+113.185.45.121 182 249 6902667 20251002182128
+113.23.35.198 3 31 3648877 20251004201842
+115.73.221.117 11 71 11966234 20251031182408
+14.231.103.47 2636 2663 811927 20251003215733
+42.113.246.251 36 88 1230811 20251023101422
+34.28.87.170 2 2 556415 20251028004406
+123.21.244.161 11 43 9139019 20251028224131
+14.167.50.24 68 144 4176697 20251026095326
+171.253.178.238 3 40 6416532 20251003144819
+42.118.148.35 396 855 16983271 20251031211123
+27.68.139.242 3 32 1607676 20251021084931
+172.226.46.122 79 191 6878604 20251030014702
+103.199.32.82 26 38 438453 20251021101648
+112.197.9.5 8 51 1705010 20251031092144
+42.119.87.194 6 33 3534465 20251001232610
+42.118.188.255 144 225 14741674 20251026092912
+159.223.8.189 1 2 84750 20251029193344
+116.108.178.146 9 39 1698537 20251011093932
+115.73.201.1 13 36 1495317 20251017222405
+103.163.220.191 5 64 18589599 20251028103513
+171.255.75.169 32 91 1960344 20251024213352
+103.114.192.130 10 41 2724328 20251031164937
+104.28.68.150 0 1 15639 
+14.231.103.107 217 249 5036642 20251011202255
+64.233.172.193 9 25 321361 20251027232447
+14.226.16.124 504 958 13064376 20251017111014
+103.204.123.232 1 1 27221 20251012050041
+115.77.156.122 252 400 11199001 20251015000857
+118.69.62.113 3 32 3721659 20251006103224
+14.188.255.129 63 166 7976237 20251002103321
+42.113.248.192 671 1817 9622831 20251014143637
+104.28.157.200 30 124 7400488 20251030090014
+104.28.159.94 1 9 317742 20251015135836
+123.16.96.139 55 87 300680 20251029204946
+117.7.207.52 7389 7425 5958549 20251017100946
+14.191.105.209 101 163 4541828 20251027224951
+171.253.235.76 75 212 9749410 20251025090207
+42.114.49.155 17 69 1467103 20251007180607
+14.182.145.231 6180 6180 63252 20251023083541
+1.52.33.48 6 39 6037260 20251001043659
+123.17.132.235 458 544 7494705 20251023142248
+14.172.182.115 3697 3719 1003974 20251025135414
+27.78.32.150 1 13 209438 20251003222337
+192.178.15.10 5 26 441998 20251013142527
+1.53.235.159 11 40 11795984 20251027082259
+104.28.163.84 25 70 1278283 20251014180216
+138.246.253.7 1 1 0 20251010234600
+116.111.184.70 52 72 463366 20251014191919
+104.28.156.217 13 25 536707 20251030093334
+1.52.39.134 195 302 14274469 20251029080513
+58.187.67.179 6 44 2698366 20251011082137
+118.68.23.208 7 65 21748783 20251027163233
+118.68.5.56 275 371 12413985 20251003232027
+115.79.208.171 30 39 1973166 20251029162105
+103.199.57.111 24 40 385470 20251017074815
+42.113.248.163 51 87 989727 20251014152130
+91.231.89.98 1 2 234001 20251008052418
+171.251.237.43 1114 1348 34952678 20251013152437
+115.73.16.185 6 36 1203562 20251029090027
+104.28.163.51 37 92 2079068 20251016133532
+42.113.152.169 91 169 15062925 20251024132109
+116.98.248.26 256 513 30297774 20251026204311
+58.187.74.84 109 174 7725416 20251011211146
+104.28.159.129 2 27 3209128 20251007104334
+103.199.33.65 18 32 385419 20251024061005
+171.235.133.17 27 63 4663517 20251005204458
+103.199.33.97 408 854 9243465 20251004173620
+116.111.26.215 12 42 1729075 20251018172643
+159.65.205.147 1 2 117681 20251001221828
+104.28.71.156 4 4 106910 20251029224820
+27.68.138.81 3 4 155338 20251021180425
+117.5.143.90 3 33 3769709 20251028103114
+116.111.184.153 4 50 5244107 20251013234555
+115.74.96.97 147 227 8931849 20251027191129
+123.16.19.229 3 31 1556476 20251014121852
+222.255.75.71 3 17 477701 20251023173513
+42.112.8.6 4 18 637137 20251024203053
+66.249.71.69 46 46 1203688 20251026213334
+113.180.71.190 6 35 1653631 20251017215629
+171.253.235.23 168 420 17174250 20251024071305
+103.218.242.3 2 2 135463 20251019183917
+91.231.89.16 1 1 522 20251009031619
+117.5.147.96 3 3 51152 20251026181528
+113.185.44.3 122 266 6355265 20251012124135
+58.187.174.12 1839 1895 4810062 20251010160006
+14.248.128.101 26 90 5309141 20251004085622
+162.120.184.238 3 3 140061 20251018215400
+14.190.126.96 3 17 584021 20251016184320
+104.28.254.75 119 220 3180640 20251023160529
+14.190.117.216 6 14 940585 20251022162834
+42.119.226.213 154 205 3194924 20251009092827
+103.121.153.56 3 22 994816 20251030230245
+42.118.231.40 298 353 2558398 20251031142131
+42.114.26.25 2 15 564160 20251031140737
+171.244.188.41 1 1 6 20251029162059
+31.13.127.3 1 1 31064 20251003160022
+118.70.98.171 89 117 1610315 20251014102716
+149.57.180.65 1 1 36586 20251007192353
+113.185.79.42 190 270 16420290 20251024225533
+113.23.103.253 3 11 1734701 20251031121806
+192.178.15.2 8 22 395599 20251013142530
+14.177.173.68 3 29 3427837 20251001134922
+104.28.157.199 137 217 3684121 20251024062137
+123.28.78.48 3 3 51195 20251026162938
+171.242.199.123 95 153 3398230 20251022091919
+222.252.6.162 3824 4131 45838707 20251031091548
+42.112.8.8 3 31 3641135 20251004234822
+42.117.10.70 6 35 1170268 20251017100400
+112.197.13.75 6 36 1171965 20251005204256
+116.111.185.56 639 724 10295867 20251031234832
+173.252.127.2 3 32 4718192 20251029200743
+117.2.112.82 3 3 51126 20251026165006
+116.96.46.194 9 68 4893676 20251004160542
+14.191.155.68 20 104 12854920 20251009134542
+1.53.169.128 3 3 24914 20251004113910
+44.243.59.139 1 1 279091 20251025220214
+117.5.227.35 10941 11080 18949503 20251030153942
+45.124.92.190 1 1 26574 20251011205951
+42.114.94.2 2179 2301 10054328 20251021113429
+113.185.46.255 67 67 648146 20251012111325
+14.244.168.163 130 385 9832676 20251031115329
+118.68.5.66 49 55 766416 20251002214550
+14.171.48.213 158 234 6429559 20251004182442
+112.197.13.74 12 83 5395614 20251023150207
+42.114.44.191 153 454 17525161 20251010145646
+1.55.15.14 92 94 1116036 20251018115941
+116.97.107.109 2 19 923454 20251020180609
+171.253.241.145 27 60 3343694 20251005100832
+115.73.211.82 968 1371 35886918 20251016141423
+165.154.214.30 828 874 3448401 20251016232727
+113.185.107.101 3 3 55861 20251028090622
+42.1.90.190 70 153 5640057 20251026155906
+123.26.190.195 2 19 882898 20251012132210
+31.13.127.9 3 31 1654967 20251011101643
+104.28.68.165 13 29 840806 20251031164422
+14.240.67.29 3696 3718 1002216 20251022132108
+42.118.247.116 6528 6643 9881590 20251030223426
+103.23.159.146 1496 1496 15336 20251002140458
+113.184.44.193 2 17 550699 20251020082818
+1.53.169.101 45 79 3503520 20251022064753
+116.97.108.176 65 133 4135018 20251023104622
+173.252.127.20 3 31 3640578 20251002194515
+112.197.9.4 3 18 601784 20251029161449
+113.185.40.146 56 56 274623 20251002182534
+171.255.75.206 394 737 32961819 20251024141841
+112.197.13.70 3 17 586019 20251030145029
+171.250.162.171 8 48 1829725 20251012082323
+14.191.113.152 142 203 10653713 20251031033110
+42.1.90.51 49 117 1811346 20251001093852
+171.246.10.40 1 8 472659 20251027153804
+113.185.41.216 2 17 550657 20251014120033
+91.231.89.21 3 3 153757 20251009031914
+117.5.152.137 213 230 4678412 20251012155253
+123.24.158.190 2 17 550649 20251015154146
+113.160.172.248 3298 3329 1978252 20251023084650
+171.244.120.4 3 19 809112 20251028065133
+42.113.16.252 2 18 850711 20251016104836
+103.199.57.246 26 38 397244 20251018231130
+104.28.71.159 7 7 256 20251031163158
+123.24.166.38 3 31 1556443 20251016114644
+113.168.222.165 18 62 4171236 20251031034708
+117.5.146.105 2 2 112 20251007170019
+42.113.16.151 6 35 3740376 20251003100245
+72.14.201.157 4 4 164381 20251029134221
+185.12.149.40 1 1 67947 20251017114810
+171.255.114.106 65 85 847268 20251018225339
+116.96.46.249 43 130 7404215 20251015103443
+183.81.18.20 66 181 12458417 20251006202511
+118.70.43.73 3 31 1432572 20251013092327
+27.2.201.6 3 30 1540794 20251014132619
+171.225.198.222 3 26 3453366 20251028102448
+103.199.33.218 1 5 581 20251031210218
+205.169.39.22 3 30 1540798 20251014203558
+104.28.71.168 7 15 421261 20251031204053
+42.118.128.53 9 38 3722328 20251006083940
+167.172.27.15 2 2 561564 20251021212047
+42.117.64.252 6 34 1605628 20251013222939
+116.96.44.149 2 16 477701 20251022112936
+171.253.128.208 3 32 3721616 20251005154945
+85.203.21.25 6 22 601634 20251010140523
+112.197.13.69 3 17 584018 20251015071855
+171.252.155.17 3256 3426 8264639 20251020180223
+183.81.27.238 5 5 1065 20251011101459
+69.171.251.2 2 16 535159 20251026080155
+113.185.47.162 51 163 5705977 20251020095527
+42.112.247.12 4309 4502 42356090 20251031110615
+42.114.49.57 29 41 250630 20251009143104
+27.70.185.152 1 2 73701 20251030141955
+27.79.245.156 1 1 31040 20251004211402
+42.117.10.9 3 17 586139 20251029075534
+1.52.41.139 6 31 1754552 20251009222636
+171.234.9.17 2 32 1666410 20251012075048
+31.59.27.193 1 1 52792 20251023122117
+123.24.153.244 3 33 3802062 20251007102156
+116.98.220.198 4 4 56218 20251029062621
+42.117.10.8 3 17 586145 20251024203002
+42.113.215.145 83 211 4696822 20251013205911
+123.21.33.132 1202 1269 4638284 20251022110727
+171.253.235.45 14 14 144 20251024091330
+31.13.115.113 4 34 1117813 20251026080200
+42.112.8.70 9 54 1771856 20251031092213
+104.28.68.177 0 1 15639 
+162.120.184.63 5 5 194146 20251029174907
+104.28.163.52 31 76 1278080 20251015082355
+15.220.83.146 11 40 1716998 20251011075803
+42.113.248.248 18 33 739034 20251029094052
+152.59.13.170 87 196 22644915 20251030122640
+104.28.158.52 6 24 648849 20251015094433
+141.138.213.100 1 1 36036 20251003052143
+125.235.190.14 2 18 647528 20251009195914
+42.116.163.132 393 468 15886679 20251030150925
+117.5.152.157 95 165 8027339 20251008153933
+42.113.203.146 30 89 4202421 20251005135037
+27.66.22.53 13 17 117804 20251017210026
+31.13.127.27 2 29 3537322 20251003160027
+192.178.8.73 2 2 20077 20251009071806
+171.224.181.133 1790 1833 2847487 20251020131642
+42.113.240.142 12 41 3772330 20251005201849
+183.80.51.80 8373 9041 77888726 20251009171810
+113.165.20.120 3 18 602714 20251015182355
+42.114.15.104 276 294 1437457 20251013200146
+162.120.184.47 5 5 242868 20251023100535
+1.55.48.175 2 16 494263 20251007063205
+64.233.172.194 8 31 529458 20251029144416
+104.28.237.74 1 5 512525 20251007104333
+31.13.115.115 2 18 647555 20251005083012
+104.28.160.182 88 161 2202850 20251021161612
+42.114.72.175 1352 1423 7282065 20251009225949
+116.108.9.207 16 45 3822668 20251007100517
+42.112.8.72 3 17 586140 20251027111515
+171.253.186.193 21 52 1076172 20251023165923
+117.2.113.85 40 102 2325991 20251009175110
+27.70.186.156 0 26 924124 
+42.112.8.4 3 17 583828 20251015114854
+113.185.44.146 6 38 2195075 20251023081114
+125.235.211.182 159 209 3915733 20251014202734
+27.73.0.213 745 808 6483606 20251023152519
+103.196.9.193 1 1 31688 20251006012903
+171.240.105.244 0 1 80522 
+104.28.163.53 129 211 2000952 20251030084734
+193.186.4.188 1 1 51851 20251030122050
+171.247.177.100 1277 1812 17757258 20251023090058
+27.79.195.16 367 427 6168228 20251013100518
+42.117.10.7 6 37 1192446 20251009151730
+42.118.139.31 846 908 4633774 20251002194740
+113.178.25.186 4 6 170150 20251008190659
+66.249.71.70 31 31 912604 20251030202826
+173.252.127.59 0 1 72765 
+173.252.95.1 3 31 12220703 20251026132751
+116.104.180.140 47 47 474 20251025182331
+171.224.177.188 2953 2996 4983919 20251016114941
+14.236.33.39 3 37 6090823 20251001192950
+54.85.79.68 3 28 3423081 20251002053414
+104.28.68.169 82 167 6087587 20251031163627
+183.80.235.118 8 57 3350712 20251024154451
+42.118.214.139 9 66 5342414 20251011161228
+42.114.204.230 3 31 1599652 20251018092911
+192.178.8.65 0 5 142588 
+31.13.127.2 2 18 647523 20251002081306
+14.185.32.68 3 34 3773661 20251028090440
+171.244.120.57 22 57 1390602 20251028215423
+1.55.40.186 26 86 4943021 20251006082725
+113.185.43.29 34 76 2340567 20251012204235
+113.185.43.202 1 2 83953 20251027174051
+203.162.160.204 61 177 14059861 20251028175508
+104.28.71.160 0 1 15639 
+42.114.49.74 26 38 383876 20251019133307
+104.28.242.151 56 82 2066054 20251020095528
+34.168.89.38 2 2 556435 20251028032502
+171.252.102.167 7 36 3722094 20251005082935
+104.28.158.53 90 147 1155463 20251023091404
+116.96.45.238 4 20 647497 20251009163803
+171.242.56.59 3 42 2673945 20251019204420
+213.188.68.48 3 32 3721617 20251006162030
+42.114.19.121 26 54 1744145 20251017223955
+104.28.71.147 0 1 15639 
+31.13.115.1 3 32 1607635 20251020130945
+171.250.167.86 22 52 7411519 20251025115104
+58.187.67.110 6 35 3757715 20251003212042
+27.66.22.135 65 106 543754 20251017090650
+104.28.205.70 29 72 4869832 20251030213713
+123.24.230.134 484 753 23253284 20251025193110
+123.16.134.5 1280 1519 28305661 20251031233833
+42.117.10.5 3 20 855608 20251031170703
+42.112.110.32 5 35 2475714 20251031235333
+117.0.201.63 37 82 2482960 20251023153649
+42.113.131.238 7 37 1679120 20251020131234
+27.66.22.46 86 118 840290 20251017095419
+113.185.47.214 16 49 4822557 20251025150711
+103.199.32.29 570 1105 10056946 20251003194153
+91.231.89.18 0 1 203765 
+116.111.184.85 325 422 5565485 20251022161210
+123.25.25.3 946 1078 13898344 20251031105114
+42.117.145.67 6 34 1605635 20251013212123
+116.96.77.130 21 58 7812970 20251029174939
+42.117.10.11 3 17 586113 20251027165459
+42.113.203.31 158 219 6219724 20251011124242
+104.28.231.125 2 18 582630 20251012001701
+117.5.147.175 2 2 112 20251011135647
+27.65.23.147 101 183 11762062 20251025161330
+123.16.123.125 9 38 3704657 20251003013619
+116.106.99.121 2 31 1784043 20251009134926
+14.191.100.187 229 353 25750452 20251026161442
+173.252.87.5 2 18 647528 20251008151230
+27.79.221.67 1 1 55943 20251022084954
+42.119.143.126 3720 3761 4211831 20251006203755
+118.69.37.28 232 284 11246599 20251029162048
+14.248.175.249 6 37 1944613 20251022114546
+171.253.240.99 5 10 106715 20251009201619
+66.249.82.103 6 18 498265 20251027232446
+113.185.45.219 3 3 49560 20251017030256
+116.111.185.92 3 32 3721630 20251006161234
+115.79.213.185 1 2 674772 20251007133005
+104.28.71.164 1 1 55595 20251024143255
+117.2.115.173 5 16 5004702 20251030164524
+171.246.125.144 35 51 390397 20251014193349
+116.106.99.92 4 34 1101399 20251014084303
+113.178.54.215 10 45 4835035 20251001083831
+171.229.78.172 1 4 392945 20251015164135
+113.22.46.167 7 46 2722673 20251019091041
+113.185.40.18 107 166 4995073 20251016152230
+203.210.249.187 138 234 5305904 20251001043524
+115.78.100.233 3 32 3721617 20251007124217
+104.28.237.72 9 37 1486046 20251013113144
+113.185.47.227 0 1 643121 
+113.185.108.96 3 3 49087 20251015102855
+171.253.241.130 4 19 5166157 20251030133328
+113.173.35.4 6 37 5574124 20251028002801
+113.185.40.206 42 80 2918289 20251019150455
+104.28.254.73 230 380 6516364 20251028153101
+104.28.160.187 39 121 4451352 20251030231042
+42.114.36.203 1 4 394960 20251027234705
+117.2.112.84 6 6 31320 20251008125845
+66.249.82.102 9 27 310250 20251027232239
+115.76.220.182 21 64 2508565 20251023173705
+1.52.111.200 15 90 5647058 20251023111110
+118.68.222.144 128 201 9639547 20251030111701
+91.231.89.102 1 1 155132 20251008052226
+113.163.207.149 3697 3719 1003954 20251027143506
+103.199.57.18 409 956 6212896 20251021195131
+79.191.205.96 2 20 2946191 20251004082002
+42.114.184.31 1 2 71347 20251014171723
+171.242.198.190 11 13 138507 20251018112445
+14.170.62.131 1067 1120 4825757 20251011104554
+109.243.5.20 1 15 556600 20251004081950
+42.114.200.199 10649 11083 71511018 20251031235425
+116.111.184.159 6 50 6194584 20251030140643
+35.165.215.140 3 29 3320395 20251009111009
+104.28.243.56 0 1 28308 
+18.206.199.143 4 34 5575190 20251028004350
+42.112.8.69 3 17 586104 20251028114125
+42.114.234.118 1569 1591 2399919 20251012164232
+183.80.32.59 3 32 11693310 20251027085752
+31.13.127.25 3 30 1540814 20251014124723
+42.1.70.226 1523 1565 5553739 20251003160624
+113.190.167.189 200 224 3002741 20251011130329
+107.172.195.38 2 2 63377 20251006012927
+116.110.43.242 11 48 4642802 20251003204329
+42.116.229.132 3 30 1552023 20251016150311
+14.248.214.20 13 56 4324522 20251028113717
+113.162.243.236 252 252 389795 20251004114657
+42.1.91.26 1 1 30962 20251002044525
+14.249.187.29 6 36 1623509 20251020192339
+64.233.172.195 3 24 608759 20251027203122
+104.28.163.56 20 49 172464 20251023114615
+104.28.68.161 4 4 24 20251031162009
+116.105.226.146 51 131 16780161 20251024161342
+23.234.103.56 1 1 31687 20251006013646
+42.112.8.7 6 34 1170357 20251030124836
+171.234.13.70 1259 1440 15421757 20251023131132
+72.14.201.135 2 2 74344 20251030113042
+171.224.113.32 3 32 3721640 20251007170533
+27.73.107.147 6 34 1451519 20251013124623
+171.229.151.250 4 4 18788 20251010191220
+91.231.89.99 0 1 203765 
+42.117.49.6 35 105 2359691 20251028152225
+118.70.41.73 13 42 3808798 20251006104736
+113.23.76.30 3 32 3721699 20251004073741
+162.120.184.46 5 5 217120 20251025113357
+42.113.248.107 48 106 352550 20251009142829
+23.27.145.46 1 1 36662 20251003194024
+171.244.123.228 2 18 850802 20251030145659
+58.186.129.81 389 389 21784 20251014092007
+116.99.230.112 0 1 15639 
+27.69.119.30 314 359 6571748 20251030084608
+116.98.252.155 26 67 2186760 20251011015845
+27.115.124.70 1 15 535219 20251002181148
+104.28.222.74 103 214 6324056 20251028160712
+116.105.29.66 3 35 6952598 20251030194355
+42.118.12.60 41 133 5246663 20251014094142
+113.23.54.141 3 18 57819 20251021110232
+27.68.136.161 126 304 17097404 20251026120426
+5.133.192.99 1 2 83746 20251016103132
+117.2.112.229 125 283 10546684 20251001191624
+59.153.224.58 33 85 4354616 20251004171903
+103.199.33.52 66 129 1291132 20251031174829
+193.186.4.135 3 3 138598 20251027082220
+47.237.22.105 1 1 67658 20251019012231
+31.13.127.48 2 18 582671 20251012075322
+14.191.28.227 376 752 19119253 20251008183550
+14.187.211.242 3 37 5934112 20251009135452
+27.70.165.76 3 32 3726031 20251002141821
+42.118.50.8 562 682 11693739 20251013164043
+116.107.103.78 236 336 5795522 20251019130158
+91.231.89.17 3 3 159686 20251009031536
+171.224.178.188 6 6 60 20251010125627
+117.1.111.38 1601 1687 8865351 20251015170635
+27.68.166.185 103 305 8383361 20251023223859
+14.191.38.188 3 32 7013670 20251024101933
+1.54.208.84 269 467 7787154 20251009155317
+185.219.141.102 1 1 31040 20251005161030
+14.236.165.201 11 43 9396736 20251029122704
+117.1.181.47 11 11 79951 20251009143345
+14.254.95.149 1142 1259 11793171 20251001110844
+98.83.135.238 2 2 135844 20251022060344
+42.114.151.37 64 162 1986650 20251024075816
+162.120.184.16 1 1 55732 20251014084700
+116.107.80.214 99 161 5492405 20251013182617
+117.2.112.255 27 99 2095711 20251031162219
+113.186.228.219 9 40 5629938 20251028000007
+42.118.42.42 162 465 28363973 20251029150048
+104.28.68.151 7 37 4841003 20251029222052
+171.255.114.20 1 1 50997 20251029222513
+42.112.192.182 6 36 1679469 20251021085102
+1.53.53.192 1962 1968 896888 20251003101159
+115.79.47.15 2573 2925 40937992 20251023091520
+1.54.214.174 8 8 84 20251003190627
+115.73.222.135 119 250 6584617 20251023175514
+42.1.103.191 1 1 55586 20251027111516
+117.2.115.31 9 10 184088 20251018112906
+104.28.68.148 1 1 55900 20251018150716
+113.23.74.11 9 50 2748885 20251030235106
+171.251.237.57 3 40 2528365 20251016001444
+42.114.202.41 15 160 18608183 20251007093728
+171.224.177.87 8 52 14531475 20251029100637
+14.236.17.83 3 29 3320379 20251009141530
+42.114.15.165 2 18 647419 20251008151124
+14.187.160.238 0 1 68352 
+171.224.113.0 35 57 723676 20251008074821
+183.81.19.166 209 278 6819187 20251003222320
+27.2.194.69 3 17 586148 20251031233233
+14.248.212.193 71 79 323187 20251030132250
+27.74.115.207 305 407 13949360 20251025111746
+171.246.175.64 15 43 1511628 20251020224107
+42.118.12.78 6 36 1203536 20251031100822
+116.96.47.84 240 465 15512437 20251028013011
+171.225.185.5 2 32 7203890 20251028123606
+14.177.84.160 1958 2001 3356321 20251023133747
+91.231.89.22 1 1 522 20251009031634
+117.5.146.54 2 2 112 20251001132053
+113.185.43.83 2 34 9232625 20251029111206
+58.187.175.71 6 34 1605598 20251014132632
+49.213.78.31 0 5 1821474 
+38.170.158.249 1 1 52792 20251023122040
+171.224.112.147 47 146 5500990 20251010193713
+116.106.97.147 1 3 248687 20251003123109
+1.54.210.86 4 29 6907718 20251024102942
+193.186.4.177 1 1 55602 20251028103428
+171.255.134.90 103 173 6672071 20251008232252
+104.28.71.149 0 1 15639 
+42.114.14.62 93 287 11253232 20251027193014
+171.224.180.242 348 385 2825830 20251009211755
+104.28.68.160 1 2 136414 20251019154044
+113.185.73.153 9 36 1536504 20251013145103
+193.186.4.156 4 4 220321 20251029161337
+27.78.6.19 40 83 5954332 20251030015320
+42.114.44.176 7 7 69453 20251006093038
+104.28.163.49 38 62 1719991 20251026161950
+116.110.225.150 2 2 2776 20251013131357
+91.231.89.23 2 2 153244 20251009031845
+14.177.208.110 10 94 5169461 20251011151721
+171.250.162.181 113 124 458156 20251003121653
+104.28.68.153 1 1 55649 20251024115605
+113.185.45.240 11 53 4995244 20251016164351
+117.0.137.114 8280 8317 4847855 20251002171706
+205.169.39.31 3 31 3641107 20251007020213
+104.28.237.70 0 2 342924 
+113.166.120.49 15 72 7421161 20251007104859
+171.241.17.169 2773 2948 23228304 20251024135604
+117.5.147.42 8 8 448 20251001231231
+113.167.135.56 9 35 3478164 20251001135215
+113.23.52.122 3 36 5549736 20251030224152
+171.253.232.187 53 126 2391463 20251025125345
+204.101.161.15 3 28 3350105 20251002013332
+178.156.177.231 1 1 22957 20251011061448
+123.17.197.162 3 3 49533 20251023170942
+115.76.60.88 6 6 60922 20251009161952
+113.185.74.180 3 40 2315197 20251012230224
+116.103.35.11 7 37 3956255 20251003091959
+116.106.98.102 1 1 70230 20251002142929
+43.142.47.75 1 1 67506 20251015024135
+42.117.147.4 1 1 19017 20251001184921
+93.158.90.71 1 1 67777 20251027043451
+171.224.179.179 3 32 3726523 20251008165125
+171.255.118.190 5 9 103261 20251028181139
+42.1.91.158 15 23 177540 20251026195814
+172.226.46.106 3 3 51192 20251030023337
+162.120.184.239 8 8 365445 20251029111200
+14.191.220.228 5 21 647528 20251010090709
+42.117.48.101 1704 1745 2345974 20251013153534
+27.2.201.4 6 34 1169998 20251031092229
+27.78.41.106 3073 3117 3287416 20251023135346
+116.96.46.58 430 499 5779173 20251021132436
+103.199.57.7 8 12 110385 20251021195353
+14.228.29.145 71 117 4439784 20251002014519
+115.76.255.117 1103 1191 6254397 20251002115012
+171.255.66.224 15 45 795913 20251025074509
+118.70.42.204 0 1 15639 
+103.199.33.121 230 266 1045932 20251012075104
+1.52.41.238 2492 2534 1486113 20251022091718
+104.28.157.201 22 22 428 20251020095702
+14.191.134.94 14 45 2043807 20251022000116
+171.254.201.241 2 2 112 20251004090157
+192.178.15.6 2 8 121809 20251016151641
+113.172.42.117 18 47 3852494 20251007131451
+171.246.8.123 15 46 944684 20251026060420
+171.243.49.248 0 1 15639 
+14.191.154.145 3 29 1426185 20251013163616
+112.197.12.69 3 17 584251 20251020021916
+42.112.7.120 552 1609 17340899 20251023220016
+208.117.251.132 3 18 585720 20251010140528
+42.114.84.92 2198 2283 12022731 20251028140037
+116.107.99.165 524 741 19916746 20251002194953
+42.113.242.103 2232 2232 124992 20251002045943
+93.158.91.25 1 2 84022 20251027014644
+116.102.15.45 2248 2266 1380299 20251008173104
+42.114.49.103 238 383 4472951 20251013145818
+104.28.71.163 68 125 3744262 20251031162217
+113.185.41.179 144 205 6431380 20251016135137
+112.197.5.198 3 18 585974 20251003135011
+44.246.119.109 1 1 277957 20251028143431
+118.70.202.53 1055 1140 5816718 20251017090523
+31.13.127.17 2 17 550796 20251029080344
+42.114.35.121 145 304 6551547 20251027231602
+171.250.165.97 137 160 1855043 20251021005300
+1.53.68.155 36 109 19125417 20251030212622
+31.13.115.7 6 60 6388847 20251029200807
+171.224.178.0 23 63 1947274 20251013081454
+222.254.214.242 338 400 6551769 20251012015511
+123.19.45.79 2639 2729 29866643 20251026125938
+116.111.184.246 1975 2136 24560496 20251014102305
+58.186.77.209 5839 5839 326984 20251008150333
+42.114.212.154 687 846 16326220 20251014135215
+192.178.15.5 1 9 59258 20251016151645
+117.5.147.142 21 25 377403 20251014221527
+192.178.15.7 4 13 306019 20251016151645
+116.108.65.89 8 36 1673476 20251010214916
+42.119.36.227 3 34 1894933 20251022133131
+58.186.196.37 389 605 18919122 20251012201942
+116.111.184.225 71 155 5102207 20251019162915
+123.18.225.197 2 32 7203602 20251025113400
+116.97.202.211 1 18 1367849 20251007171918
+117.5.147.213 2 2 112 20251001134332
+91.231.89.96 0 2 245146 
+116.108.39.193 4 46 8617794 20251028165504
+173.252.95.19 3 34 1895043 20251023182359
+113.190.82.126 14 18 102866 20251029204131
+123.6.49.18 1 1 30811 20251002181149
+113.186.44.129 1655 1740 10547522 20251003141534
+42.112.8.9 8 64 11599354 20251025222109
+192.178.8.64 2 11 123234 20251009071806
+42.114.49.156 68 122 1980261 20251011145820
+14.191.79.245 3 40 2315191 20251013075302
+123.26.214.76 176 358 5907669 20251026150612
+117.5.147.41 2 2 112 20251005101422
+113.186.47.171 3 3 48984 20251013155103
+58.186.123.68 14 43 3801732 20251003002808
+123.16.116.90 196 363 8449401 20251010194631
+27.65.162.246 170 400 11476710 20251020111738
+58.187.78.101 3 3 19241 20251002101159
+42.112.8.10 6 36 1172022 20251009135502
+173.252.127.14 3 33 1623267 20251020130932
+1.53.3.249 6 23 953480 20251019091703
+125.235.190.113 3 32 3721666 20251005095312
+104.28.71.151 1 2 71356 20251015073520
+171.241.7.249 577 623 3131101 20251021101419
+104.28.222.75 14 49 1670565 20251021155016
+115.77.6.131 10 40 3975970 20251005132503
+115.76.63.179 137 193 898044 20251005214609
+112.197.12.70 7 36 1188843 20251021163917
+113.178.91.20 1179 1184 552075 20251008121324
+116.111.185.185 1105 1213 10162991 20251015135337
+113.23.6.185 7 36 1689746 20251011083959
+171.253.181.213 147 258 3273790 20251021192249
+171.224.179.99 3 23 7717625 20251027111229
+113.185.111.144 41 81 2068982 20251015072052
+125.212.158.214 31 185 26813121 20251028060137
+118.70.132.9 287 329 2138726 20251020131833
+116.105.35.198 5 23 974650 20251009140813
+113.185.46.149 8 38 3722058 20251007150755
+31.13.115.114 2 17 550780 20251029160111
+193.186.4.166 1 1 51216 20251031162341
+116.97.104.35 70 204 8434860 20251015090756
+205.169.39.37 3 34 1648986 20251018210953
+42.114.214.122 209 528 29970238 20251031192254
+14.191.7.100 6 7 38468 20251001101945
+14.243.50.220 53 147 5725174 20251016171235
+116.96.47.57 3 17 477807 20251030103244
+42.1.70.133 57 122 6446461 20251017202948
+14.186.192.118 102 168 6774718 20251021085241
+113.23.31.19 100 165 6015706 20251009134409
+42.118.113.108 123 218 8759279 20251009152743
+14.248.236.218 100 184 11473037 20251007195323
+171.254.200.82 9 38 3771063 20251002145555
+42.113.248.20 112 382 20386910 20251029074315
+69.171.251.115 2 16 535061 20251019081044
+14.160.23.174 7 45 2649053 20251015110145
+117.5.146.181 1043 1152 30495546 20251026162857
+27.79.197.12 3 28 1735486 20251010124559
+171.227.198.221 1 30 1806393 20251022093119
+193.186.4.146 1 1 55732 20251025133816
+104.28.205.72 20 44 989526 20251021161953
+101.36.112.121 2 2 135296 20251019152752
+27.79.138.78 424 514 17417848 20251029164305
+42.114.248.40 0 1 15639 
+31.13.115.9 2 18 647533 20251009075122
+171.254.200.60 48 157 8238235 20251002082557
+42.1.90.207 45 110 1845252 20251001171217
+58.186.78.140 3 42 2623799 20251018200418
+116.99.196.200 2 17 567284 20251013090109
+125.235.211.142 1 11 1590015 20251031213458
+171.246.10.73 3 3 31151 20251002094711
+222.253.53.18 68 107 4087031 20251002094321
+42.117.48.37 4120 4120 230720 20251004031740
+172.225.74.1 31 167 17516433 20251031161333
+171.224.180.103 202 261 8110514 20251028085825
+42.116.146.163 13 42 3737183 20251004072718
+123.24.156.60 1 1 0 20251016000056
+72.14.201.177 1 1 25330 20251010184145
+52.91.214.236 1 1 67999 20251017093822
+END_VISITOR
+
+# Date - Pages - Hits - Bandwidth - Visits
+BEGIN_DAY 31
+20251001 64798 66089 130473114 52
+20251002 83497 85584 171372857 66
+20251003 59312 61041 129986023 65
+20251004 48454 49508 70462893 47
+20251005 45977 46633 65281205 61
+20251006 44424 45238 92791908 50
+20251007 36033 37149 98895230 47
+20251008 25565 27540 147781656 49
+20251009 34308 36224 203731576 85
+20251010 26986 29016 131921019 68
+20251011 50070 51940 117054834 59
+20251012 22581 23877 99605196 43
+20251013 26736 28307 139111229 61
+20251014 16260 18708 89297580 48
+20251015 10376 11388 80020293 47
+20251016 34368 35777 110146023 53
+20251017 17914 18741 56917577 42
+20251018 17202 17891 52678176 32
+20251019 7031 7405 23881009 18
+20251020 33058 34066 68451949 28
+20251021 67455 68935 55948841 38
+20251022 95456 96177 50751052 31
+20251023 49430 52497 128956812 68
+20251024 37012 39240 271386027 41
+20251025 6532 7452 108736597 33
+20251026 4894 6475 229471805 31
+20251027 19441 20762 158548374 41
+20251028 36664 38326 202128811 49
+20251029 32196 34084 268572482 52
+20251030 42422 44364 251940355 49
+20251031 42871 45092 208192327 52
+END_DAY
+
+# Session range - Number of visits
+BEGIN_SESSION 7
+0s-30s 796
+30s-2mn 125
+15mn-30mn 97
+2mn-5mn 101
+1h+ 196
+30mn-1h 83
+5mn-15mn 108
+END_SESSION
+
+# URL - Pages - Bandwidth - Entry - Exit
+# The 10 first Pages must be first (order not required for others)
+BEGIN_SIDER 650
+/includes/ajax/data/live.php 663637 72517738 89 398
+/includes/ajax/chat/live.php 427078 7800538 57 191
+/includes/ajax/phuong_nhi.php 16704 1562303 152 415
+/api/notifications-html 11399 638344 32 47
+/api/history 5674 317744 18 2
+/ 2677 221391782 605 158
+/shop-ai 1557 120130479 155 19
+/includes/ajax/phone-check-history.php 1547 382155 3 0
+/includes/ajax/users/location.php 1124 6811 0 2
+/includes/ajax/core/signin.php 440 30054 0 8
+/check-phone 2 0 0 0
+/Lambaokhanh2122 6 350725 2 2
+/search/2510035A8QHWKN 1 20733 0 0
+/si_lac_iNVb 2 48960 0 0
+/tuyetnhi/photos 1 61424 0 0
+/chieu_nong_U2Wn/followers 1 23045 0 0
+/google-maps-reviews/request-details/19 2 110800 0 0
+/Sang2505 2 50658 2 2
+/lehonglien/videos 1 22851 0 1
+/ashley_1808 1 105718 0 0
+/phamanhthu 1 25260 0 0
+/src= 182 0 0 4
+/posts/173 1 51841 1 1
+/Giahung2021az09 1 55224 1 1
+/soudy 4 316595 0 0
+/includes/ajax/posts/who_reacts.php 11 10655 0 1
+/cam_trong_wB7m/photos 1 23012 0 0
+/KhuongBolion/photos 1 54391 1 0
+/shop-ai/bank-accounts 9 589556 1 0
+/admincp/users/edit/176 5 194763 0 0
+/admincp/tips 1 59182 0 0
+/includes/ajax/admin/settings.php 30 2400 0 0
+/photos/54 1 51603 1 1
+/Congtai 13 1407403 0 0
+/people 60 4394898 1 0
+/google-maps-reviews/submit-proof/92 1 80898 0 0
+/admincp/wallet 1 60353 0 0
+/forums/my-threads 3 98772 0 0
+/admincp/users/edit/188 1 64455 0 0
+/nhan_hung_B57X 1 23990 0 1
+/phat275 3 323897 0 0
+/Haanh111/videos 2 61069 0 0
+/search/Li%C3%AAn%20l%C3%AA/src= 1 0 0 0
+/google-maps-reviews/request-details/15 35 1926086 0 0
+/includes/ajax/admin/users.php 18 1820 0 0
+/google-maps-reviews/src= 52 0 0 1
+/admincp/currencies 26 2285215 0 0
+/jvan_IdAY/photos 1 22972 1 1
+/posts/169 3 202404 1 0
+/settings/security/sessions 2 147844 0 0
+/includes/ajax/core/signup.php 373 34359 2 2
+/anhphuc10/friends 1 92563 0 0
+/cam_trong_wB7m/followers 1 23093 0 0
+/blogs 2 196916 0 0
+/directory/posts/src= 2 54011 0 0
+/trac_loc_bkZh/likes 1 23650 1 1
+/pages/mtp.official 4 316640 0 0
+/admincp/ads 1 91719 0 0
+/admincp/settings/uploads 4 327929 0 0
+/kieu_an_ExxX/albums 3 67493 0 2
+/Dotrongnam/friends 2 185390 0 0
+/phong_han_SDdh/albums 2 45912 1 2
+/zutaki 1 24840 1 1
+/google-maps-reviews/submit-proof/111 3 90 0 0
+/hoa15_dLSG 1 24491 0 1
+/signup 131 5009722 18 4
+/cskhrosy 2 155333 1 1
+/groups/datdon 2 224049 0 0
+/Son98/albums 1 52744 1 1
+/settings/notifications 2 155212 0 0
+/includes/ajax/admin/pages.php 2 158 0 0
+/Haohao88/photos 1 52802 0 1
+/Hfg 1 55291 1 1
+/rmai_6EvN 1 24531 1 0
+/google-maps-reviews/my-requests 166 12559226 4 1
+/qlinhdzs1tg 1 55236 1 0
+/admincp/games 1 58254 0 0
+/trac_loc_bkZh/albums 1 22850 1 1
+/google-maps-reviews/submit-proof/49 1 48798 0 0
+/phong_han_SDdh/photos 1 22986 1 0
+/tuyetnhi/videos 1 61228 0 0
+/dien_loc_pqCu/followings 2 46012 0 1
+/settings/profile/work 4 242661 0 0
+/posts/64 2 41176 2 2
+/pages/category/1/C%E1%BB%ADa-h%C3%A0ng 2 53646 0 0
+/dien_loc_pqCu/likes 1 23693 1 1
+/tuyetnhi 17 1674846 1 0
+/lehonglien/followers 1 23034 1 1
+/settings/privacy 6 448680 0 0
+/kieu_an_ExxX 2 48197 1 0
+/0962814664 5 541562 0 0
+/google-maps-reviews/submit-proof/87 1 80722 0 0
+/admincp/users/find 43 2614972 0 0
+/Haanh111/friends 5 308128 0 0
+/groups/datdon/settings 1 105579 0 0
+/includes/ajax/posts/offer.php 3 2982 0 0
+/search/Shop-ai/posts 2 136833 0 0
+/google-maps-reviews/submit-proof/27 1 48705 0 0
+/spsvn2011/friends 1 92577 0 0
+/xuanhong/friends 2 84988 1 0
+/NguyenAnh1998 7 677433 1 1
+/lieu_quynh_hZzh/albums 2 44908 1 0
+/google-maps-reviews/submit-proof/22 1 48800 0 0
+/admincp/settings/security 1 63088 0 0
+/admincp/users/edit/174 1 64549 0 0
+/google-maps-reviews/submit-proof/98 1 80762 0 0
+/admincp/settings/notifications 1 63999 0 0
+/Lengaa/likes 1 23191 1 0
+/includes/ajax/chat/post.php 3 1294 0 0
+/admincp/design 38 2698688 0 0
+/thekingdemon 1 66961 0 0
+/dien_loc_pqCu/albums 2 45866 0 0
+/google-maps-reviews/submit-proof/81 1 79048 0 0
+/minhtaieng/friends 1 53017 1 1
+/admincp/pages/edit_page/6 1 92217 0 0
+/admincp/users/edit/165 1 66982 0 0
+/events/2 3 334699 0 0
+/google-maps-reviews/submit-proof/122 1 81085 0 0
+/monneynguyen 3 289901 0 0
+/dung_banh_OQBr/albums 1 22895 1 1
+/Tham_191023 8 870682 0 0
+/Hoantt 5 541147 0 0
+/jobs 1 49775 0 0
+/duytuan1818 1 25472 1 1
+/google-maps-reviews/request-details/13 5 272353 0 0
+/photos/31 1 19634 1 1
+/shan_NBpp/followings 1 22868 1 1
+/google-maps-reviews/ 2 137293 0 0
+/ScaredPvP 6 658014 0 0
+/photos/37 1 50721 0 1
+/google-maps-reviews/submit-proof/39 1 48889 0 0
+/admincp/settings/src= 1 19017 0 0
+/settings/src= 8 88802 0 0
+/ScaredPvP/friends 1 92664 0 0
+/Vubui92/videos 3 283937 0 0
+/admincp 115 8508504 1 0
+/tranlong 1 99951 0 0
+/includes/ajax/users/settings.php 19 1801 0 0
+/Silen 6 647309 0 0
+/people/friend_requests 6 318940 0 0
+/nhan_hung_B57X/albums 2 45858 2 2
+/admincp/themes 4 263951 0 0
+/chinhnguyen 3 318518 0 0
+/uyen324 8 563130 1 1
+/search/2510035A8QHWKN/src= 1 0 0 0
+/tu_hong_TNCS/photos 1 22873 0 1
+/mymymy/friends 1 0 0 0
+/huykaka 6 658411 0 0
+/kha_trung_ks8F/friends 2 45999 2 1
+/posts/51 2 86448 1 1
+/google-maps-reviews/submit-proof/47 1 48796 0 0
+/admincp/users/edit/204 1 64478 0 0
+/admincp/users 30 2010092 0 0
+/search/2510035A8QHWKN/pages 1 0 0 0
+/pco_A295/likes 1 23778 1 1
+/admincp/users/edit/146 1 64509 0 0
+/includes/ajax/data/upload.php 132 9525 2 0
+/cuongminh114235 2 212448 0 0
+/xuanhong/albums 1 22791 1 0
+/pages/celine.spa 9 610841 1 0
+/Maithao/albums 1 52698 1 0
+/Kaidz123/albums 1 52754 1 1
+/thanhuong 11 1208765 0 0
+/lho_rxO7/albums 1 22885 1 1
+/0876867567/videos 1 22839 1 1
+/google-maps-reviews/dashboard 95 4924758 19 4
+/google-maps-reviews/submit-proof/65 1 79105 0 0
+/directory 4 292858 0 0
+/pages/checkso 19 1228265 4 3
+/posts/29 1 20537 0 0
+/posts/58 1 20971 1 1
+/nguyen_van_ARNI/photos 1 22991 0 1
+/node_modules/bootstrap/dist/css/bootstrap.min.css.map 7 4124127 0 0
+/my-system.php 3 254043 0 0
+/admincp/users/src= 4 48982 0 0
+/Duytan1996vn 2 24976 1 1
+/posts/57 5 279680 1 0
+/google-maps-reviews/submit-proof/46 1 48725 0 0
+/includes/ajax/posts/edit.php 1 272 0 0
+/changbi 1 25273 1 0
+/otp-rental/src= 2 61363 0 0
+/ehome102/videos 1 22864 1 1
+/content/themes/default/images/headers/ 1 522 1 1
+/google-maps-reviews/submit-proof/36 1 48748 0 0
+/google-maps-reviews/submit-proof/50 1 48872 0 0
+/forums/my-replies 3 0 0 0
+/tuyetnhi/friends 1 61687 0 0
+/kieu_an_ExxX/friends 2 44957 2 1
+/google-maps-reviews/request-details/14 1 54473 0 0
+/quan84_jesa/albums 1 22905 0 0
+/pages/maps 28 1808393 1 0
+/kien_don_lFWm/videos 1 22920 1 1
+/dung_banh_OQBr/photos 1 22988 1 1
+/zutaki/albums 1 22924 0 1
+/shop-ai/pricing 122 7280347 6 1
+/google-maps-reviews/submit-proof/25 1 48997 0 0
+/my-system/google-maps 6 396593 0 0
+/search 38 2107211 6 4
+/thao_ba_TRaw/photos 1 23016 1 0
+/hao_trinh_wGQr/videos 2 45748 2 2
+/admincp/users/edit/125 2 66784 0 0
+/thdi/photos 1 54155 1 1
+/includes/ajax/posts/story.php 15 17407 0 0
+/phong_han_SDdh/friends 2 46048 2 1
+/tora999/likes 1 23197 0 1
+/nguyen_van_ARNI/likes 1 23652 0 1
+/memories 11 533659 0 0
+/settings/profile/education 2 151254 0 0
+/hinh_vuong_WwV7 1 24491 1 0
+/static/src= 2 0 0 0
+/daonguyen 2 130551 0 0
+/minhtu2507 1 105084 0 0
+/kinglee259 3 325195 0 0
+/huykaka/friends 1 92761 0 0
+/hao_trinh_wGQr/photos 1 22961 1 1
+/includes/ajax/users/information.php 1 37 0 0
+/Dotrongnam/photos 2 185402 0 0
+/hoang1789 8 757919 1 0
+/my-system/number-check 19 1280842 1 0
+/kha_trung_ks8F 2 48926 2 1
+/reset 39 1549329 1 1
+/truong97 1 55211 1 0
+/nghia_bang_iw4A/likes 1 23635 0 0
+/Sang2505/photos 1 22889 1 0
+/Giang223 7 541290 0 0
+/minhtaieng/photos 1 22822 1 1
+/includes/ajax/admin/delete.php 28 168 0 0
+/settings/information 3 234003 0 0
+/Maihn 1 25387 1 0
+/quoc 1 68503 0 0
+/google-maps-reviews/view-penalty/src= 2 0 0 0
+/Haanh111 9 673784 0 0
+/google-maps-reviews/submit-proof/73 1 79088 0 0
+/Lengaa/followers 1 23021 0 0
+/includes/ajax/posts/lightbox.php 53 164149 0 2
+/popular 15 1456149 0 0
+/myphuong 1 24858 1 1
+/pages/manage 19 1171794 2 0
+/NguyenAnh1998/albums 1 52579 0 1
+/spsvn2011 8 865287 0 0
+/settings/profile 87 6742310 2 0
+/search/thu%C3%AA%20s%E1%BB%91/posts 1 57554 0 0
+/dien_loc_pqCu 2 48910 2 1
+/static/terms 6 488708 0 0
+/pages/src= 5 0 0 0
+/Vukhangqd4/albums 1 52607 1 1
+/google-maps-reviews/request-details/16 4 308834 0 0
+/photos/131 1 51705 1 1
+/pco_A295 2 49068 2 2
+/Vubui92/photos 1 64677 0 0
+/includes/ajax/posts/filter.php 2 27968 0 0
+/si_lac_iNVb/photos 1 22987 0 1
+/google-maps-reviews/submit-proof/38 1 48785 0 0
+/Mafia 4 435255 0 0
+/google-maps-reviews/reward-history 137 8121000 14 3
+/vo_nhung_XA5b 1 24450 1 1
+/google-maps-reviews/create-request 145 11572717 6 2
+/admincp/notifications 3 182446 0 0
+/search/ch%C3%ADnh/src= 1 0 0 0
+/trangnguyen 1 24890 1 1
+/posts/60 2 41782 2 1
+/photos/108 1 51658 1 1
+/notifications 7 497307 1 0
+/google-maps-reviews/request-details/24 3 253508 0 0
+/baotrongg2019/videos 1 22876 0 1
+/posts/72 1 94155 0 0
+/admincp/settings/limits 1 58897 0 0
+/vaan.hee 1 25373 1 1
+/lehonglien 2 80549 2 2
+/gnong_03dD/likes 1 23754 0 0
+/Oanh 3 204956 1 1
+/includes/ajax/users/switch.php 123 4719 1 0
+/pages/Shopai.vn/settings 3 198239 0 0
+/cvu_bEqs 1 66612 0 0
+/yty_G251/followers 1 23026 1 1
+/shop-ai/recharge 303 21877844 6 1
+/google-maps-reviews/submit-proof/109 1 30 0 0
+/google-maps-reviews/submit-proof/124 1 80688 0 0
+/google-maps-reviews/submit-proof/84 1 79137 0 0
+/admincp/settings/chat 3 250189 0 0
+/Buidat00/videos 1 22850 1 1
+/%C4%90%C4%82NG%20XU%E1%BA%A4T 2 1898 0 0
+/quyetnguyen01/photos 1 22798 0 1
+/posts/149 1 51678 1 1
+/includes/ajax/chat/messages.php 9 2431 0 0
+/includes/ajax/users/mutual_friends.php 1 870 0 0
+/google-maps-reviews/submit-proof/123 1 80577 0 0
+/dien_loc_pqCu/photos 2 45892 1 0
+/phat275/friends 1 54683 1 1
+/kimloan1762 1 55149 0 1
+/pages/category/15/src= 2 137827 0 0
+/hunghc2003 12 1116690 1 1
+/pages/maps/photos 1 61711 0 0
+/Cuong113/friends 1 92675 0 0
+/pages/Shopai.vn/settings/src= 2 0 0 0
+/settings/profile/design 3 184102 0 0
+/includes/ajax/posts/reaction.php 56 392 0 0
+/Dotrongnam/likes 1 92697 0 0
+/gpt-verify-proof 37 13358 0 0
+/vuthisao 1 24887 1 1
+/settings/profile/location 2 93153 0 0
+/admincp/pro/packages 1 58261 0 0
+/andrew242004 2 51117 0 0
+/admincp/users/edit/src= 1 0 0 0
+/0868920634 1 55236 0 1
+/XoaiCute 14 1089830 1 0
+/kha_trung_ks8F/albums 2 45802 0 1
+/includes/ajax/chat/reaction.php 9 48 0 0
+/online_vanan 20 2207082 0 0
+/Cuong113 2 212364 0 0
+/Lengaa 1 55206 1 1
+/Haanh111/photos 3 183349 0 0
+/posts/61 1 20996 0 1
+/votrongvan 11 1161016 1 0
+/dien_loc_pqCu/friends 2 46062 1 1
+/tfree 1 104829 0 0
+/hoang1789/albums 1 22786 0 1
+/lieu_quynh_hZzh 1 24025 0 0
+/includes/ajax/users/image_position.php 19 114 0 0
+/leoslark 1 116635 0 0
+/Kupetshop/photos 3 157397 3 1
+/vanchinhecom 9 872387 0 0
+/google-maps-reviews/my-reviews 345 26542437 2 1
+/NguyenAnh1998/followers 1 22952 0 0
+/Congtai/videos 1 92366 0 0
+/google-maps-reviews/view-proof/46 6 0 0 0
+/harshtech 3 275522 0 0
+/Dangnam88 6 596661 0 0
+/groups 1 91497 0 0
+/admincp/countries 1 58377 0 0
+/includes/ajax/posts/share.php 2 4247 0 0
+/nguyenphuong912 2 50668 1 1
+/Dotrongnam 8 765236 0 0
+/nguyen_van_ARNI/followings 1 23030 1 1
+/vu_doi_yceo/albums 1 22446 1 0
+/hinh_vuong_WwV7/friends 2 45906 0 0
+/shop-ai/src= 24 0 0 0
+/includes/ajax/posts/who_votes.php 2 1016 0 0
+/admincp/users/edit/140 1 64517 0 0
+/admincp/themes/edit/1 2 116974 0 0
+/admincp/announcements 7 636203 0 0
+/login 1 0 1 0
+/includes/ajax/admin/design.php 26 1014 0 0
+/hao_trinh_wGQr 1 24579 1 1
+/includes/ajax/core/forget_password.php 38 4870 0 0
+/posts/54 1 20422 1 1
+/posts/113 1 51738 1 1
+/settings/accounts 1 59217 0 0
+/braveacc 6 655134 0 0
+/admincp/bank 2 59382 0 0
+/admincp/settings/payments 1 86168 0 0
+/includes/ajax/users/connect.php 45 264 0 0
+/google-maps-reviews/submit-proof/112 9 647043 2 0
+/Vubui92 77 7363901 4 2
+/google-maps-reviews/submit-proof/43 1 48887 0 0
+/duytuan1818/likes 1 23080 1 0
+/pages/maps/settings 1 95976 0 0
+/includes/ajax/data/load.php 180 957695 1 8
+/admincp/users/edit/112 3 284328 0 0
+/kha_trung_ks8F/followings 2 45870 1 1
+/google-maps-reviews/submit-proof/51 1 48886 0 0
+/__whereami.php 1 192 0 0
+/debug-host-complete.php 1 784 0 0
+/kha_trung_ks8F/photos 1 23021 0 0
+/pages/checkso/photos 3 101639 0 0
+/tora999/videos 1 22874 1 1
+/admincp/users/edit/201 2 65487 0 0
+/discover 14 1346871 1 0
+/phuongduy19071993 7 753482 0 0
+/Tan1234561 5 541629 0 0
+/events/2/settings 1 104187 0 0
+/content/themes/default/images/ 2 1044 1 2
+/dat09032001 5 546410 0 0
+/google-maps-reviews/submit-proof/79 2 158246 0 0
+/Lucytbg 1 24813 1 1
+/cam_trong_wB7m/albums 1 23019 0 1
+/quyetnguyen01 1 25296 1 0
+/pages/maps/src= 2 0 0 0
+/search/s%E1%BB%91%20d%C6%B0 1 63145 0 0
+/admincp/pages/business_types 2 152891 0 0
+/Yennhi/albums 1 52623 0 0
+/google-maps-reviews/request-details/28 1 87792 0 0
+/admincp/announcements/add 2 181975 0 0
+/shop-ai/transactions 127 9607027 0 0
+/Maihn/likes 1 23010 0 1
+/thanh77_n7dI/followers 1 22885 0 0
+/google-maps-reviews/submit-proof/31 3 145971 0 0
+/posts/69 2 116355 1 1
+/includes/ajax/admin/announcements.php 5 390 0 0
+/settings/profile/social 2 152619 0 0
+/xuanhong 11 485940 6 2
+/Congtai/photos 1 92114 0 0
+/otp-rental 3 100029 1 1
+/includes/ajax/posts/scraper.php 1 218 0 0
+/posts/62 1 20986 1 1
+/mymymy 9 763995 0 0
+/admincp/pages 17 1076992 0 0
+/search/cursor 1 51772 0 0
+/admincp/users/edit/215 2 189896 0 0
+/google-maps-reviews/view-penalty/122 32 2577794 0 0
+/phong_han_SDdh 1 24558 0 0
+/admincp/users/edit/224 3 96879 0 0
+/anhtrong379x 7 769525 0 0
+/ehome102/followers 1 22989 1 1
+/static/about 12 865018 1 0
+/google-maps-reviews/request-details/8 2 110796 0 0
+/google-maps-reviews/submit-proof/117 1 80699 0 0
+/yty_G251/videos 1 22901 0 0
+/forums 3 196063 0 0
+/0876867567/followers 2 74943 2 1
+/includes/ajax/data/search.php 62 27362 0 0
+/pages/Shopai.vn/reviews 3 189813 0 0
+/admincp/users/edit/1 2 165463 0 0
+/thdi 6 652885 0 0
+/lyntt 1 100460 0 0
+/shop-ai/withdrawal 2 130659 0 0
+/includes/ajax/admin/notifications.php 1 89 0 0
+/admincp/settings/sms 1 181604 0 0
+/static/privacy 17 1261159 1 0
+/events 2 182167 0 0
+/otp-rental/history 2 117658 0 0
+/phunem/albums 1 52518 0 0
+/google-maps-reviews/submit-proof/28 1 48751 0 0
+/kieu_an_ExxX/followers 1 22578 1 0
+/eha_z8OI 1 24042 1 1
+/content/uploads/undefined 1 0 0 0
+/Sang2505/followers 1 22993 0 1
+/nguyen_van_ARNI/friends 2 45992 0 2
+/includes/ajax/users/image_crop.php 54 324 0 0
+/google-maps-reviews/submit-proof/121 1 80699 0 0
+/Baothi 10 1076637 0 0
+/signin 229 7508875 21 7
+/lieu_quynh_hZzh/photos 1 22508 0 0
+/tuanta2 6 400793 1 1
+/Son98 2 80528 1 2
+/Lengaa/videos 1 22899 0 0
+/lieu_quynh_hZzh/followings 1 22597 0 0
+/google-maps-reviews.php 199 30582 0 0
+/search/ 9 630546 2 1
+/search/2510035A8QHWKN/posts 1 20733 0 0
+/pages/Shopai.vn/settings/admins 2 133805 0 0
+/posts/55 2 43354 2 1
+/Hoang2705 5 546456 0 0
+/google-maps-reviews/submit-proof/32 1 48872 0 0
+/admincp/users/moderators 1 89546 0 0
+/includes/ajax/modules/create.php 5 405 0 0
+/ehome102 3 174862 0 0
+/search/src= 9 578169 0 0
+/quanlykho 1 106278 0 0
+/honghanh98 1 26436 1 1
+/posts/src= 3 0 0 0
+/includes/ajax/posts/post.php 26 204471 0 0
+/minhtaieng 1 25271 1 1
+/Haohao88 1 107306 0 0
+/Huong37 2 94836 1 1
+/people/find 7 489742 0 0
+/settings/profile/src= 1 0 0 0
+/my-system/src= 20 443853 0 0
+/pages 35 1805897 1 0
+/vi92_eOs4/followers 1 23011 0 1
+/Vubui92/friends 6 366170 2 1
+/Hfg/albums 1 52114 1 1
+/pages/Shopai.vn 34 2342323 5 5
+/content/themes/default/css/ 2 1044 2 1
+/phi_dan_ja4a/followers 1 23053 0 0
+/phunem 2 93062 1 1
+/vu_doi_yceo/videos 1 22432 1 0
+/search/2510035A8QHWKN/users 2 20739 0 0
+/0876867567 2 100741 0 1
+/admincp/genders 1 58254 0 0
+/minhtaieng/albums 1 22367 1 1
+/includes/ajax/modules/add.php 6 14199 0 0
+/vuthisao/albums 1 52588 0 1
+/nhan_hung_B57X/photos 1 22974 1 1
+/kieu_an_ExxX/photos 2 44924 0 1
+/posts/83 1 95199 0 0
+/si_lac_iNVb/albums 2 45860 0 0
+/admincp/pages/categories 1 59173 0 0
+/chuanpro9x 4 430195 0 0
+/google-maps-reviews/view-penalty/124 2 160538 0 0
+/google-maps-reviews/submit-proof/48 1 48705 0 0
+/sdsdsdsd 3 216338 0 0
+/tora999 1 24898 1 1
+/pages/category/15/Th%C6%B0%C6%A1ng-m%E1%BA%A1i-%C4%91i%E1%BB%87n-t%E1%BB%AD 2 137856 0 0
+/Pskehsb 25 2305531 1 0
+/Congtai/src= 1 0 0 0
+/nhan_hung_B57X/followings 2 46026 2 2
+/Kiem 9 967027 0 0
+/shop-ai.php 120 15360 0 0
+/nguyen_van_ARNI/albums 2 45932 1 2
+/cam_trong_wB7m 1 24527 1 0
+/admincp/settings 35 3347120 1 1
+/Xuem78/followings 1 23295 0 0
+/includes/ajax/users/photos.php 13 17374 0 0
+/Samsung71 6 454614 1 0
+/google-maps-reviews/submit-proof/66 1 79093 0 0
+/truc_au_jYAr/videos 1 22932 1 1
+/search/Li%C3%AAn%20l%C3%AA/posts 1 60515 0 0
+/anhphuc10 4 393416 0 1
+/google-maps-reviews 301 20735937 6 1
+/google-maps-reviews/request-details/12 3 166808 0 0
+/google-maps-reviews/submit-proof/94 6 180 0 0
+/hao_trinh_wGQr/albums 1 22988 0 1
+/kieu_an_ExxX/likes 2 46707 1 0
+/pages/dalatanuong/settings 2 191416 0 0
+/pages/Shopai.vn/settings/info 1 67783 0 0
+/bac_huynh_Dgcc/likes 1 23767 0 1
+/pages/liked 4 111808 0 0
+/includes/ajax/data/reset.php 76 438 0 0
+/Kupetshop 2 79510 2 2
+/Yennhi 1 25264 1 1
+/posts/49 20 1142488 1 1
+/includes/ajax/users/image_change.php 6 36 0 0
+/truong97/likes 1 23237 1 0
+/thdi/followers 1 54171 1 1
+/cam_trong_wB7m/friends 1 23044 1 1
+/posts/39 1 20060 1 1
+/directory/posts/1 2 108027 1 1
+/lieu_quynh_hZzh/likes 1 23262 0 1
+/trinh 5 434761 1 1
+/includes/ajax/users/popover.php 50 38187 0 0
+/nguyendung3012 8 759783 0 0
+/Louistran999/photos 1 0 0 0
+/admincp/settings/live 2 151389 0 0
+/dodanhvu 1 74332 0 0
+/includes/ajax/core/theme.php 17 0 0 0
+/Maithao 11 1032338 1 2
+/admincp/users/edit/10 1 94929 0 0
+/kieu_an_ExxX/followings 2 44982 1 1
+/phong_han_SDdh/likes 1 23610 0 0
+/Dotrongnam/videos 6 554564 0 0
+/lieu_quynh_hZzh/followers 1 22583 0 1
+/daonguyen/photos 3 128541 3 3
+/google-maps-reviews/submit-proof/114 1 80726 0 0
+/uyenthu/friends 1 23281 1 1
+/admincp/announcements/edit/3 4 275570 0 0
+/egapidal 5 546532 0 0
+/posts/65 5 259008 0 0
+/0868920634/albums 1 52593 0 0
+/google-maps-reviews/request-details/7 12 660255 0 0
+/phong_han_SDdh/followings 1 23024 1 0
+/google-maps-reviews/submit-proof/34 1 48819 0 0
+/Louistran999 6 536361 0 0
+/dollarcheckso 5 546043 0 0
+/trac_loc_bkZh/friends 1 22910 1 1
+/admincp/users/edit/143 1 94763 0 0
+/admincp/settings/analytics 1 58312 0 0
+/otp-shop-ai 3 0 1 0
+/includes/ajax/posts/comment.php 27 48281 0 0
+/admincp/announcements/edit/src= 1 0 0 0
+/trac_loc_bkZh/followings 1 22927 1 0
+/Kupetshop/albums 1 52640 0 0
+/modcp 8 548342 0 0
+/test-my-system.php 1 202 0 0
+/my-system 102 8408633 2 1
+/Son98/videos 1 22853 0 0
+/lieu_quynh_hZzh/friends 2 44916 0 1
+/vuthisao/followings 1 23327 0 0
+/google-maps-reviews/submit-proof/33 1 48978 0 0
+/posts/56 7 365042 2 2
+/Huong37/photos 1 61191 0 0
+/includes/ajax/modules/review.php 1 0 0 0
+/admincp/users/edit/137 1 64469 0 0
+/Kupetshop/friends 1 23186 0 1
+/includes/ajax/chat/call.php 20 455 0 0
+/Kaidz123 1 24811 1 1
+/si_lac_iNVb/friends 2 45932 0 1
+/posts/99 1 94510 0 0
+/people/sent_requests 7 375350 0 0
+/Yennhi/friends 1 23337 0 0
+/posts/68 12 460831 3 1
+/Buidat00 2 80654 2 2
+/Xuem78 1 24940 0 0
+/Kblinh 1 76915 0 0
+/Kupetshop94 1 25272 1 0
+/nguyen_van_ARNI 2 49054 1 1
+/admincp/src= 271 251230 0 0
+/pages/category/1/src= 1 53705 0 0
+/saved 22 1421564 3 1
+/hao_trinh_wGQr/likes 1 23780 1 0
+/chieu_nong_U2Wn/likes 1 23634 1 1
+/google-maps-reviews/submit-proof/23 1 48777 0 0
+/groups/manage 1 0 0 0
+/Tranbac2004 1 25263 1 1
+/admincp/stickers 1 58648 0 0
+/google-maps-reviews/submit-proof/80 5 365900 1 0
+/hinh_vuong_WwV7/photos 1 23037 1 1
+/directory/users/10 1 20370 0 0
+/admincp/users_groups 4 235378 0 0
+/posts/73 3 199186 2 0
+/Kalinh 1 55161 1 1
+/hunghc2003/friends 1 22955 1 1
+/laluungocanh 10 971166 0 0
+/hong50_oTn2/photos 1 22847 1 1
+/anhmanh0811 11 1214764 0 0
+/Vukhangqd4 1 55227 1 1
+/haiau112 6 546970 0 0
+/search/ch%C3%ADnh/posts 1 97362 0 0
+/google-maps-reviews/submit-proof/26 1 48728 0 0
+/pages/dalatanuong 3 322987 0 0
+/google-maps-reviews/request-details/9 10 558374 0 0
+/vu_doi_yceo 1 66529 0 0
+/content/uploads/ 1 1 0 0
+/KhuongBolion/likes 2 108611 2 2
+/nguyenphuong912/videos 1 22871 0 1
+/Vubui92/likes 3 224288 0 0
+/admincp/shop-ai 94 6759271 3 1
+/my-system/transactions 363 19472068 15 4
+/si_lac_iNVb/followings 2 46018 1 0
+/KhuongBolion 10 867720 4 3
+/nguyennguyen 6 657738 0 0
+/phanhoang24547 1 105751 0 0
+/baotrongg2019 1 55203 1 1
+/search/Shop-ai/pages 1 57487 0 0
+/0862920294 4 434753 0 0
+/groups/joined 2 96802 0 0
+/admincp/changelog 2 79354 0 0
+/can11_bv6L 1 24523 1 1
+/settings 32 2266222 3 1
+/vanh_YWrD/albums 1 22937 1 1
+/hinh_vuong_WwV7/albums 1 22808 1 1
+/andrew242004/albums 1 52761 1 1
+/google-maps-reviews/submit-proof/42 1 48771 0 0
+/google-maps-reviews/submit-proof/30 1 48725 0 0
+/Huong37/friends 2 61643 0 0
+/offers 4 184811 0 0
+/directory/posts/5 2 103703 2 1
+/mymymy/photos 2 92420 0 0
+/Sang2505/likes 1 23215 1 0
+/kha_trung_ks8F/likes 1 23622 0 1
+/Yenphuong 3 218611 0 0
+/nlthien 7 763774 0 0
+/spsvn2011/photos 1 0 0 0
+/google-maps-reviews/request-details/21 6 471190 2 0
+/admincp/groups 2 177904 0 0
+/Quynhanh 7 650978 0 0
+/contacts 4 216121 2 2
+/posts/102 1 51216 1 1
+/vu_doi_yceo/likes 2 46945 1 1
+/thanhsang 7 628132 0 0
+/ly_an_PqIK 1 24517 1 1
+/sacaca 1 24855 0 0
+/loroqua123 6 652549 0 0
+/si_lac_iNVb/likes 1 23660 1 0
+/admincp/languages 1 58501 0 0
+/google-maps-reviews/request-details/src= 9 0 0 0
+/admincp/users/online 4 361945 0 0
+/includes/ajax/core/activation_email_resend.php 10 1970 0 0
+/trinh/followers 2 106106 2 1
+/hoang1789/photos 1 22870 1 0
+END_SIDER
+
+# Payload Range - Payload Frequency
+BEGIN_FILESIZE 7
+44-100 27973
+0-44 962469
+2K-5K 3519
+100-500 81224
+5K+ 50334
+500-1K 88776
+1K-2K 20007
+END_FILESIZE

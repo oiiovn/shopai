@@ -1,2 +1,0 @@
-* * * * * php /Applications/XAMPP/xamppfiles/htdocs/dropseller/artisan schedule:run >> /dev/null 2>&1
-* * * * * /opt/homebrew/bin/php /Applications/XAMPP/xamppfiles/htdocs/TCSN/Script/cron-bank-transactions-cli.php >> /Applications/XAMPP/xamppfiles/htdocs/TCSN/Script/logs/cron.log 2>&1
