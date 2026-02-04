@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 4.3.4, created on 2026-02-04 05:49:23
+/* Smarty version 4.3.4, created on 2026-02-04 07:01:25
   from '/Applications/XAMPP/xamppfiles/htdocs/shop-ai.vn/public_html/content/themes/default/templates/giao-dich-trung-gian-detail.tpl' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '4.3.4',
-  'unifunc' => 'content_6982dde3036920_54977018',
+  'unifunc' => 'content_6982eec5a81c47_69778432',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     'cd2d3b8040307e2e25538356e3520c84dcccbc43' => 
     array (
       0 => '/Applications/XAMPP/xamppfiles/htdocs/shop-ai.vn/public_html/content/themes/default/templates/giao-dich-trung-gian-detail.tpl',
-      1 => 1770184161,
+      1 => 1770188484,
       2 => 'file',
     ),
   ),
@@ -24,7 +24,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:_footer.tpl' => 1,
   ),
 ),false)) {
-function content_6982dde3036920_54977018 (Smarty_Internal_Template $_smarty_tpl) {
+function content_6982eec5a81c47_69778432 (Smarty_Internal_Template $_smarty_tpl) {
 $_smarty_tpl->_checkPlugins(array(0=>array('file'=>'/Applications/XAMPP/xamppfiles/htdocs/shop-ai.vn/public_html/vendor/smarty/smarty/libs/plugins/modifier.date_format.php','function'=>'smarty_modifier_date_format',),1=>array('file'=>'/Applications/XAMPP/xamppfiles/htdocs/shop-ai.vn/public_html/vendor/smarty/smarty/libs/plugins/modifier.number_format.php','function'=>'smarty_modifier_number_format',),));
 $_smarty_tpl->_subTemplateRender('file:_head.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array(), 0, false);
 $_smarty_tpl->_subTemplateRender('file:_header.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array(), 0, false);
@@ -37,6 +37,14 @@ $_smarty_tpl->_subTemplateRender('file:_header.tpl', $_smarty_tpl->cache_id, $_s
 #confirm-complete-modal .fa, #confirm-complete-modal .fas { margin-right: 0.5rem; }
 #confirm-complete-modal .modal-header .btn-close-custom { padding: 0.25rem 0.5rem; font-size: 1.25rem; line-height: 1; color: #6c757d; background: transparent; border: 0; cursor: pointer; }
 #confirm-complete-modal .modal-header .btn-close-custom:hover { color: #212529; }
+/* Sticky card dưới header */
+.escrow-detail .aside-card.sticky-top,
+.escrow-detail .sticky-top { z-index: 998 !important; }
+/* Modal đè lên tất cả kể cả header, căn giữa màn hình (chỉ khi .show) */
+.modal-backdrop { position: fixed !important; z-index: 9998 !important; top: 0; left: 0; right: 0; bottom: 0; }
+#confirm-complete-modal, #dispute-modal { position: fixed !important; z-index: 9999 !important; top: 0; left: 0; right: 0; bottom: 0; }
+#confirm-complete-modal.show, #dispute-modal.show { display: flex !important; align-items: center !important; justify-content: center !important; padding: 1rem; }
+#confirm-complete-modal .modal-dialog, #dispute-modal .modal-dialog { margin: 0 auto; }
 .escrow-detail .blur-secret { filter: blur(6px); user-select: none; transition: all 0.3s; }
 .escrow-detail .blur-secret.reveal { filter: none; user-select: auto; }
 .escrow-detail .card { border: none; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,.08); overflow: hidden; }
@@ -417,7 +425,7 @@ $_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
             <?php if (($_smarty_tpl->tpl_vars['escrow']->value['status'] == 'delivering' || $_smarty_tpl->tpl_vars['escrow']->value['status'] == 'locked') && $_smarty_tpl->tpl_vars['escrow']->value['is_buyer']) {?>
               <button type="button" class="btn btn-success btn-block font-weight-bold py-3 js-confirm-complete" id="btn-confirm-complete" disabled><i class="fa fa-check-circle mr1"></i> Xác nhận giao dịch an toàn</button>
             <?php }?>
-            <button type="button" class="btn btn-outline-danger btn-block mt-3 py-2 js-open-dispute"><i class="fa fa-flag mr1"></i> Báo cáo sự cố / Khiếu nại</button>
+            <button type="button" class="btn btn-outline-danger btn-block mt-3 py-2 js-open-dispute"><i class="fa fa-flag mr1"></i> Báo cáo admin</button>
           </div>
           <?php }?>
         </div>
@@ -440,7 +448,7 @@ $_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
         <p class="text-dark mb-0">Bạn chắc chắn giao dịch đã an toàn đối với bạn chứ?</p>
         <div class="alert alert-warning border-0 mt-3 mb-0 py-2 px-3 small d-flex align-items-start">
           <i class="fas fa-info-circle mt-1 mr-2"></i>
-          <span><strong>Lưu ý:</strong> Sau khi xác nhận, tiền sẽ được chuyển ngay cho người bán và <strong>không thể đảo ngược</strong>. Nếu có vấn đề, hãy dùng "Báo cáo sự cố / Khiếu nại" trước khi bấm hoàn tất.</span>
+          <span><strong>Lưu ý:</strong> Sau khi xác nhận, tiền sẽ được chuyển ngay cho người bán và <strong>không thể đảo ngược</strong>. Nếu có vấn đề, hãy dùng "Báo cáo admin" trước khi bấm hoàn tất.</span>
         </div>
       </div>
       <div class="modal-footer border-0 bg-light px-4 py-3">
@@ -458,10 +466,11 @@ $_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header border-bottom d-flex align-items-center">
-        <h5 class="modal-title text-danger mb-0">Khởi tạo tranh chấp</h5>
+        <h5 class="modal-title text-danger mb-0">Báo cáo Admin</h5>
         <button type="button" class="close ml-auto p-2 border-0 bg-transparent" style="font-size:1.5rem;line-height:1;color:#6c757d;cursor:pointer;" data-dismiss="modal" aria-label="Đóng" title="Đóng">&times;</button>
       </div>
       <div class="modal-body">
+        <p class="small font-weight-bold text-primary mb-2"><i class="fa fa-phone mr1"></i> Liên hệ Admin qua Zalo: <a href="tel:0934584939">0934584939</a></p>
         <p class="small text-muted">Hệ thống sẽ đóng băng tiền và mời Admin tham gia. Vui lòng cung cấp bằng chứng.</p>
         <div class="form-group">
           <label class="small font-weight-bold">Lý do chính</label>
@@ -478,7 +487,7 @@ $_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Hủy bỏ</button>
-        <button type="button" class="btn btn-danger btn-sm js-submit-dispute">Gửi khiếu nại</button>
+        <button type="button" class="btn btn-danger btn-sm js-submit-dispute">Gửi báo cáo</button>
       </div>
     </div>
   </div>
@@ -612,6 +621,7 @@ $_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
   });
 
   function showModal(el) {
+    if (el.parentNode !== document.body) document.body.appendChild(el);
     if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
       var m = bootstrap.Modal.getOrCreateInstance(el);
       m.show();

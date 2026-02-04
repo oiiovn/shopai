@@ -8,6 +8,14 @@
 #confirm-complete-modal .fa, #confirm-complete-modal .fas { margin-right: 0.5rem; }
 #confirm-complete-modal .modal-header .btn-close-custom { padding: 0.25rem 0.5rem; font-size: 1.25rem; line-height: 1; color: #6c757d; background: transparent; border: 0; cursor: pointer; }
 #confirm-complete-modal .modal-header .btn-close-custom:hover { color: #212529; }
+/* Sticky card dưới header */
+.escrow-detail .aside-card.sticky-top,
+.escrow-detail .sticky-top { z-index: 998 !important; }
+/* Modal đè lên tất cả kể cả header, căn giữa màn hình (chỉ khi .show) */
+.modal-backdrop { position: fixed !important; z-index: 9998 !important; top: 0; left: 0; right: 0; bottom: 0; }
+#confirm-complete-modal, #dispute-modal { position: fixed !important; z-index: 9999 !important; top: 0; left: 0; right: 0; bottom: 0; }
+#confirm-complete-modal.show, #dispute-modal.show { display: flex !important; align-items: center !important; justify-content: center !important; padding: 1rem; }
+#confirm-complete-modal .modal-dialog, #dispute-modal .modal-dialog { margin: 0 auto; }
 .escrow-detail .blur-secret { filter: blur(6px); user-select: none; transition: all 0.3s; }
 .escrow-detail .blur-secret.reveal { filter: none; user-select: auto; }
 .escrow-detail .card { border: none; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,.08); overflow: hidden; }
@@ -346,7 +354,7 @@
             {if ($escrow.status == 'delivering' || $escrow.status == 'locked') && $escrow.is_buyer}
               <button type="button" class="btn btn-success btn-block font-weight-bold py-3 js-confirm-complete" id="btn-confirm-complete" disabled><i class="fa fa-check-circle mr1"></i> Xác nhận giao dịch an toàn</button>
             {/if}
-            <button type="button" class="btn btn-outline-danger btn-block mt-3 py-2 js-open-dispute"><i class="fa fa-flag mr1"></i> Báo cáo sự cố / Khiếu nại</button>
+            <button type="button" class="btn btn-outline-danger btn-block mt-3 py-2 js-open-dispute"><i class="fa fa-flag mr1"></i> Báo cáo admin</button>
           </div>
           {/if}
         </div>
@@ -369,7 +377,7 @@
         <p class="text-dark mb-0">Bạn chắc chắn giao dịch đã an toàn đối với bạn chứ?</p>
         <div class="alert alert-warning border-0 mt-3 mb-0 py-2 px-3 small d-flex align-items-start">
           <i class="fas fa-info-circle mt-1 mr-2"></i>
-          <span><strong>Lưu ý:</strong> Sau khi xác nhận, tiền sẽ được chuyển ngay cho người bán và <strong>không thể đảo ngược</strong>. Nếu có vấn đề, hãy dùng "Báo cáo sự cố / Khiếu nại" trước khi bấm hoàn tất.</span>
+          <span><strong>Lưu ý:</strong> Sau khi xác nhận, tiền sẽ được chuyển ngay cho người bán và <strong>không thể đảo ngược</strong>. Nếu có vấn đề, hãy dùng "Báo cáo admin" trước khi bấm hoàn tất.</span>
         </div>
       </div>
       <div class="modal-footer border-0 bg-light px-4 py-3">
@@ -387,10 +395,11 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header border-bottom d-flex align-items-center">
-        <h5 class="modal-title text-danger mb-0">Khởi tạo tranh chấp</h5>
+        <h5 class="modal-title text-danger mb-0">Báo cáo Admin</h5>
         <button type="button" class="close ml-auto p-2 border-0 bg-transparent" style="font-size:1.5rem;line-height:1;color:#6c757d;cursor:pointer;" data-dismiss="modal" aria-label="Đóng" title="Đóng">&times;</button>
       </div>
       <div class="modal-body">
+        <p class="small font-weight-bold text-primary mb-2"><i class="fa fa-phone mr1"></i> Liên hệ Admin qua Zalo: <a href="tel:0934584939">0934584939</a></p>
         <p class="small text-muted">Hệ thống sẽ đóng băng tiền và mời Admin tham gia. Vui lòng cung cấp bằng chứng.</p>
         <div class="form-group">
           <label class="small font-weight-bold">Lý do chính</label>
@@ -407,7 +416,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Hủy bỏ</button>
-        <button type="button" class="btn btn-danger btn-sm js-submit-dispute">Gửi khiếu nại</button>
+        <button type="button" class="btn btn-danger btn-sm js-submit-dispute">Gửi báo cáo</button>
       </div>
     </div>
   </div>
@@ -538,6 +547,7 @@
   });
 
   function showModal(el) {
+    if (el.parentNode !== document.body) document.body.appendChild(el);
     if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
       var m = bootstrap.Modal.getOrCreateInstance(el);
       m.show();

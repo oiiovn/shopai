@@ -184,12 +184,14 @@
           Mua Tài Khoản
         </a>
       </li>
+      {* Ẩn menu Giao Dịch Trung Gian
       <li {if $page == "giao-dich-trung-gian"}class="active" {/if}>
         <a href="{$system['system_url']}/giao-dich-trung-gian">
           <img src="{$system['system_url']}/content/themes/{$system['theme']}/images/escrow-icon.png" alt="" class="main-icon mr10" width="24" height="24" style="object-fit: contain;">
           Giao Dịch Trung Gian
         </a>
       </li>
+      *}
       {if $system['google_maps_reviews_enabled']}
       <li {if $page == "google-maps-reviews"}class="active" {/if}>
         <a href="{$system['system_url']}/google-maps-reviews">
