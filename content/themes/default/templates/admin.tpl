@@ -31,6 +31,13 @@
                 </a>
               </li>
               <!-- Shop-AI Admin -->
+              <!-- Phản hồi Giao dịch trung gian -->
+              <li {if $view == "escrow-feedback"}class="active" {/if}>
+                <a href="{$system['system_url']}/{$control_panel['url']}/escrow-feedback">
+                  <i class="fa fa-handshake fa-lg fa-fw mr10" style="color: #5e72e4"></i>{__("Phản hồi Giao dịch trung gian")}
+                </a>
+              </li>
+              <!-- Phản hồi Giao dịch trung gian -->
               <!-- Settings -->
               <li {if $view == "settings"}class="active" {/if}>
                 <a href="#settings" data-bs-toggle="collapse" {if $view == "settings"}aria-expanded="true" {/if}>

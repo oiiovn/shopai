@@ -147,11 +147,21 @@
         <small class="text-muted">{__("explore")|upper}</small>
       </li>
 
-      {if $user->_logged_in}
+      {* Tạm ẩn mục Người dùng trong KHÁM PHÁ *}
+      {* {if $user->_logged_in}
         <li {if $page == "people"}class="active" {/if}>
           <a href="{$system['system_url']}/people">
             {include file='__svg_icons.tpl' icon="find_people" class="main-icon mr10" width="24px" height="24px"}
             {__("People")}
+          </a>
+        </li>
+      {/if} *}
+
+      {if $user->_logged_in}
+        <li {if $page == "finance"}class="active" {/if}>
+          <a href="{$system['system_url']}/finance">
+            {include file='__svg_icons.tpl' icon="wallet" class="main-icon mr10" width="24px" height="24px"}
+            {__("Tài chính")}
           </a>
         </li>
       {/if}
@@ -162,16 +172,24 @@
           {__("Check số shopee")}
         </a>
       </li>
-      
-      {if $system['otp_rental_enabled']}
       <li {if $page == "otp-rental"}class="active" {/if}>
-        <a href="{$system['system_url']}/otp-rental">
-          <i class="fa fa-mobile-alt main-icon mr10" style="width: 24px; height: 24px; font-size: 18px;"></i>
-          {__("Thuê OTP")}
+        <a href="{$system['system_url']}/otp-rental?view=rent">
+          <img src="https://img.icons8.com/ios/50/5e72e4/sim-card.png" alt="sim-card" class="main-icon mr10" width="24" height="24">
+          Thuê OTP
         </a>
       </li>
-      {/if}
-      
+      <li {if $page == "buy-account"}class="active" {/if}>
+        <a href="{$system['system_url']}/buy-account">
+          {include file='__svg_icons.tpl' icon="profile" class="main-icon mr10" width="24px" height="24px"}
+          Mua Tài Khoản
+        </a>
+      </li>
+      <li {if $page == "giao-dich-trung-gian"}class="active" {/if}>
+        <a href="{$system['system_url']}/giao-dich-trung-gian">
+          <img src="{$system['system_url']}/content/themes/{$system['theme']}/images/escrow-icon.png" alt="" class="main-icon mr10" width="24" height="24" style="object-fit: contain;">
+          Giao Dịch Trung Gian
+        </a>
+      </li>
       {if $system['google_maps_reviews_enabled']}
       <li {if $page == "google-maps-reviews"}class="active" {/if}>
         <a href="{$system['system_url']}/google-maps-reviews">
@@ -300,7 +318,7 @@
         </li>
       {/if}
 
-      <!-- explore -->
+  <!-- explore -->
     </ul>
   </div>
 </div>

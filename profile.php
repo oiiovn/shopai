@@ -168,6 +168,12 @@ try {
 
       /* get followers count */
       $profile['followers_count'] = $user->get_followers_count($profile['user_id']);
+      /* cộng 5k người theo dõi ảo chỉ cho tài khoản admin (user_group = 1); user thường không cộng */
+      if ((int)$profile['user_group'] === 1) {
+        $profile['followers_count'] += 5000;
+      }
+      /* format followers count with thousand separator */
+      $profile['followers_count_formatted'] = number_format($profile['followers_count'], 0, ',', '.');
 
       /* get custom fields */
       $smarty->assign('custom_fields', $user->get_custom_fields(array("for" => "user", "get" => "profile", "node_id" => $profile['user_id'])));
@@ -263,7 +269,15 @@ try {
       $profile['followers'] = $user->get_followers($profile['user_id']);
       if ($profile['followers']) {
         $profile['followers_count'] = $user->get_followers_count($profile['user_id']);
+      } else {
+        $profile['followers_count'] = $user->get_followers_count($profile['user_id']);
       }
+      /* cộng 5k người theo dõi ảo chỉ cho tài khoản admin (user_group = 1); user thường không cộng */
+      if ((int)$profile['user_group'] === 1) {
+        $profile['followers_count'] += 5000;
+      }
+      /* format followers count with thousand separator */
+      $profile['followers_count_formatted'] = number_format($profile['followers_count'], 0, ',', '.');
       break;
 
     case 'followings':

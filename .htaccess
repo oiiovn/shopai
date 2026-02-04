@@ -61,6 +61,8 @@ Options -MultiViews
 	ExpiresByType text/css "access plus 1 month"
 	ExpiresByType application/pdf "access plus 1 month"
 	ExpiresByType text/x-javascript "access plus 1 month"
+	ExpiresByType application/javascript "access plus 1 month"
+	ExpiresByType text/javascript "access plus 1 month"
 	ExpiresByType application/x-shockwave-flash "access plus 1 month"
 	ExpiresByType image/x-icon "access plus 1 year"
 	ExpiresDefault "access plus 2 days"
@@ -137,10 +139,6 @@ RewriteRule ^settings/?$ settings.php [L,QSA]
 RewriteRule ^settings/([^/]+)/?$ settings.php?view=$1 [L,QSA]
 RewriteRule ^settings/([^/]+)/([^/]+)/?$ settings.php?view=$1&sub_view=$2 [L,QSA]
 
-# My System Management
-RewriteRule ^my-system/?$ my-system.php [L,QSA]
-RewriteRule ^my-system/([^/]+)/?$ my-system.php?view=$1 [L,QSA]
-
 # Live
 RewriteRule ^live/?$ live.php [L,QSA]
 
@@ -172,6 +170,11 @@ RewriteRule ^ads/edit/([^/]+)/?$ ads.php?view=edit&campaign_id=$1 [L,QSA]
 RewriteRule ^wallet/?$ wallet.php [L,QSA]
 RewriteRule ^wallet/payments/?$ wallet.php?view=payments [L,QSA]
 
+# Finance
+RewriteRule ^finance/?$ finance.php [L,QSA]
+RewriteRule ^finance/recharge/?$ finance.php?view=recharge [L,QSA]
+RewriteRule ^finance/transactions/?$ finance.php?view=transactions [L,QSA]
+
 # Boosted
 RewriteRule ^boosted/posts/?$ index.php?view=boosted_posts [L,QSA]
 RewriteRule ^boosted/pages/?$ index.php?view=boosted_pages [L,QSA]
@@ -185,10 +188,29 @@ RewriteRule ^people/sent_requests/?$ people.php?view=sent_requests [L,QSA]
 # Shop AI
 RewriteRule ^shop-ai/?$ shop-ai.php [L,QSA]
 RewriteRule ^shop-ai/recharge/?$ shop-ai.php?view=recharge [L,QSA]
+RewriteRule ^shop-ai/withdrawal/?$ shop-ai.php?view=withdrawal [L,QSA]
+RewriteRule ^shop-ai/bank-accounts/?$ shop-ai.php?view=bank-accounts [L,QSA]
 RewriteRule ^shop-ai/transactions/?$ shop-ai.php?view=transactions [L,QSA]
 RewriteRule ^shop-ai/pricing/?$ shop-ai.php?view=pricing [L,QSA]
 RewriteRule ^shop-ai/history/?$ shop-ai.php?view=history [L,QSA]
 RewriteRule ^shop-ai/rank-check/?$ shop-ai.php?view=rank-check [L,QSA]
+
+# OTP Rental
+RewriteRule ^otp-rental/?$ otp-rental.php [L,QSA]
+RewriteRule ^otp-rental/services/?$ otp-rental.php?view=services [L,QSA]
+RewriteRule ^otp-rental/rent/?$ otp-rental.php?view=rent [L,QSA]
+RewriteRule ^otp-rental/rent/([0-9]+)/?$ otp-rental.php?view=rent&service_id=$1 [L,QSA]
+RewriteRule ^otp-rental/active/([0-9]+)/?$ otp-rental.php?view=active&request_id=$1 [L,QSA]
+RewriteRule ^otp-rental/history/?$ otp-rental.php?view=history [L,QSA]
+
+# Buy Account
+RewriteRule ^buy-account/?$ buy-account.php [L,QSA]
+RewriteRule ^buy-account/list/?$ buy-account.php?view=list [L,QSA]
+RewriteRule ^buy-account/category/([0-9]+)/?$ buy-account.php?view=category&category_id=$1 [L,QSA]
+RewriteRule ^buy-account/details/([0-9]+)/?$ buy-account.php?view=details&account_id=$1 [L,QSA]
+RewriteRule ^buy-account/order/([0-9]+)/?$ buy-account.php?view=order&order_id=$1 [L,QSA]
+RewriteRule ^buy-account/history/?$ buy-account.php?view=my-accounts [L,QSA]
+RewriteRule ^buy-account/my-accounts/?$ buy-account.php?view=my-accounts [L,QSA]
 
 # Google Maps Reviews
 RewriteRule ^google-maps-reviews/?$ google-maps-reviews.php [L,QSA]
@@ -335,6 +357,13 @@ RewriteRule ^admincp/?$ admin.php [L,QSA]
 RewriteRule ^admincp/([^/]+)/?$ admin.php?view=$1 [L,QSA]
 RewriteRule ^admincp/([^/]+)/([^/]+)/?$ admin.php?view=$1&sub_view=$2 [L,QSA]
 RewriteRule ^admincp/([^/]+)/([^/]+)/([^/]+)/?$ admin.php?view=$1&sub_view=$2&id=$3 [L,QSA]
+
+# My System
+RewriteRule ^my-system/?$ my-system.php [L,QSA]
+RewriteRule ^my-system/([^/]+)/?$ my-system.php?view=$1 [L,QSA]
+
+# Giao dịch trung gian (tin tức + phản hồi)
+RewriteRule ^giao-dich-trung-gian/?$ giao-dich-trung-gian.php [L,QSA]
 
 # Profile
 RewriteCond %{REQUEST_FILENAME} !-f

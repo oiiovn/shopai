@@ -740,6 +740,47 @@ try {
       $smarty->assign('pending_withdrawals_count', count($pending_withdrawals));
       break;
 
+    case 'escrow-feedback':
+      if ($user->_is_moderator) {
+        _error(__('System Message'), __("You don't have the right permission to access this"));
+      }
+      $db->query("
+        CREATE TABLE IF NOT EXISTS escrow_feedback (
+          id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+          user_id INT UNSIGNED NOT NULL,
+          type ENUM('interest','feedback') NOT NULL,
+          message TEXT NULL,
+          created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          INDEX idx_user_id (user_id),
+          INDEX idx_type (type),
+          INDEX idx_created (created_at)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+      ");
+      page_header($control_panel['title'] . " &rsaquo; " . __("Phản hồi Giao dịch trung gian"));
+      $count_interest = $db->query("SELECT COUNT(*) as c FROM escrow_feedback WHERE type = 'interest'") or _error('SQL_ERROR');
+      $count_feedback = $db->query("SELECT COUNT(*) as c FROM escrow_feedback WHERE type = 'feedback'") or _error('SQL_ERROR');
+      $stats = [
+        'interest' => (int)$count_interest->fetch_assoc()['c'],
+        'feedback' => (int)$count_feedback->fetch_assoc()['c'],
+        'total' => 0
+      ];
+      $stats['total'] = $stats['interest'] + $stats['feedback'];
+      $smarty->assign('escrow_stats', $stats);
+      $get_rows = $db->query("
+        SELECT ef.*, u.user_name, u.user_firstname, u.user_lastname, u.user_picture, u.user_gender
+        FROM escrow_feedback ef
+        LEFT JOIN users u ON ef.user_id = u.user_id
+        ORDER BY ef.created_at DESC
+      ") or _error('SQL_ERROR');
+      $rows = [];
+      while ($r = $get_rows->fetch_assoc()) {
+        $r['user_picture'] = get_picture($r['user_picture'], $r['user_gender']);
+        $r['type_label'] = $r['type'] === 'interest' ? __('Quan tâm') : __('Góp ý');
+        $rows[] = $r;
+      }
+      $smarty->assign('escrow_rows', $rows);
+      break;
+
     case 'users':
       // check admin|moderator permission
       if ($user->_is_moderator) {
@@ -951,7 +992,7 @@ try {
           /* get user's friends */
           $data['friends'] = $user->get_friends_count($data['user_id']);
           $data['followings'] = $user->get_followings_count($data['user_id']);
-          $data['followers'] = $user->get_followers_count($data['user_id']);
+          $data['followers'] = $user->get_followers_count($data['user_id']) + ((int)$data['user_group'] === 1 ? 5000 : 0); /* +5k chỉ cho tài khoản admin, user thường không cộng */
           /* parse birthdate */
           $data['user_birthdate_parsed'] = ($data['user_birthdate']) ? date_parse($data['user_birthdate']) : null;
           /* get user sessions */
