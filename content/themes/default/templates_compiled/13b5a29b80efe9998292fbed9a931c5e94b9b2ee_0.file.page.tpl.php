@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 4.3.4, created on 2025-09-29 09:51:24
+/* Smarty version 4.3.4, created on 2026-01-31 14:34:34
   from '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/page.tpl' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '4.3.4',
-  'unifunc' => 'content_68da569c747dc4_20034009',
+  'unifunc' => 'content_697e12fa28a4f4_61588312',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     '13b5a29b80efe9998292fbed9a931c5e94b9b2ee' => 
     array (
       0 => '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/page.tpl',
-      1 => 1758583937,
+      1 => 1769870041,
       2 => 'file',
     ),
   ),
@@ -29,6 +29,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:_publisher.tpl' => 1,
     'file:_pinned_post.tpl' => 1,
     'file:_posts.tpl' => 1,
+    'file:page.virtual-orders.tpl' => 1,
     'file:_need_subscription.tpl' => 4,
     'file:__feeds_album.tpl' => 1,
     'file:_album.tpl' => 1,
@@ -42,7 +43,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:_footer.tpl' => 1,
   ),
 ),false)) {
-function content_68da569c747dc4_20034009 (Smarty_Internal_Template $_smarty_tpl) {
+function content_697e12fa28a4f4_61588312 (Smarty_Internal_Template $_smarty_tpl) {
 $_smarty_tpl->_checkPlugins(array(0=>array('file'=>'/home/sho73359/domains/shop-ai.vn/public_html/vendor/smarty/smarty/libs/plugins/modifier.number_format.php','function'=>'smarty_modifier_number_format',),));
 $_smarty_tpl->_subTemplateRender('file:_head.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array(), 0, false);
 $_smarty_tpl->_subTemplateRender('file:_header.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array(), 0, false);
@@ -217,15 +218,15 @@ $_smarty_tpl->_subTemplateRender('file:_header.tpl', $_smarty_tpl->cache_id, $_s
 "><?php echo $_smarty_tpl->tpl_vars['spage']->value['page_title'];?>
 </a>
           <?php if ($_smarty_tpl->tpl_vars['spage']->value['page_verified'] == '1') {?>
-            <span class="verified-badge" data-bs-toggle="tooltip" title='<?php echo __("Verified Page");?>
+            <span class="verified-badge verified-badge-profile" data-bs-toggle="tooltip" title='<?php echo __("Verified Page");?>
 '>
-              <?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"verified_badge",'width'=>"30px",'height'=>"30px"), 0, true);
+              <?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"verified_badge",'width'=>"20px",'height'=>"20px"), 0, true);
 ?>
             </span>
           <?php } elseif ($_smarty_tpl->tpl_vars['spage']->value['page_verified'] == '2') {?>
-            <span class="verified-badge-gray" data-bs-toggle="tooltip" title='<?php echo __("Business Verified");?>
+            <span class="verified-badge-gray verified-badge-profile" data-bs-toggle="tooltip" title='<?php echo __("Business Verified");?>
 '>
-              <?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"verified_badge_gray",'width'=>"30px",'height'=>"30px"), 0, true);
+              <?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"verified_badge_gray",'width'=>"20px",'height'=>"20px"), 0, true);
 ?>
             </span>
           <?php }?>
@@ -429,6 +430,53 @@ $_smarty_tpl->_subTemplateRender('file:_header.tpl', $_smarty_tpl->cache_id, $_s
         <?php }?>
       </div>
       <!-- profile-tabs -->
+
+      <?php if ($_smarty_tpl->tpl_vars['spage']->value['page_business_type_id'] == 1 && $_smarty_tpl->tpl_vars['spage']->value['i_admin']) {?>
+        <?php $_smarty_tpl->_assignInScope('__virtual_orders_tab', (($tmp = $_smarty_tpl->tpl_vars['virtual_orders_tab']->value ?? null)===null||$tmp==='' ? 'create' ?? null : $tmp));?>
+        <div class="card mt-3 mb-3 page-virtual-orders-nav">
+          <div class="card-body py-2">
+            <div class="d-flex flex-wrap justify-content-center gap-2">
+              <a href="<?php echo $_smarty_tpl->tpl_vars['system']->value['system_url'];?>
+/pages/<?php echo $_smarty_tpl->tpl_vars['spage']->value['page_name'];?>
+/virtual-orders?tab=guide" class="btn btn-sm d-flex align-items-center justify-content-center text-center px-3 virtual-orders-tab-link <?php if ($_smarty_tpl->tpl_vars['view']->value == 'virtual-orders' && $_smarty_tpl->tpl_vars['__virtual_orders_tab']->value == 'guide') {?>btn-primary<?php } else { ?>btn-outline-light border-0 rounded-0<?php }?>" data-order-tab="guide">
+                <span class="virtual-orders-icon-wrap virtual-orders-icon-wrap-sm me-2 d-inline-flex align-items-center justify-content-center">
+                  <img src="https://img.icons8.com/color/240/youtube-play.png" alt="" class="virtual-orders-icon">
+                </span>
+                <span><?php echo __("Xem hướng dẫn");?>
+</span>
+              </a>
+              <a href="<?php echo $_smarty_tpl->tpl_vars['system']->value['system_url'];?>
+/pages/<?php echo $_smarty_tpl->tpl_vars['spage']->value['page_name'];?>
+/virtual-orders?tab=create" class="btn btn-sm d-flex align-items-center justify-content-center text-center px-3 virtual-orders-tab-link <?php if ($_smarty_tpl->tpl_vars['view']->value == 'virtual-orders' && $_smarty_tpl->tpl_vars['__virtual_orders_tab']->value == 'create') {?>btn-primary<?php } else { ?>btn-outline-light border-0 rounded-0<?php }?>" data-order-tab="create"><?php echo __("Tạo đơn ảo");?>
+</a>
+              <a href="<?php echo $_smarty_tpl->tpl_vars['system']->value['system_url'];?>
+/pages/<?php echo $_smarty_tpl->tpl_vars['spage']->value['page_name'];?>
+/virtual-orders?tab=new" class="btn btn-sm d-flex align-items-center justify-content-center text-center px-3 virtual-orders-tab-link <?php if ($_smarty_tpl->tpl_vars['view']->value == 'virtual-orders' && $_smarty_tpl->tpl_vars['__virtual_orders_tab']->value == 'new') {?>btn-primary<?php } else { ?>btn-outline-light border-0 rounded-0<?php }?>" data-order-tab="new"><?php echo __("Đơn mới");?>
+</a>
+              <a href="<?php echo $_smarty_tpl->tpl_vars['system']->value['system_url'];?>
+/pages/<?php echo $_smarty_tpl->tpl_vars['spage']->value['page_name'];?>
+/virtual-orders?tab=received" class="btn btn-sm d-flex align-items-center justify-content-center text-center px-3 virtual-orders-tab-link <?php if ($_smarty_tpl->tpl_vars['view']->value == 'virtual-orders' && $_smarty_tpl->tpl_vars['__virtual_orders_tab']->value == 'received') {?>btn-primary<?php } else { ?>btn-outline-light border-0 rounded-0<?php }?>" data-order-tab="received"><?php echo __("Đã nhận");?>
+</a>
+              <a href="<?php echo $_smarty_tpl->tpl_vars['system']->value['system_url'];?>
+/pages/<?php echo $_smarty_tpl->tpl_vars['spage']->value['page_name'];?>
+/virtual-orders?tab=placed" class="btn btn-sm d-flex align-items-center justify-content-center text-center px-3 virtual-orders-tab-link <?php if ($_smarty_tpl->tpl_vars['view']->value == 'virtual-orders' && $_smarty_tpl->tpl_vars['__virtual_orders_tab']->value == 'placed') {?>btn-primary<?php } else { ?>btn-outline-light border-0 rounded-0<?php }?>" data-order-tab="placed"><?php echo __("Đã đặt");?>
+</a>
+              <a href="<?php echo $_smarty_tpl->tpl_vars['system']->value['system_url'];?>
+/pages/<?php echo $_smarty_tpl->tpl_vars['spage']->value['page_name'];?>
+/virtual-orders?tab=reviewed" class="btn btn-sm d-flex align-items-center justify-content-center text-center px-3 virtual-orders-tab-link <?php if ($_smarty_tpl->tpl_vars['view']->value == 'virtual-orders' && $_smarty_tpl->tpl_vars['__virtual_orders_tab']->value == 'reviewed') {?>btn-primary<?php } else { ?>btn-outline-light border-0 rounded-0<?php }?>" data-order-tab="reviewed"><?php echo __("Đã đánh giá");?>
+</a>
+              <a href="<?php echo $_smarty_tpl->tpl_vars['system']->value['system_url'];?>
+/pages/<?php echo $_smarty_tpl->tpl_vars['spage']->value['page_name'];?>
+/virtual-orders?tab=completed" class="btn btn-sm d-flex align-items-center justify-content-center text-center px-3 virtual-orders-tab-link <?php if ($_smarty_tpl->tpl_vars['view']->value == 'virtual-orders' && $_smarty_tpl->tpl_vars['__virtual_orders_tab']->value == 'completed') {?>btn-primary<?php } else { ?>btn-outline-light border-0 rounded-0<?php }?>" data-order-tab="completed"><?php echo __("Hoàn thành");?>
+</a>
+              <a href="<?php echo $_smarty_tpl->tpl_vars['system']->value['system_url'];?>
+/pages/<?php echo $_smarty_tpl->tpl_vars['spage']->value['page_name'];?>
+/virtual-orders?tab=failed" class="btn btn-sm d-flex align-items-center justify-content-center text-center px-3 virtual-orders-tab-link <?php if ($_smarty_tpl->tpl_vars['view']->value == 'virtual-orders' && $_smarty_tpl->tpl_vars['__virtual_orders_tab']->value == 'failed') {?>btn-primary<?php } else { ?>btn-outline-light border-0 rounded-0<?php }?>" data-order-tab="failed"><?php echo __("Thất bại");?>
+</a>
+            </div>
+          </div>
+        </div>
+      <?php }?>
 
       <!-- profile-content -->
       <div class="row">
@@ -840,6 +888,13 @@ $_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
 
           </div>
           <!-- right panel -->
+
+        <?php } elseif ($_smarty_tpl->tpl_vars['view']->value == "virtual-orders") {?>
+          <div class="col-12" id="js-virtual-orders-container" data-active-tab="<?php echo (($tmp = $_smarty_tpl->tpl_vars['__virtual_orders_tab']->value ?? null)===null||$tmp==='' ? 'create' ?? null : $tmp);?>
+">
+            <?php $_smarty_tpl->_subTemplateRender('file:page.virtual-orders.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array(), 0, false);
+?>
+          </div>
 
         <?php } elseif ($_smarty_tpl->tpl_vars['view']->value == "photos") {?>
           <!-- photos -->
@@ -2006,14 +2061,14 @@ $_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
                   <div class="card-body">
                     <div class="text-center">
                       <?php if ($_smarty_tpl->tpl_vars['spage']->value['page_verified'] == '1') {?>
-                        <?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"verified_badge",'class'=>"main-icon mb10",'width'=>"60px",'height'=>"60px"), 0, true);
+                        <?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"verified_badge",'class'=>"main-icon mb10",'width'=>"40px",'height'=>"40px"), 0, true);
 ?>
                         <h4 class="text-info"><?php echo __("Premium Verified");?>
 </h4>
                         <p class="mt20"><?php echo __("This page has blue verification badge");?>
 </p>
                       <?php } elseif ($_smarty_tpl->tpl_vars['spage']->value['page_verified'] == '2') {?>
-                        <?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"verified_badge_gray",'class'=>"main-icon mb10",'width'=>"60px",'height'=>"60px"), 0, true);
+                        <?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"verified_badge_gray",'class'=>"main-icon mb10",'width'=>"40px",'height'=>"40px"), 0, true);
 ?>
                         <h4 class="text-secondary"><?php echo __("Business Verified");?>
 </h4>
@@ -2046,7 +2101,7 @@ $_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
                       <div class="col-md-6">
                         <div class="card verification-option" onclick="selectVerificationLevel('gray')">
                           <div class="card-body text-center">
-                            <?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"verified_badge_gray",'width'=>"48px",'height'=>"48px"), 0, true);
+                            <?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"verified_badge_gray",'width'=>"38px",'height'=>"38px"), 0, true);
 ?>
                             <h6 class="mt-2"><?php echo __("Gray Badge");?>
 </h6>
@@ -2066,7 +2121,7 @@ $_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
                       <div class="col-md-6">
                         <div class="card verification-option" onclick="selectVerificationLevel('blue')">
                           <div class="card-body text-center">
-                            <?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"verified_badge",'width'=>"48px",'height'=>"48px"), 0, true);
+                            <?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"verified_badge",'width'=>"38px",'height'=>"38px"), 0, true);
 ?>
                             <h6 class="mt-2"><?php echo __("Blue Badge");?>
 </h6>
@@ -2459,6 +2514,228 @@ $_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
   </div>
 </div>
 <!-- page content -->
+
+<?php if ($_smarty_tpl->tpl_vars['spage']->value['page_business_type_id'] == 1 && $_smarty_tpl->tpl_vars['spage']->value['i_admin']) {?>
+  <style>
+    .page-virtual-orders-nav .virtual-orders-tab-link.btn-outline-light {
+      background-color: transparent;
+      color: #212529;
+      border-color: transparent;
+      transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .page-virtual-orders-nav .virtual-orders-tab-link.btn-outline-light:hover,
+    .page-virtual-orders-nav .virtual-orders-tab-link.btn-outline-light:focus {
+      background-color: rgba(26, 115, 232, 0.12);
+      color: #1a73e8;
+      border-color: rgba(26, 115, 232, 0.3);
+      border-radius: 999px;
+      box-shadow: 0 2px 6px rgba(26, 115, 232, 0.25);
+    }
+    .page-virtual-orders-nav .virtual-orders-tab-link.btn-primary {
+      border-radius: 999px;
+      box-shadow: 0 2px 6px rgba(26, 115, 232, 0.3);
+    }
+    .virtual-orders-icon-wrap {
+      border-radius: 50%;
+      background-color: #ffffff;
+      transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .virtual-orders-icon-wrap-sm {
+      width: 24px;
+      height: 24px;
+    }
+    .virtual-orders-icon-wrap-lg {
+      width: 32px;
+      height: 32px;
+    }
+    .virtual-orders-icon {
+      width: 16px;
+      height: 16px;
+    }
+    .virtual-orders-icon-lg {
+      width: 20px;
+      height: 20px;
+    }
+    .page-virtual-orders-guide .guide-playlist .list-group-item {
+      border-radius: 12px;
+      margin-bottom: 10px;
+      border: 1px solid #e9ecef;
+      transition: all 0.2s ease;
+    }
+    .page-virtual-orders-guide .guide-playlist .list-group-item.active {
+      background-color: #1a73e8;
+      border-color: #1a73e8;
+      color: #fff;
+      box-shadow: 0 8px 20px rgba(26, 115, 232, 0.25);
+    }
+    .page-virtual-orders-guide .guide-playlist .list-group-item.active small,
+    .page-virtual-orders-guide .guide-playlist .list-group-item.active .fw-semibold {
+      color: #fff !important;
+    }
+    .page-virtual-orders-guide .guide-player-wrapper {
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 12px 24px rgba(26, 115, 232, 0.15);
+    }
+    body.night-mode .page-virtual-orders-nav .virtual-orders-tab-link.btn-outline-light {
+      background-color: transparent;
+      color: #e2e8f0;
+      border-color: transparent;
+    }
+    body.night-mode .page-virtual-orders-nav .virtual-orders-tab-link.btn-outline-light:hover,
+    body.night-mode .page-virtual-orders-nav .virtual-orders-tab-link.btn-outline-light:focus {
+      background-color: rgba(99, 179, 237, 0.12);
+      color: #63b3ed;
+      border-color: rgba(99, 179, 237, 0.35);
+      box-shadow: 0 2px 8px rgba(99, 179, 237, 0.35);
+    }
+    body.night-mode .virtual-orders-icon-wrap {
+      background-color: #2d3748;
+    }
+    body.night-mode .page-virtual-orders-guide .guide-playlist .list-group-item {
+      background-color: #1a202c;
+      border-color: #2d3748;
+      color: #e2e8f0;
+    }
+    body.night-mode .page-virtual-orders-guide .guide-playlist .list-group-item:hover {
+      background-color: #222c3c;
+    }
+    body.night-mode .page-virtual-orders-guide .guide-playlist .list-group-item.active {
+      background-color: #2b6cb0;
+      border-color: #2b6cb0;
+      color: #f7fafc !important;
+      box-shadow: 0 10px 24px rgba(43, 108, 176, 0.35);
+    }
+    body.night-mode .page-virtual-orders-guide .guide-playlist .list-group-item small,
+    body.night-mode .page-virtual-orders-guide .guide-playlist .list-group-item .fw-semibold {
+      color: inherit !important;
+    }
+    body.night-mode .page-virtual-orders-guide .guide-player-wrapper {
+      box-shadow: 0 12px 30px rgba(15, 32, 55, 0.55);
+    }
+    body.night-mode .page-virtual-orders-guide .guide-player-title,
+    body.night-mode .page-virtual-orders-guide .guide-player-desc {
+      color: #e2e8f0;
+    }
+  </style>
+  <?php echo '<script'; ?>
+>
+    (function ($) {
+      $(function () {
+        var $nav = $('.page-virtual-orders-nav');
+        if (!$nav.length) {
+          return;
+        }
+
+        function getContainer() {
+          return $('#js-virtual-orders-container');
+        }
+
+        function setNavState(activeTab) {
+          $nav.find('a[data-order-tab]').each(function () {
+            var $item = $(this);
+            var tab = $item.data('order-tab');
+            var isActive = tab === activeTab;
+            if (isActive) {
+              $item.removeClass('btn-outline-light text-dark border-0 rounded-0').addClass('btn-primary text-white');
+            } else {
+              $item.removeClass('btn-primary text-white').addClass('btn-outline-light text-dark border-0 rounded-0');
+            }
+          });
+        }
+
+        function buildAjaxUrl(url) {
+          try {
+            var ajaxUrl = new URL(url, window.location.origin);
+            ajaxUrl.searchParams.set('ajax', '1');
+            return ajaxUrl.toString();
+          } catch (error) {
+            if (url.indexOf('ajax=1') === -1) {
+              url += (url.indexOf('?') === -1 ? '?' : '&') + 'ajax=1';
+            }
+            return url;
+          }
+        }
+
+        function loadTab(url, tab, pushState) {
+          var $container = getContainer();
+          if (!$container.length) {
+            window.location.href = url;
+            return;
+          }
+
+          setNavState(tab);
+          $container.attr('data-active-tab', tab);
+          $container.html('<div class="text-center py-5 virtual-orders-spinner"><span class="spinner-border text-primary" role="status"></span></div>');
+
+          $.get(buildAjaxUrl(url))
+            .done(function (response) {
+              if (response && response.html) {
+                $container.html(response.html);
+                var nextTab = response.tab || tab;
+                $container.attr('data-active-tab', nextTab);
+                setNavState(nextTab);
+                if (pushState && window.history && window.history.pushState) {
+                  window.history.pushState({ tab: nextTab }, '', url);
+                }
+              } else if (response && response.error) {
+                alert(response.message || 'Đã xảy ra lỗi, vui lòng thử lại.');
+              } else {
+                window.location.href = url;
+              }
+            })
+            .fail(function () {
+              window.location.href = url;
+            });
+        }
+
+        $nav.on('click', 'a[data-order-tab]', function (event) {
+          var $link = $(this);
+          var tab = $link.data('order-tab');
+          if (!tab) {
+            return;
+          }
+          var $containerCheck = getContainer();
+          if (!$containerCheck.length) {
+            return;
+          }
+          if ($link.hasClass('btn-primary')) {
+            event.preventDefault();
+            return;
+          }
+          event.preventDefault();
+          var url = $link.attr('href');
+          loadTab(url, tab, true);
+        });
+
+        var $initialContainer = getContainer();
+        if ($initialContainer.length) {
+          var initialTab = $initialContainer.data('active-tab') || $nav.find('a.btn-primary').data('order-tab') || 'create';
+          setNavState(initialTab);
+
+          $(window).on('popstate', function () {
+            var currentUrl = window.location.href;
+            if (currentUrl.indexOf('/virtual-orders') === -1) {
+              return;
+            }
+            var tab = 'create';
+            try {
+              var parsed = new URL(currentUrl);
+              tab = parsed.searchParams.get('tab') || 'create';
+            } catch (error) {
+              var matches = currentUrl.match(/tab=([^&]+)/);
+              if (matches) {
+                tab = decodeURIComponent(matches[1]);
+              }
+            }
+            loadTab(currentUrl, tab, false);
+          });
+        }
+      });
+    })(jQuery);
+  <?php echo '</script'; ?>
+>
+<?php }?>
 
 <?php $_smarty_tpl->_subTemplateRender('file:_footer.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array(), 0, false);
 }

@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 4.3.4, created on 2025-09-29 06:03:08
+/* Smarty version 4.3.4, created on 2026-02-02 05:15:57
   from '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/_js_files.tpl' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '4.3.4',
-  'unifunc' => 'content_68da211c9838f3_39106200',
+  'unifunc' => 'content_6980330dd13422_87663924',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     '184c3159d791328f6d90c260148b0d7f27457ad0' => 
     array (
       0 => '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/_js_files.tpl',
-      1 => 1757748363,
+      1 => 1770009354,
       2 => 'file',
     ),
   ),
@@ -20,7 +20,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   array (
   ),
 ),false)) {
-function content_68da211c9838f3_39106200 (Smarty_Internal_Template $_smarty_tpl) {
+function content_6980330dd13422_87663924 (Smarty_Internal_Template $_smarty_tpl) {
 ?><!-- Initialize --><?php echo '<script'; ?>
 >/* initialize vars */var site_title = "<?php echo __($_smarty_tpl->tpl_vars['system']->value['system_title']);?>
 ";var site_path = "<?php echo $_smarty_tpl->tpl_vars['system']->value['system_url'];?>
@@ -252,10 +252,12 @@ echo '</script'; ?>
 ";__['Chart context menu'] = "<?php echo __('Chart context menu');?>
 ";<?php echo '</script'; ?>
 ><!-- Initialize --><!-- Dependencies Libs [jQuery|Bootstrap] --><?php echo '<script'; ?>
- src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js" <?php if (!$_smarty_tpl->tpl_vars['user']->value->_logged_in) {?>defer<?php }?>><?php echo '</script'; ?>
+ src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js">
+    
+  <?php echo '</script'; ?>
 ><?php echo '<script'; ?>
  src="<?php echo $_smarty_tpl->tpl_vars['system']->value['system_url'];?>
-/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js" <?php if (!$_smarty_tpl->tpl_vars['user']->value->_logged_in) {?>defer<?php }?>><?php echo '</script'; ?>
+/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js" defer><?php echo '</script'; ?>
 ><!-- Dependencies Libs [jQuery|Bootstrap] --><!-- Dependencies Plugins --><?php echo '<script'; ?>
  src="<?php echo $_smarty_tpl->tpl_vars['system']->value['system_url'];?>
 /node_modules/mustache/mustache.min.js" <?php if (!$_smarty_tpl->tpl_vars['user']->value->_logged_in) {?>defer<?php }?>><?php echo '</script'; ?>
@@ -275,10 +277,14 @@ echo '</script'; ?>
  src="<?php echo $_smarty_tpl->tpl_vars['system']->value['system_url'];?>
 /node_modules/moment/min/moment-with-locales.min.js" <?php if (!$_smarty_tpl->tpl_vars['user']->value->_logged_in) {?>defer<?php }?>><?php echo '</script'; ?>
 ><?php echo '<script'; ?>
- src="https://unpkg.com/video.js@7.21.1/dist/video.min.js" <?php if (!$_smarty_tpl->tpl_vars['user']->value->_logged_in) {?>defer<?php }?>><?php echo '</script'; ?>
-><link href="https://unpkg.com/@silvermine/videojs-quality-selector/dist/css/quality-selector.css" rel="stylesheet"><?php echo '<script'; ?>
- src="https://unpkg.com/@silvermine/videojs-quality-selector/dist/js/silvermine-videojs-quality-selector.min.js" <?php if (!$_smarty_tpl->tpl_vars['user']->value->_logged_in) {?>defer<?php }?>><?php echo '</script'; ?>
-><link href="https://unpkg.com/video.js@7.21.1/dist/video-js.min.css" rel="stylesheet"><?php if ($_smarty_tpl->tpl_vars['system']->value['auto_play_videos']) {
+ src="https://unpkg.com/video.js@7.21.1/dist/video.min.js" defer>
+    
+  <?php echo '</script'; ?>
+><link href="https://unpkg.com/@silvermine/videojs-quality-selector/dist/css/quality-selector.css" rel="stylesheet" media="print" onload="this.media='all'"><?php echo '<script'; ?>
+ src="https://unpkg.com/@silvermine/videojs-quality-selector/dist/js/silvermine-videojs-quality-selector.min.js" defer>
+    
+  <?php echo '</script'; ?>
+><link href="https://unpkg.com/video.js@7.21.1/dist/video-js.min.css" rel="stylesheet" media="print" onload="this.media='all'"><?php if ($_smarty_tpl->tpl_vars['system']->value['auto_play_videos']) {
 echo '<script'; ?>
  src="<?php echo $_smarty_tpl->tpl_vars['system']->value['system_url'];?>
 /node_modules/jquery-fracs/dist/jquery.fracs.min.js" <?php if (!$_smarty_tpl->tpl_vars['user']->value->_logged_in) {?>defer<?php }?>><?php echo '</script'; ?>
@@ -380,7 +386,7 @@ echo '<script'; ?>
  src="https://unpkg.com/xregexp/xregexp-all.js"><?php echo '</script'; ?>
 ><!-- XRegExp --><?php }?><!-- Dependencies Plugins --><!-- System [JS] --><?php echo '<script'; ?>
  src="<?php echo $_smarty_tpl->tpl_vars['system']->value['system_url'];?>
-/includes/assets/js/core/core.js" <?php if (!$_smarty_tpl->tpl_vars['user']->value->_logged_in) {?>defer<?php }?>><?php echo '</script'; ?>
+/includes/assets/js/core/core.js"><?php echo '</script'; ?>
 ><?php if ($_smarty_tpl->tpl_vars['user']->value->_logged_in) {
 echo '<script'; ?>
  src="<?php echo $_smarty_tpl->tpl_vars['system']->value['system_url'];?>

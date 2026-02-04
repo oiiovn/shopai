@@ -1,11 +1,11 @@
 <?php
-/* Smarty version 4.3.4, created on 2025-10-02 04:01:34
+/* Smarty version 4.3.4, created on 2025-11-07 11:27:57
   from '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/ajax.page.publisher.tpl' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '4.3.4',
-  'unifunc' => 'content_68ddf91e70bfc5_76862336',
+  'unifunc' => 'content_690dd7bde9bbf7_32106742',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
@@ -23,7 +23,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:__custom_fields.tpl' => 1,
   ),
 ),false)) {
-function content_68ddf91e70bfc5_76862336 (Smarty_Internal_Template $_smarty_tpl) {
+function content_690dd7bde9bbf7_32106742 (Smarty_Internal_Template $_smarty_tpl) {
 ?><div class="modal-header">
   <h6 class="modal-title">
     <?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"pages",'class'=>"main-icon mr10",'width'=>"24px",'height'=>"24px"), 0, false);

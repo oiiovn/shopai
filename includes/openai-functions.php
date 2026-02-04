@@ -105,7 +105,11 @@ function generateReviewContent($api_key, $place_name, $place_address, $review_te
     $prompt = "Bạn là người dùng thật viết đánh giá Google Maps.\n\n";
     
     if (!empty($review_template)) {
+        // CÓ TEMPLATE: Dựa trên hướng dẫn của người dùng
         $prompt .= "Dựa trên ý chính: \"{$review_template}\"\n\n";
+    } else {
+        // KHÔNG CÓ TEMPLATE: Tự do sáng tạo dựa trên phong cách và variation đã random
+        $prompt .= "Hãy viết một đánh giá tự nhiên về trải nghiệm của bạn.\n\n";
     }
     
     $prompt .= "YÊU CẦU:\n";

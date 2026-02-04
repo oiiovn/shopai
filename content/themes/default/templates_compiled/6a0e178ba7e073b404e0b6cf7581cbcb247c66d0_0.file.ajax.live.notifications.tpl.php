@@ -1,11 +1,11 @@
 <?php
-/* Smarty version 4.3.4, created on 2025-09-29 13:05:07
+/* Smarty version 4.3.4, created on 2025-11-07 11:25:14
   from '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/ajax.live.notifications.tpl' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '4.3.4',
-  'unifunc' => 'content_68da840338fba7_39573586',
+  'unifunc' => 'content_690dd71adad986_23029515',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
@@ -21,7 +21,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:__feeds_notification.tpl' => 1,
   ),
 ),false)) {
-function content_68da840338fba7_39573586 (Smarty_Internal_Template $_smarty_tpl) {
+function content_690dd71adad986_23029515 (Smarty_Internal_Template $_smarty_tpl) {
 $_from = $_smarty_tpl->smarty->ext->_foreach->init($_smarty_tpl, $_smarty_tpl->tpl_vars['notifications']->value, 'notification');
 $_smarty_tpl->tpl_vars['notification']->do_else = true;
 if ($_from !== null) foreach ($_from as $_smarty_tpl->tpl_vars['notification']->value) {

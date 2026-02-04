@@ -1,11 +1,11 @@
 <?php
-/* Smarty version 4.3.4, created on 2025-09-29 13:02:41
+/* Smarty version 4.3.4, created on 2025-11-07 11:22:43
   from '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/ajax.lightbox.tpl' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '4.3.4',
-  'unifunc' => 'content_68da8371637239_23302256',
+  'unifunc' => 'content_690dd683862775_45381415',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
@@ -21,7 +21,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:__feeds_post_photo.tpl' => 1,
   ),
 ),false)) {
-function content_68da8371637239_23302256 (Smarty_Internal_Template $_smarty_tpl) {
+function content_690dd683862775_45381415 (Smarty_Internal_Template $_smarty_tpl) {
 $_smarty_tpl->_assignInScope('post', $_smarty_tpl->tpl_vars['photo']->value['post']);?>
 
 <div class="lightbox-post" data-id="<?php if ($_smarty_tpl->tpl_vars['photo']->value['is_single']) {

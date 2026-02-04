@@ -12,11 +12,11 @@
         </span>
         {if $_page['page_verified'] == '1'}
           <span class="verified-badge" data-bs-toggle="tooltip" title='{__("Verified Page")}'>
-            {include file='__svg_icons.tpl' icon="verified_badge" width="20px" height="20px"}
+            {include file='__svg_icons.tpl' icon="verified_badge" width="15px" height="15px"}
           </span>
         {elseif $_page['page_verified'] == '2'}
           <span class="verified-badge-gray" data-bs-toggle="tooltip" title='{__("Business Verified")}'>
-            {include file='__svg_icons.tpl' icon="verified_badge_gray" width="20px" height="20px"}
+            {include file='__svg_icons.tpl' icon="verified_badge_gray" width="15px" height="15px"}
           </span>
         {/if}
         {if !$_page['monetization_plan']}
@@ -63,7 +63,7 @@
             </button>
           {else}
             <button type="button" class="btn btn-sm btn-light rounded-pill js_like-page" data-id="{$_page['page_id']}">
-              {include file='__svg_icons.tpl' icon="plus" class="main-icon" width="20px" height="20px"}
+              {include file='__svg_icons.tpl' icon="plus" class="main-icon" width="15px" height="15px"}
             </button>
           {/if}
         </div>
@@ -73,11 +73,11 @@
           </span>
           {if $_page['page_verified'] == '1'}
             <span class="verified-badge" data-bs-toggle="tooltip" title='{__("Verified Page")}'>
-              {include file='__svg_icons.tpl' icon="verified_badge" width="20px" height="20px"}
+              {include file='__svg_icons.tpl' icon="verified_badge" width="15px" height="15px"}
             </span>
           {elseif $_page['page_verified'] == '2'}
             <span class="verified-badge-gray" data-bs-toggle="tooltip" title='{__("Business Verified")}'>
-              {include file='__svg_icons.tpl' icon="verified_badge_gray" width="20px" height="20px"}
+              {include file='__svg_icons.tpl' icon="verified_badge_gray" width="15px" height="15px"}
             </span>
           {/if}
           <div>{$_page['page_likes']} {__("Likes")}</div>

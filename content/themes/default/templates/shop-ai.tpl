@@ -22,12 +22,6 @@
                 {__("Check số Shopee")}
               </a>
             </li>
-            <li {if $view == "recharge"}class="active" {/if}>
-              <a href="{$system['system_url']}/shop-ai/recharge">
-                <i class="fa fa-credit-card main-icon mr-2" style="width: 24px; height: 24px; font-size: 18px;"></i>
-                {__("Nạp tiền")}
-              </a>
-            </li>
             {* TEMPORARY HIDDEN - Rút tiền và Ngân hàng *}
             {*
             <li {if $view == "withdrawal"}class="active" {/if}>
@@ -43,16 +37,16 @@
               </a>
             </li>
             *}
-            <li {if $view == "transactions"}class="active" {/if}>
-              <a href="{$system['system_url']}/shop-ai/transactions">
-                <i class="fa fa-history main-icon mr-2" style="width: 24px; height: 24px; font-size: 18px;"></i>
-                {__("Lịch sử giao dịch")}
-              </a>
-            </li>
             <li>
               <a href="{$system['system_url']}/shop-ai/pricing">
                 <i class="fa fa-list-alt main-icon mr-2" style="width: 24px; height: 24px; font-size: 18px;"></i>
                 {__("Bảng giá")}
+              </a>
+            </li>
+            <li>
+              <a href="{$system['system_url']}/finance/recharge">
+                <i class="fa fa-wallet main-icon mr-2" style="width: 24px; height: 24px; font-size: 18px;"></i>
+                {__("Nạp tiền")}
               </a>
             </li>
           </ul>
@@ -72,11 +66,6 @@
               {__("Check số")}
             </a>
           </li>
-          <li {if $view == "recharge"}class="active" {/if}>
-            <a href="{$system['system_url']}/shop-ai/recharge">
-              {__("Nạp tiền")}
-            </a>
-          </li>
           {* TEMPORARY HIDDEN - Rút tiền và Ngân hàng *}
           {*
           <li {if $view == "withdrawal"}class="active" {/if}>
@@ -90,14 +79,14 @@
             </a>
           </li>
           *}
-          <li {if $view == "transactions"}class="active" {/if}>
-            <a href="{$system['system_url']}/shop-ai/transactions">
-              {__("Giao dịch")}
-            </a>
-          </li>
           <li>
             <a href="{$system['system_url']}/shop-ai/pricing">
               {__("Bảng giá")}
+            </a>
+          </li>
+          <li>
+            <a href="{$system['system_url']}/finance/recharge">
+              {__("Nạp tiền")}
             </a>
           </li>
         </ul>
@@ -352,8 +341,10 @@
                         <tbody>
                           {assign var="running_balance" value=$current_balance}
                           {foreach $shop_ai_transactions as $transaction}
+                            {* Xác định loại giao dịch: cộng tiền hay trừ tiền *}
+                            {assign var="is_credit" value=($transaction.type == 'recharge' || $transaction.type == 'otp_refund' || $transaction.type == 'receive')}
                             {* Calculate balance after this transaction *}
-                            {if $transaction.type == 'recharge'}
+                            {if $is_credit}
                               {assign var="balance_after" value=$running_balance}
                               {assign var="running_balance" value=$running_balance-$transaction.amount}
                             {else}
@@ -363,13 +354,13 @@
                             <tr>
                               <td>#{$transaction.transaction_id}</td>
                               <td>
-                                <strong class="{if $transaction.type == 'recharge'}text-success{else}text-danger{/if}">
-                                  {if $transaction.type == 'recharge'}+{else}-{/if}{number_format($transaction.amount, 0, ',', '.')} VNĐ
+                                <strong class="{if $is_credit}text-success{else}text-danger{/if}">
+                                  {if $is_credit}+{else}-{/if}{number_format($transaction.amount, 0, ',', '.')} VNĐ
                                 </strong>
                               </td>
                               <td>
-                                <span class="badge {if $transaction.type == 'recharge'}bg-success{else}bg-danger{/if}">
-                                  {if $transaction.type == 'recharge'}{__("Nạp Tiền")}{else}{__("Trừ tiền")}{/if}
+                                <span class="badge {if $is_credit}bg-success{else}bg-danger{/if}">
+                                  {if $is_credit}{__("Nạp Tiền")}{else}{__("Trừ tiền")}{/if}
                                 </span>
                               </td>
                               <td>
@@ -412,8 +403,10 @@
                     <div class="d-block d-md-none">
                       {assign var="running_balance_mobile" value=$current_balance}
                       {foreach $shop_ai_transactions as $transaction}
+                        {* Xác định loại giao dịch: cộng tiền hay trừ tiền *}
+                        {assign var="is_credit_mobile" value=($transaction.type == 'recharge' || $transaction.type == 'otp_refund' || $transaction.type == 'receive')}
                         {* Calculate balance after this transaction *}
-                        {if $transaction.type == 'recharge'}
+                        {if $is_credit_mobile}
                           {assign var="balance_after_mobile" value=$running_balance_mobile}
                           {assign var="running_balance_mobile" value=$running_balance_mobile-$transaction.amount}
                         {else}
@@ -425,13 +418,13 @@
                             <div class="row align-items-center">
                               <div class="col-8">
                                 <div class="d-flex align-items-center mb-2">
-                                  <span class="badge {if $transaction.type == 'recharge'}bg-success{else}bg-danger{/if} mr10">
-                                    {if $transaction.type == 'recharge'}Nạp Tiền{else}Trừ tiền{/if}
+                                  <span class="badge {if $is_credit_mobile}bg-success{else}bg-danger{/if} mr10">
+                                    {if $is_credit_mobile}Nạp Tiền{else}Trừ tiền{/if}
                                   </span>
                                   <small class="text-muted">#{$transaction.transaction_id}</small>
                                 </div>
-                                <h6 class="mb-1 {if $transaction.type == 'recharge'}text-success{else}text-danger{/if} font-weight-bold">
-                                  {if $transaction.type == 'recharge'}+{else}-{/if}{number_format($transaction.amount, 0, ',', '.')} VNĐ
+                                <h6 class="mb-1 {if $is_credit_mobile}text-success{else}text-danger{/if} font-weight-bold">
+                                  {if $is_credit_mobile}+{else}-{/if}{number_format($transaction.amount, 0, ',', '.')} VNĐ
                                 </h6>
                                 <p class="text-muted small mb-1">
                                   {if $transaction.description}
@@ -639,10 +632,13 @@
                     var statusText = transaction.status === 'completed' ? '{__("Hoàn thành")}' :
                                    transaction.status === 'pending' ? '{__("Đang xử lý")}' : '{__("Thất bại")}';
                     
+                    // Xác định loại giao dịch: cộng tiền (recharge, otp_refund) hay trừ tiền
+                    var isCredit = (transaction.type === 'recharge' || transaction.type === 'otp_refund' || transaction.type === 'receive');
+                    
                     html += '<tr>';
                     html += '<td>' + transaction.created_at + '</td>';
-                    html += '<td><span class="badge badge-' + (transaction.type === 'recharge' ? 'success' : 'danger') + '">' + 
-                           (transaction.type === 'recharge' ? '{__("Nạp tiền")}' : '{__("Trừ tiền")}') + '</span></td>';
+                    html += '<td><span class="badge badge-' + (isCredit ? 'success' : 'danger') + '">' + 
+                           (isCredit ? '{__("Nạp tiền")}' : '{__("Trừ tiền")}') + '</span></td>';
                     html += '<td class="text-right">' + formatMoney(transaction.amount) + ' VNĐ</td>';
                     html += '<td class="text-right"><strong>' + formatMoney(transaction.balance_after) + ' VNĐ</strong></td>';
                     html += '<td>' + transaction.description + '</td>';
@@ -664,10 +660,12 @@
                     var statusText = transaction.status === 'completed' ? '{__("Hoàn thành")}' :
                                    transaction.status === 'pending' ? '{__("Đang xử lý")}' : '{__("Thất bại")}';
                     
-                    var typeClass = transaction.type === 'recharge' ? 'success' : 'danger';
-                    var typeText = transaction.type === 'recharge' ? '{__("Nạp tiền")}' : '{__("Trừ tiền")}';
-                    var amountClass = transaction.type === 'recharge' ? 'text-success' : 'text-danger';
-                    var amountPrefix = transaction.type === 'recharge' ? '+' : '-';
+                    // Xác định loại giao dịch: cộng tiền (recharge, otp_refund) hay trừ tiền
+                    var isCredit = (transaction.type === 'recharge' || transaction.type === 'otp_refund' || transaction.type === 'receive');
+                    var typeClass = isCredit ? 'success' : 'danger';
+                    var typeText = isCredit ? '{__("Nạp tiền")}' : '{__("Trừ tiền")}';
+                    var amountClass = isCredit ? 'text-success' : 'text-danger';
+                    var amountPrefix = isCredit ? '+' : '-';
                     
                     html += '<div class="card mb-3 transaction-card">';
                     html += '  <div class="card-body p-3">';
@@ -1506,19 +1504,19 @@
                               <td>
                                 {if $item.status == "pending"}
                                   <span class="badge badge-info">
-                                    <i class="fa fa-spinner fa-spin" style="margin-right: 8px;"></i>Đang check...
+                                    <i class="fa fa-spinner fa-spin mr-2"></i>Đang check...
                                   </span>
                                 {elseif $item.status == "success"}
                                   <span class="badge badge-success">
-                                    <i class="fa fa-check" style="margin-right: 8px;"></i>Thành công
+                                    <i class="fa fa-check mr-2"></i>Thành công
                                   </span>
                                 {elseif $item.status == "not_found"}
                                   <span class="badge badge-secondary">
-                                    <i class="fa fa-user-times" style="margin-right: 8px;"></i>Không tìm thấy
+                                    <i class="fa fa-user-times mr-2"></i>Không tìm thấy
                                   </span>
                                 {else}
                                   <span class="badge badge-danger">
-                                    <i class="fa fa-exclamation-triangle" style="margin-right: 8px;"></i>Lỗi
+                                    <i class="fa fa-exclamation-triangle mr-2"></i>Lỗi
                                   </span>
                                 {/if}
                               </td>
@@ -1562,19 +1560,19 @@
                                     <div class="col-5 text-right">
                                       {if $item.status == "pending"}
                                         <span class="badge badge-info">
-                                          <i class="fa fa-spinner fa-spin" style="margin-right: 8px;"></i>Đang check...
+                                          <i class="fa fa-spinner fa-spin mr-2"></i>Đang check...
                                         </span>
                                       {elseif $item.status == "success"}
                                         <span class="badge badge-success">
-                                          <i class="fa fa-check" style="margin-right: 8px;"></i>Thành công
+                                          <i class="fa fa-check mr-2"></i>Thành công
                                         </span>
                                       {elseif $item.status == "not_found"}
                                         <span class="badge badge-secondary">
-                                          <i class="fa fa-user-times" style="margin-right: 8px;"></i>Không tìm thấy
+                                          <i class="fa fa-user-times mr-2"></i>Không tìm thấy
                                         </span>
                                       {else}
                                         <span class="badge badge-danger">
-                                          <i class="fa fa-exclamation-triangle" style="margin-right: 8px;"></i>Lỗi
+                                          <i class="fa fa-exclamation-triangle mr-2"></i>Lỗi
                                         </span>
                                       {/if}
                                     </div>
@@ -2104,9 +2102,6 @@
               });
               </script>
             {elseif $view == "" || $view == "check"}
-              <div class="card-header bg-transparent">
-                <strong>Shopee Phone Checker</strong>
-              </div>
               <div class="card-body">
                 <!-- Combined Check & Filter Section -->
                 <div class="combined-section mb-4">
@@ -2114,10 +2109,6 @@
                     <!-- Check Form -->
                     <div class="col-md-6">
                       <div class="check-form-part">
-                        <h5 class="section-title">
-                          <i class="fa fa-mobile mr-2"></i>Check Số Điện Thoại Shopee
-                        </h5>
-                        
                         <!-- Thông tin số dư và giá check -->
                         <div class="alert alert-info mb-3" style="border-radius: 8px;">
                           <div class="row">
@@ -2125,7 +2116,7 @@
                               <div class="text-center">
                                 <i class="fa fa-wallet fa-lg mb-2" style="color: #28a745;"></i>
                                 <div class="small text-muted">Số dư hiện tại</div>
-                                <div class="h6 mb-0 font-weight-bold" style="color: #28a745;">
+                                <div class="small mb-0 font-weight-bold" style="color: #28a745; font-size: 0.8rem; white-space: nowrap;">
                                   {if isset($current_balance)}
                                     {number_format($current_balance, 0, ',', '.')} VNĐ
                                   {else}
@@ -2138,7 +2129,7 @@
                               <div class="text-center">
                                 <i class="fa fa-tag fa-lg mb-2" style="color: #007bff;"></i>
                                 <div class="small text-muted">Giá check</div>
-                                <div class="h6 mb-0 font-weight-bold" style="color: #007bff;">
+                                <div class="small mb-0 font-weight-bold" style="color: #007bff; font-size: 0.8rem; white-space: nowrap;">
                                   {if isset($user_rank) && isset($user_rank.check_price)}
                                     {number_format($user_rank.check_price, 0, ',', '.')} VNĐ
                                   {else}
@@ -2151,7 +2142,7 @@
                               <div class="text-center">
                                 <i class="fa fa-chart-line fa-lg mb-2" style="color: #fd7e14;"></i>
                                 <div class="small text-muted">Tổng đã chi</div>
-                                <div class="h6 mb-0 font-weight-bold" style="color: #fd7e14;">
+                                <div class="small mb-0 font-weight-bold" style="color: #fd7e14; font-size: 0.8rem; white-space: nowrap;">
                                   {if isset($user_rank) && isset($user_rank.user_total_spent)}
                                     {number_format($user_rank.user_total_spent, 0, ',', '.')} VNĐ
                                   {else}
@@ -2173,22 +2164,46 @@
                         </div>
                         
                         <div class="form-group">
-                          <label for="usernameInput" class="form-label">
-                            <i class="fa fa-user mr-2"></i>Shopee Username Khách hàng
-                          </label>
-                          <div class="row">
-                            <div class="col-8">
-                              <input type="text" 
-                                     class="form-control" 
-                                     id="usernameInput" 
-                                     placeholder="vd: buiquocvu"
-                                     maxlength="30">
+                          <div class="d-flex align-items-center justify-content-between mb-2 position-relative">
+                            <span class="badge-new-blink-red">NEW</span>
+                            <label for="usernameInput" class="form-label mb-0">
+                              <i class="fa fa-user mr-3"></i>Shopee Username Khách hàng
+                            </label>
+                            <div class="form-check form-check-inline mb-0">
+                              <input class="form-check-input" type="checkbox" id="multiCheckMode" value="1">
+                              <label class="form-check-label small" for="multiCheckMode">Check nhiều username</label>
                             </div>
-                            <div class="col-4">
-                              <button type="button" class="btn btn-primary btn-block" id="checkBtn" disabled>
-                                <i class="fa fa-search mr-2"></i><span class="btn-text-desktop">Check số</span><span class="btn-text-mobile">Gửi</span>
-                              </button>
+                          </div>
+                          <div id="singleUsernameWrap">
+                            <div class="row">
+                              <div class="col-8">
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="usernameInput" 
+                                       placeholder="vd: buiquocvu"
+                                       maxlength="30">
+                              </div>
+                              <div class="col-4">
+                                <button type="button" class="btn btn-primary btn-block" id="checkBtn" disabled>
+                                  <span class="btn-text-desktop">Check số</span><span class="btn-text-mobile">Gửi</span>
+                                </button>
+                              </div>
                             </div>
+                          </div>
+                          <div id="multiUsernameWrap" style="display: none;">
+                            <div class="row">
+                              <div class="col-8">
+                                <textarea class="form-control" id="usernameMultiInput" rows="4" 
+                                  placeholder="Mỗi dòng một username, vd:&#10;shopaicore&#10;shopaiflux&#10;shopaikaro"></textarea>
+                              </div>
+                              <div class="col-4">
+                                <button type="button" class="btn btn-primary btn-block" id="checkBtnMulti" disabled>
+                                  <span class="btn-text-desktop">Check số</span><span class="btn-text-mobile">Gửi</span>
+                                </button>
+                              </div>
+                            </div>
+                            <div id="multiUsernameCount" class="small text-muted mt-1" style="min-height: 1.2em;">Số lượng: 0 username</div>
+                            <div id="multiBalanceHint" class="small mt-1" style="min-height: 1.2em;"></div>
                           </div>
                         </div>
                         
@@ -2202,12 +2217,9 @@
                     <!-- Search & Filter -->
                     <div class="col-md-6">
                       <div class="filter-form-part">
-                        <h5 class="section-title">
-                          <i class="fa fa-filter mr-2"></i>Tìm Kiếm & Lọc Lịch Sử
-                        </h5>
                         <div class="form-group">
                           <label class="form-label">
-                            <i class="fa fa-search mr-2"></i>Tìm kiếm & Lọc
+                            <i class="fa fa-search mr-3"></i>Tìm kiếm & Lọc
                           </label>
                           <div class="row">
                             <div class="col-6">
@@ -2227,13 +2239,44 @@
                         <div class="form-group">
                           <div class="btn-group btn-group-justified w-100">
                             <button class="btn btn-info" id="refreshBtn" title="Làm mới dữ liệu">
-                              <i class="fa fa-refresh mr-2"></i>Làm mới
+                              <i class="fa fa-refresh mr-3"></i>Làm mới
                             </button>
                             <a href="{$system['system_url']}/shop-ai?view=history" class="btn btn-primary" title="Xem tất cả lịch sử check">
-                              <i class="fa fa-list mr-2"></i>Tất cả lịch sử
+                              <i class="fa fa-list mr-3"></i>Tất cả lịch sử
                             </a>
                           </div>
                         </div>
+                        
+                        <!-- Admin Contact Info -->
+                        {if $admin_info}
+                        <div class="admin-contact-info mt-3 p-3" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; color: white;">
+                          <div class="text-center mb-2">
+                            <small class="opacity-75">
+                              <i class="fa fa-headset mr-1"></i>Liên hệ hỗ trợ khi cần
+                            </small>
+                          </div>
+                          <div class="d-flex align-items-center justify-content-center flex-wrap">
+                            <a href="{$system['system_url']}/{$admin_info.user_name}" class="text-white d-flex align-items-center" style="text-decoration: none;">
+                              <img src="{$admin_info.user_picture}" alt="Admin" class="rounded-circle" style="width: 50px; height: 50px; border: 2px solid rgba(255,255,255,0.3); margin-right: 5px;">
+                              <div class="d-flex align-items-center">
+                                <span class="font-weight-bold">{$admin_info.name}</span>
+                                {if $admin_info.user_verified}
+                                  <span class="ml-2" data-bs-toggle="tooltip" title='{__("Verified User")}'>
+                                    {include file='__svg_icons.tpl' icon="verified_badge" width="15px" height="15px"}
+                                  </span>
+                                {/if}
+                              </div>
+                            </a>
+                            {if $admin_info.zalo}
+                            <div class="ml-3">
+                              <small>
+                                <i class="fab fa-zalo mr-1"></i>Zalo: <strong>{$admin_info.zalo}</strong>
+                              </small>
+                            </div>
+                            {/if}
+                          </div>
+                        </div>
+                        {/if}
                       </div>
                     </div>
                   </div>
@@ -2245,10 +2288,13 @@
                     <div class="row align-items-center">
                       <div class="col-md-6">
                         <h5 class="mb-0 text-primary font-weight-bold">
-                          <i class="fa fa-history mr-2"></i>Lịch sử check
+                          <i class="fa fa-history mr-3"></i>Lịch sử check
                         </h5>
                       </div>
                       <div class="col-md-6 text-right">
+                        <button type="button" class="btn btn-sm btn-outline-danger mr-2" id="btnDeleteNotfoundError" title="Xoá hết các bản ghi check thất bại (Không tìm thấy / Lỗi)">
+                          <i class="fa fa-trash-alt mr-3"></i>Xoá check đã thất bại <span class="badge-new-blink">New</span>
+                        </button>
                         <small class="text-muted" id="historyStats">Đang tải...</small>
                       </div>
                     </div>
@@ -2285,8 +2331,58 @@
                 </div>
               </div>
 
+              <!-- Modal xác nhận xoá not_found & error -->
+              <div class="modal fade" id="modalConfirmDeleteNotfoundError" tabindex="-1" role="dialog" aria-labelledby="modalConfirmDeleteNotfoundErrorLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="modalConfirmDeleteNotfoundErrorLabel">
+                        <i class="fa fa-trash-alt text-danger mr-2"></i>Xác nhận xoá
+                      </h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Đóng">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      Bạn có chắc muốn xoá hết các username có trạng thái <strong>Không tìm thấy</strong> và <strong>Lỗi</strong> trong lịch sử check? Thao tác không thể hoàn tác.
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Huỷ</button>
+                      <button type="button" class="btn btn-danger" id="btnConfirmDeleteNotfoundError">
+                        <i class="fa fa-trash-alt mr-1"></i>Xoá
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <!-- Styles -->
               <style>
+              /* Khoảng cách icon và chữ - ép hiển thị */
+              .combined-section .section-title .fa,
+              .combined-section .form-label .fa,
+              .combined-section .btn .fa,
+              .combined-section a.btn .fa,
+              .history-section .fa,
+              .history-section h5 .fa,
+              .history-section .btn .fa {
+                margin-right: 0.75rem !important;
+                display: inline-block;
+              }
+              /* Placeholder textarea multi-username: chữ mô tả rất mờ */
+              #usernameMultiInput::placeholder {
+                color: #c8c8c8 !important;
+              }
+              #usernameMultiInput::-webkit-input-placeholder {
+                color: #c8c8c8 !important;
+              }
+              #usernameMultiInput::-moz-placeholder {
+                color: #c8c8c8 !important;
+                opacity: 0.8;
+              }
+              #usernameMultiInput:-ms-input-placeholder {
+                color: #c8c8c8 !important;
+              }
               .combined-section {
                 background: linear-gradient(135deg, #f8f9fa 0%, #e3f2fd 100%);
                 padding: 20px;
@@ -2691,6 +2787,28 @@
                 100% { transform: rotate(360deg); }
               }
 
+              .badge-new-blink {
+                font-size: 10px;
+                font-weight: 700;
+                color: #000;
+                margin-left: 4px;
+                animation: blink 1s ease-in-out infinite;
+              }
+              @keyframes blink {
+                0%, 100% { opacity: 1; }
+                50% { opacity: 0.2; }
+              }
+
+              .badge-new-blink-red {
+                position: absolute;
+                top: -8px;
+                right: 0;
+                font-size: 10px;
+                font-weight: 700;
+                color: #dc3545;
+                animation: blink 1s ease-in-out infinite;
+              }
+
               .phone-number {
                 font-family: 'Courier New', monospace;
                 font-weight: 600;
@@ -2780,6 +2898,12 @@
                 color: #dc3545;
                 font-size: 12px;
                 margin-top: 4px;
+              }
+              
+              /* Quick Action Cards Hover Effect */
+              .hover-lift:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 20px rgba(0,0,0,0.15) !important;
               }
               </style>
 
@@ -2920,6 +3044,10 @@
                   });
                 }
                 
+                // Số dư và giá check (dùng cho kiểm tra trước khi check nhiều username)
+                var shopAiCurrentBalance = {if isset($current_balance)}{$current_balance|default:0}{else}0{/if};
+                var shopAiCheckPrice = {if isset($user_rank) && isset($user_rank.check_price)}{$user_rank.check_price|default:30000}{else}30000{/if};
+                
                 // Form handling
                 var input = document.getElementById('usernameInput');
                 var btn = document.getElementById('checkBtn');
@@ -2927,6 +3055,28 @@
                 if (input && btn) {
                   input.addEventListener('input', function() {
                     btn.disabled = input.value.trim().length < 3;
+                  });
+                  input.addEventListener('paste', function(e) {
+                    var pasted = (e.clipboardData && e.clipboardData.getData('text')) || '';
+                    if (pasted.indexOf('\n') === -1 && pasted.indexOf('\r') === -1) return;
+                    e.preventDefault();
+                    var val = pasted.trim().replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+                    var mCheck = document.getElementById('multiCheckMode');
+                    var sWrap = document.getElementById('singleUsernameWrap');
+                    var mWrap = document.getElementById('multiUsernameWrap');
+                    var mInput = document.getElementById('usernameMultiInput');
+                    var mBtn = document.getElementById('checkBtnMulti');
+                    if (mCheck && !mCheck.checked) {
+                      mCheck.checked = true;
+                      if (sWrap) sWrap.style.display = 'none';
+                      if (mWrap) mWrap.style.display = 'block';
+                    }
+                        if (mInput) {
+                          mInput.value = val;
+                          if (typeof updateMultiCheckState === 'function') updateMultiCheckState();
+                        }
+                        input.value = '';
+                        btn.disabled = true;
                   });
                   
                   btn.addEventListener('click', function() {
@@ -2978,7 +3128,98 @@
                     })
                     .finally(function() {
                       btn.disabled = false;
-                      btn.innerHTML = '<i class="fa fa-search mr-2"></i><span class="btn-text-desktop">Check số</span><span class="btn-text-mobile">Gửi</span>';
+                      btn.innerHTML = '<span class="btn-text-desktop">Check số</span><span class="btn-text-mobile">Gửi</span>';
+                    });
+                  });
+                }
+                
+                // Toggle single / multi username mode
+                var multiCheckMode = document.getElementById('multiCheckMode');
+                var singleWrap = document.getElementById('singleUsernameWrap');
+                var multiWrap = document.getElementById('multiUsernameWrap');
+                var multiInput = document.getElementById('usernameMultiInput');
+                var btnMulti = document.getElementById('checkBtnMulti');
+                function updateMultiCheckState() {
+                  if (!multiInput || !btnMulti) return;
+                  var lines = multiInput.value.trim().split(/\r?\n/).filter(function(s) { return s.trim().length >= 3; });
+                  var count = lines.length;
+                  var countEl = document.getElementById('multiUsernameCount');
+                  var hintEl = document.getElementById('multiBalanceHint');
+                  if (countEl) countEl.textContent = 'Số lượng: ' + count + ' username';
+                  if (count === 0) {
+                    if (hintEl) { hintEl.textContent = ''; hintEl.className = 'small mt-1'; }
+                    btnMulti.disabled = true;
+                    return;
+                  }
+                  var requiredTotal = count * shopAiCheckPrice;
+                  if (requiredTotal > shopAiCurrentBalance) {
+                    if (hintEl) {
+                      hintEl.textContent = 'Số dư không đủ. Cần ' + requiredTotal.toLocaleString('vi-VN') + ' VNĐ, hiện có ' + shopAiCurrentBalance.toLocaleString('vi-VN') + ' VNĐ.';
+                      hintEl.className = 'small mt-1 text-danger';
+                    }
+                    btnMulti.disabled = true;
+                  } else {
+                    if (hintEl) {
+                      hintEl.textContent = 'Cần ' + requiredTotal.toLocaleString('vi-VN') + ' VNĐ. Số dư đủ.';
+                      hintEl.className = 'small mt-1 text-success';
+                    }
+                    btnMulti.disabled = false;
+                  }
+                }
+                if (multiCheckMode && singleWrap && multiWrap) {
+                  multiCheckMode.addEventListener('change', function() {
+                    if (multiCheckMode.checked) {
+                      singleWrap.style.display = 'none';
+                      multiWrap.style.display = 'block';
+                      updateMultiCheckState();
+                    } else {
+                      singleWrap.style.display = 'block';
+                      multiWrap.style.display = 'none';
+                    }
+                  });
+                }
+                if (multiInput && btnMulti) {
+                  multiInput.addEventListener('input', updateMultiCheckState);
+                  btnMulti.addEventListener('click', function() {
+                    var raw = multiInput.value.trim();
+                    var list = raw.split(/\r?\n/).map(function(s) { return s.trim().toLowerCase(); }).filter(function(s) { return s.length >= 3; });
+                    if (list.length === 0) return;
+                    var total = list.length;
+                    var requiredTotal = total * shopAiCheckPrice;
+                    if (requiredTotal > shopAiCurrentBalance) {
+                      showInsufficientBalanceAlert(
+                        'Số dư không đủ để check ' + total + ' username. Cần: ' + requiredTotal.toLocaleString('vi-VN') + ' VNĐ.',
+                        requiredTotal,
+                        shopAiCurrentBalance
+                      );
+                      return;
+                    }
+                    btnMulti.disabled = true;
+                    btnMulti.innerHTML = '<i class="fa fa-spinner fa-spin mr-2"></i>Đang gửi...';
+                    fetch('includes/ajax/phone-check-history.php', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ action: 'check_phone_multi', user_id: {$user->_data.user_id}, usernames: list })
+                    })
+                    .then(function(response) { return response.json(); })
+                    .then(function(data) {
+                      btnMulti.disabled = false;
+                      btnMulti.innerHTML = '<span class="btn-text-desktop">Check số</span><span class="btn-text-mobile">Gửi</span>';
+                      if (data.success) {
+                        showResultPopup('success', 'Đang chạy ở nền', data.message || ('Đang xử lý ' + total + ' username. Bạn có thể đóng hoặc load lại trang, kết quả lưu vào lịch sử.'));
+                        if (typeof loadHistory === 'function') setTimeout(function() { loadHistory(1); }, 2000);
+                      } else {
+                        if (data.required_amount !== undefined && data.current_balance !== undefined) {
+                          showInsufficientBalanceAlert(data.message || '', data.required_amount, data.current_balance);
+                        } else {
+                          showResultPopup('danger', 'Lỗi', data.message || '');
+                        }
+                      }
+                    })
+                    .catch(function(error) {
+                      btnMulti.disabled = false;
+                      btnMulti.innerHTML = '<span class="btn-text-desktop">Check số</span><span class="btn-text-mobile">Gửi</span>';
+                      alert(translations['error_occurred'] + ' ' + (error && error.message ? error.message : ''));
                     });
                   });
                 }
@@ -3184,34 +3425,48 @@
                       '</div>' +
                     '</div>';
                   
-                  // Remove existing modal if any
-                  $('#checkResultModal').remove();
+                  // Remove existing modal if any (vanilla JS - no jQuery)
+                  var oldModal = document.getElementById('checkResultModal');
+                  if (oldModal && oldModal.parentNode) oldModal.parentNode.removeChild(oldModal);
                   
                   // Add to body
-                  $('body').append(modalHtml);
+                  document.body.insertAdjacentHTML('beforeend', modalHtml);
+                  var modalEl = document.getElementById('checkResultModal');
+                  if (!modalEl) return;
                   
-                  // Show modal with animation
-                  $('#checkResultModal').modal({
-                    backdrop: 'static',
-                    keyboard: false
-                  });
+                  // Show modal (Bootstrap 5 native or add backdrop)
+                  if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                    var modal = new bootstrap.Modal(modalEl, { backdrop: 'static', keyboard: false });
+                    modal.show();
+                  } else {
+                    modalEl.classList.add('show');
+                    modalEl.style.display = 'block';
+                    var backdrop = document.createElement('div');
+                    backdrop.className = 'modal-backdrop fade show';
+                    backdrop.id = 'checkResultModalBackdrop';
+                    document.body.appendChild(backdrop);
+                  }
                   
-                  // Countdown animation
+                  // Countdown then hide (no reload so multi-check can continue)
                   var countdown = 3;
                   var interval = setInterval(function() {
                     countdown--;
                     var timer = document.getElementById('countdownTimer');
                     var progress = document.getElementById('countdownProgress');
-                    
                     if (timer) timer.textContent = countdown;
                     if (progress) progress.style.width = (countdown / 3 * 100) + '%';
-                    
                     if (countdown <= 0) {
                       clearInterval(interval);
-                      $('#checkResultModal').modal('hide');
-                      setTimeout(function() {
-                        window.location.reload();
-                      }, 300);
+                      if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                        var m = bootstrap.Modal.getInstance(modalEl);
+                        if (m) m.hide();
+                      } else {
+                        modalEl.classList.remove('show');
+                        modalEl.style.display = 'none';
+                        var b = document.getElementById('checkResultModalBackdrop');
+                        if (b && b.parentNode) b.parentNode.removeChild(b);
+                      }
+                      if (modalEl && modalEl.parentNode) modalEl.parentNode.removeChild(modalEl);
                     }
                   }, 1000);
                 }
@@ -3340,6 +3595,57 @@
                     if (statusFilter) statusFilter.value = '';
                     
                     loadHistory(1);
+                  });
+                }
+                
+                // Xoá hết not_found & error: mở modal xác nhận
+                var btnDeleteNotfoundError = document.getElementById('btnDeleteNotfoundError');
+                var modalConfirmDelete = document.getElementById('modalConfirmDeleteNotfoundError');
+                var btnConfirmDelete = document.getElementById('btnConfirmDeleteNotfoundError');
+                if (btnDeleteNotfoundError && modalConfirmDelete) {
+                  btnDeleteNotfoundError.addEventListener('click', function() {
+                    if (typeof $ !== 'undefined' && $.fn.modal) {
+                      $(modalConfirmDelete).modal('show');
+                    } else {
+                      if (confirm('Bạn có chắc muốn xoá hết các bản ghi trạng thái Không tìm thấy và Lỗi?')) {
+                        doDeleteNotfoundError();
+                      }
+                    }
+                  });
+                }
+                if (btnConfirmDelete && modalConfirmDelete) {
+                  btnConfirmDelete.addEventListener('click', function() {
+                    doDeleteNotfoundError();
+                  });
+                }
+                function doDeleteNotfoundError() {
+                  if (!btnConfirmDelete) return;
+                  btnConfirmDelete.disabled = true;
+                  btnConfirmDelete.innerHTML = '<i class="fa fa-spinner fa-spin mr-1"></i>Đang xoá...';
+                  fetch('includes/ajax/phone-check-history.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'delete_all_notfound_error', user_id: {$user->_data.user_id} })
+                  })
+                  .then(function(r) { return r.json(); })
+                  .then(function(data) {
+                    btnConfirmDelete.disabled = false;
+                    btnConfirmDelete.innerHTML = '<i class="fa fa-trash-alt mr-1"></i>Xoá';
+                    if (typeof $ !== 'undefined' && $.fn.modal) $(modalConfirmDelete).modal('hide');
+                    if (data.success) {
+                      if (typeof loadHistory === 'function') loadHistory(1);
+                      if (typeof showResultPopup === 'function') showResultPopup('success', 'Đã xoá', data.message || '');
+                      else alert(data.message || 'Đã xoá.');
+                    } else {
+                      if (typeof showResultPopup === 'function') showResultPopup('danger', 'Lỗi', data.message || '');
+                      else alert(data.message || 'Lỗi.');
+                    }
+                  })
+                  .catch(function(err) {
+                    btnConfirmDelete.disabled = false;
+                    btnConfirmDelete.innerHTML = '<i class="fa fa-trash-alt mr-1"></i>Xoá';
+                    if (typeof $ !== 'undefined' && $.fn.modal) $(modalConfirmDelete).modal('hide');
+                    alert('Có lỗi xảy ra: ' + (err && err.message ? err.message : ''));
                   });
                 }
                 

@@ -7,8 +7,7 @@
 
 require('../../bootstrap.php');
 
-is_ajax();
-
+// Không gọi is_ajax() để tránh lỗi khi proxy/host xóa header X-Requested-With trên production
 if (!$user->_logged_in) {
   return_json(['error' => true, 'message' => __('Vui lòng đăng nhập để gửi phản hồi.')]);
 }

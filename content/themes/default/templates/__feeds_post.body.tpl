@@ -286,11 +286,11 @@
       </span>
       {if $_post['post_author_verified'] == '1'}
         <span class="verified-badge" data-bs-toggle="tooltip" title='{if $_post['user_type'] == "user"}{__("Verified User")}{else}{__("Verified Page")}{/if}'>
-          {include file='__svg_icons.tpl' icon="verified_badge" width="20px" height="20px"}
+          {include file='__svg_icons.tpl' icon="verified_badge" width="15px" height="15px"}
         </span>
       {elseif $_post['post_author_verified'] == '2'}
         <span class="verified-badge-gray" data-bs-toggle="tooltip" title='{if $_post['user_type'] == "user"}{__("Verified Business")}{else}{__("Business Verified")}{/if}'>
-          {include file='__svg_icons.tpl' icon="verified_badge_gray" width="20px" height="20px"}
+          {include file='__svg_icons.tpl' icon="verified_badge_gray" width="15px" height="15px"}
         </span>
       {/if}
       {if $_post['user_subscribed']}
@@ -520,6 +520,9 @@
           {elseif $_post['privacy'] == "custom"}
             <i class="fa fa-cog" data-bs-toggle="tooltip" title='{__("Shared with")} {__("Custom People")}'></i>
           {/if}
+        {/if}
+        {if $_post['user_type'] == 'user' && $_post['user_current_city']}
+          - <span>{$_post['user_current_city']}</span>
         {/if}
       {/if}
       {if $_post['for_subscriptions']}

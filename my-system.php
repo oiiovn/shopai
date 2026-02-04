@@ -413,7 +413,13 @@ try {
       break;
 
     case 'number-check':
-      // Quản lý check số
+      // Quản lý check số - tổng số lần xoá lịch sử (not_found/error) của tất cả user
+      $phone_check_delete_count = 0;
+      $res_count = $db->query("SELECT option_value FROM system_options WHERE option_name = 'phone_check_history_delete_count'");
+      if ($res_count && $row = $res_count->fetch_assoc()) {
+        $phone_check_delete_count = intval($row['option_value']);
+      }
+      $smarty->assign('phone_check_history_delete_count', $phone_check_delete_count);
       $smarty->assign('page_description', 'Quản lý kiểm tra số điện thoại');
       break;
 

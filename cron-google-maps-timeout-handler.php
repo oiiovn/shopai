@@ -4,7 +4,9 @@
  * 
  * Chức năng:
  * 1. Timeout khi assigned: Sau 30 phút vẫn ở trạng thái "assigned" → Chuyển thành "timeout" và tạo chiến dịch con mới
- * 2. Xác minh thất bại: Sau 30 phút từ khi completed mà bị expired (lỗi xác minh) → Tạo chiến dịch con mới và tách chiến dịch cũ
+ * 2. Expired available: Nhiệm vụ available hết hạn → Tạo lại nếu parent còn active (bất kể parent hết hạn hay chưa)
+ * 3. Xác minh thất bại: Sau 30 phút từ khi completed mà bị expired (lỗi xác minh) → Tạo chiến dịch con mới nếu parent còn active
+ * 4. Cập nhật parent campaigns: Đánh dấu completed khi đủ verified reviews
  * 
  * Chạy mỗi 5 phút: (crontab) every 5 minutes
  */
@@ -206,7 +208,142 @@ try {
     }
     
     // ========================================
-    // 2. XỬ LÝ XÁC MINH THẤT BẠI (EXPIRED/FAILED VERIFICATION)
+    // 2. XỬ LÝ TASK AVAILABLE ĐÃ HẾT HẠN (EXPIRED AVAILABLE TASKS)
+    // ========================================
+    echo "\n[" . date('Y-m-d H:i:s') . "] Checking available tasks with expired deadline...\n";
+    
+    // Tìm các sub-request available nhưng đã quá expires_at
+    $expired_available_query = $db->query("
+        SELECT 
+            sub_request_id,
+            parent_request_id,
+            place_name,
+            place_address,
+            place_url,
+            google_place_id,
+            reward_amount,
+            expires_at,
+            status,
+            generated_review_content,
+            TIMESTAMPDIFF(MINUTE, expires_at, CONVERT_TZ(NOW(), '+00:00', '+07:00')) as minutes_since_expired
+        FROM google_maps_review_sub_requests
+        WHERE status = 'available'
+        AND expires_at < CONVERT_TZ(NOW(), '+00:00', '+07:00')
+        AND parent_request_id IS NOT NULL
+    ");
+    
+    // Fetch and validate
+    $expired_available_tasks = [];
+    if ($expired_available_query) {
+        while ($row = $expired_available_query->fetch_assoc()) {
+            // Check parent campaign status separately (chỉ cần active, không cần kiểm tra expires_at)
+            $parent_check = $db->query("
+                SELECT request_id, place_name, place_address, place_url, status, expires_at
+                FROM google_maps_review_requests
+                WHERE request_id = '{$row['parent_request_id']}'
+                AND status = 'active'
+            ");
+            
+            if ($parent_check && $parent_check->num_rows > 0) {
+                $parent = $parent_check->fetch_assoc();
+                $row['parent_place_name'] = $parent['place_name'];
+                $row['parent_place_address'] = $parent['place_address'];
+                $row['parent_place_url'] = $parent['place_url'];
+                $row['parent_status'] = $parent['status'];
+                $expired_available_tasks[] = $row;
+            }
+        }
+    }
+    
+    $expired_available_count = count($expired_available_tasks);
+    echo "Found {$expired_available_count} available tasks with expired deadline\n";
+    
+    if ($expired_available_count > 0) {
+        foreach ($expired_available_tasks as $task) {
+            echo "\nProcessing expired available task #{$task['sub_request_id']}:\n";
+            echo "  - Parent: #{$task['parent_request_id']}\n";
+            echo "  - Place: {$task['place_name']}\n";
+            echo "  - Minutes since expired: {$task['minutes_since_expired']}\n";
+            
+            // Start transaction
+            $db->query("START TRANSACTION");
+            
+            try {
+                // 1. Cập nhật sub-request cũ thành "expired" và tách khỏi chiến dịch mẹ
+                $update_old = $db->query("
+                    UPDATE google_maps_review_sub_requests
+                    SET 
+                        status = 'expired',
+                        verification_notes = 'Không ai nhận trong thời hạn - Hết hạn',
+                        updated_at = NOW(),
+                        parent_request_id = NULL
+                    WHERE sub_request_id = '{$task['sub_request_id']}'
+                ");
+                
+                if (!$update_old) {
+                    throw new Exception("Failed to update old sub-request to expired: " . $db->error);
+                }
+                
+                if ($db->affected_rows == 0) {
+                    throw new Exception("No rows affected when updating sub-request #{$task['sub_request_id']}");
+                }
+                
+                echo "  ✓ Updated old task to expired status\n";
+                
+                // 2. Tạo sub-request mới để thay thế (copy cả generated_review_content)
+                $place_name_escaped = $db->real_escape_string($task['place_name']);
+                $place_address_escaped = $db->real_escape_string($task['place_address']);
+                $review_content_escaped = $task['generated_review_content'] ? $db->real_escape_string($task['generated_review_content']) : null;
+                
+                $insert_new = $db->query("
+                    INSERT INTO google_maps_review_sub_requests (
+                        parent_request_id,
+                        google_place_id,
+                        place_name,
+                        place_address,
+                        place_url,
+                        reward_amount,
+                        expires_at,
+                        generated_review_content,
+                        status,
+                        created_at,
+                        updated_at
+                    ) VALUES (
+                        '{$task['parent_request_id']}',
+                        " . ($task['google_place_id'] ? "'{$task['google_place_id']}'" : "NULL") . ",
+                        '{$place_name_escaped}',
+                        '{$place_address_escaped}',
+                        " . ($task['place_url'] ? "'{$task['place_url']}'" : "NULL") . ",
+                        '{$task['reward_amount']}',
+                        DATE_ADD(NOW(), INTERVAL 3 DAY),
+                        " . ($review_content_escaped ? "'{$review_content_escaped}'" : "NULL") . ",
+                        'available',
+                        NOW(),
+                        NOW()
+                    )
+                ");
+                
+                if (!$insert_new) {
+                    throw new Exception("Failed to create new replacement sub-request: " . $db->error);
+                }
+                
+                $new_sub_request_id = $db->insert_id;
+                echo "  ✓ Created new replacement task #{$new_sub_request_id}\n";
+                
+                // Commit transaction
+                $db->query("COMMIT");
+                echo "  ✓ Transaction committed successfully\n";
+                
+            } catch (Exception $e) {
+                $db->query("ROLLBACK");
+                echo "  ✗ Error: {$e->getMessage()}\n";
+                error_log("Expired available handler error: {$e->getMessage()}");
+            }
+        }
+    }
+    
+    // ========================================
+    // 3. XỬ LÝ XÁC MINH THẤT BẠI (EXPIRED/FAILED VERIFICATION)
     // ========================================
     echo "\n[" . date('Y-m-d H:i:s') . "] Checking failed verification tasks...\n";
     
@@ -249,7 +386,6 @@ try {
                 FROM google_maps_review_requests
                 WHERE request_id = '{$row['parent_request_id']}'
                 AND status = 'active'
-                AND expires_at > CONVERT_TZ(NOW(), '+00:00', '+07:00')
             ");
             
             if ($parent_check && $parent_check->num_rows > 0) {
@@ -390,6 +526,7 @@ try {
     echo "\n" . str_repeat("=", 60) . "\n";
     echo "SUMMARY:\n";
     echo "  - Timeout assigned tasks processed: {$timeout_assigned_count}\n";
+    echo "  - Expired available tasks processed: {$expired_available_count}\n";
     echo "  - Failed verification tasks processed: {$failed_verification_count}\n";
     echo "  - Parent campaigns completed: {$completed_campaigns}\n";
     echo str_repeat("=", 60) . "\n";

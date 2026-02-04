@@ -1,11 +1,11 @@
 <?php
-/* Smarty version 4.3.4, created on 2025-09-29 12:35:35
+/* Smarty version 4.3.4, created on 2025-11-07 04:29:44
   from '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/settings.profile.tpl' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '4.3.4',
-  'unifunc' => 'content_68da7d177f09c3_51444380',
+  'unifunc' => 'content_690d75b8ef1343_13580788',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
@@ -22,7 +22,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:__custom_fields.tpl' => 5,
   ),
 ),false)) {
-function content_68da7d177f09c3_51444380 (Smarty_Internal_Template $_smarty_tpl) {
+function content_690d75b8ef1343_13580788 (Smarty_Internal_Template $_smarty_tpl) {
 if ($_smarty_tpl->tpl_vars['sub_view']->value == '') {?>
   <div class="card-header with-icon">
     <?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"edit_profile",'class'=>"main-icon mr15",'width'=>"24px",'height'=>"24px"), 0, false);

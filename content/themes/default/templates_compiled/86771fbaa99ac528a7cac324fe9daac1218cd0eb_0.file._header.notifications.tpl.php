@@ -1,11 +1,11 @@
 <?php
-/* Smarty version 4.3.4, created on 2025-09-29 06:03:14
+/* Smarty version 4.3.4, created on 2025-11-06 14:08:59
   from '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/_header.notifications.tpl' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '4.3.4',
-  'unifunc' => 'content_68da2122c34b79_91706773',
+  'unifunc' => 'content_690cabfb76c137_06782518',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
@@ -22,7 +22,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:__feeds_notification.tpl' => 1,
   ),
 ),false)) {
-function content_68da2122c34b79_91706773 (Smarty_Internal_Template $_smarty_tpl) {
+function content_690cabfb76c137_06782518 (Smarty_Internal_Template $_smarty_tpl) {
 ?><li class="dropdown js_live-notifications">
   <a href="#" data-bs-toggle="dropdown" data-display="static">
     <?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"header-notifications",'class'=>"header-icon",'width'=>"24px",'height'=>"24px"), 0, false);

@@ -124,6 +124,20 @@ try {
       $smarty->assign('ads', $user->ads('pages', $spage['page_id']));
       break;
 
+    case 'virtual-orders':
+      $allowed_virtual_tabs = array('guide', 'create', 'new', 'received', 'placed', 'reviewed', 'completed', 'failed');
+      $virtual_orders_tab = isset($_GET['tab']) ? trim($_GET['tab']) : 'create';
+      if (!in_array($virtual_orders_tab, $allowed_virtual_tabs)) {
+        $virtual_orders_tab = 'create';
+      }
+      $smarty->assign('virtual_orders_tab', $virtual_orders_tab);
+      $smarty->assign('__virtual_orders_tab', $virtual_orders_tab);
+      if (isset($_GET['ajax']) && $_GET['ajax'] == '1') {
+        $html = $smarty->fetch("page.virtual-orders.tpl");
+        return_json(['success' => true, 'html' => $html, 'tab' => $virtual_orders_tab]);
+      }
+      break;
+
     case 'photos':
       /* get content */
       if (!$spage['needs_subscription']) {

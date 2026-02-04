@@ -53,7 +53,7 @@ try {
         $smarty->assign('boosted_post', $boosted_post);
       }
 
-      // get posts (newsfeed)
+      // get posts (all public posts for guests)
       $posts = ($selected_country) ? $user->get_posts(['country' => $selected_country['country_id']]) : $user->get_posts();
       /* assign variables */
       $smarty->assign('posts', $posts);
@@ -115,16 +115,19 @@ try {
           }
         }
 
-        // get posts (newsfeed)
-        $posts = ($selected_country) ? $user->get_posts(['country' => $selected_country['country_id']]) : $user->get_posts();
+        // get posts (newsfeed - bài viết từ mạng lưới của bạn)
+        $posts = ($selected_country) ? $user->get_posts(['get' => 'newsfeed', 'country' => $selected_country['country_id']]) : $user->get_posts(['get' => 'newsfeed']);
         /* assign variables */
         $smarty->assign('posts', $posts);
 
         // get available review tasks (hiển thị 1 nhiệm vụ con từ mỗi chiến dịch mẹ khác nhau)
         // Loại bỏ các chiến dịch mà user đã tạo và đã nhận
+        // User có thể nhận nhiệm vụ từ cùng requester nếu là địa điểm khác nhau
         $available_tasks = array();
         $get_available_tasks = $db->query("
-            SELECT gmsr.*, gmr.place_name, gmr.place_address, gmr.place_url, gmr.expires_at as parent_expires_at,
+            SELECT gmsr.sub_request_id, gmsr.parent_request_id, gmsr.reward_amount, gmsr.status, gmsr.created_at,
+                   gmsr.expires_at,
+                   gmr.place_name, gmr.place_address, gmr.place_url, gmr.expires_at as parent_expires_at,
                    u.user_firstname, u.user_lastname, u.user_picture, u.user_verified
             FROM google_maps_review_sub_requests gmsr
             LEFT JOIN google_maps_review_requests gmr ON gmsr.parent_request_id = gmr.request_id
@@ -140,11 +143,15 @@ try {
                 AND status IN ('assigned', 'completed')
             )
             AND NOT EXISTS (
-                SELECT 1 FROM google_maps_user_requester_tracking gmt
-                WHERE gmt.user_id = '{$user->_data['user_id']}'
-                AND gmt.requester_user_id = gmr.requester_user_id
+                SELECT 1 FROM google_maps_review_sub_requests gmsr2
+                INNER JOIN google_maps_review_requests gmr2 ON gmsr2.parent_request_id = gmr2.request_id
+                WHERE gmsr2.assigned_user_id = '{$user->_data['user_id']}'
+                AND gmr2.requester_user_id = gmr.requester_user_id
+                AND gmr2.place_url = gmr.place_url
+                AND gmr2.place_url != ''
+                AND gmsr2.status IN ('assigned', 'completed')
             )
-            GROUP BY gmr.request_id
+            GROUP BY gmr.request_id, gmsr.sub_request_id, gmsr.parent_request_id, gmsr.reward_amount, gmsr.status, gmsr.created_at, gmsr.expires_at, gmr.place_name, gmr.place_address, gmr.place_url, gmr.expires_at, u.user_firstname, u.user_lastname, u.user_picture, u.user_verified
             ORDER BY gmsr.created_at DESC
         ");
         

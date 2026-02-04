@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 4.3.4, created on 2025-10-15 03:09:16
+/* Smarty version 4.3.4, created on 2026-01-31 14:45:43
   from '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/shop-ai.tpl' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '4.3.4',
-  'unifunc' => 'content_68ef105c3600b8_94732739',
+  'unifunc' => 'content_697e1597b884f7_35026413',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     '15b2c8fa57cb3b0e98f333ec98b22b6dac759e06' => 
     array (
       0 => '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/shop-ai.tpl',
-      1 => 1760497750,
+      1 => 1769870740,
       2 => 'file',
     ),
   ),
@@ -21,14 +21,14 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:_head.tpl' => 1,
     'file:_header.tpl' => 1,
     'file:_sidebar.tpl' => 1,
-    'file:__svg_icons.tpl' => 1,
+    'file:__svg_icons.tpl' => 2,
     'file:_no_transactions.tpl' => 1,
     'file:shop-ai-bank-accounts.tpl' => 1,
     'file:shop-ai-withdrawal.tpl' => 1,
     'file:_footer.tpl' => 1,
   ),
 ),false)) {
-function content_68ef105c3600b8_94732739 (Smarty_Internal_Template $_smarty_tpl) {
+function content_697e1597b884f7_35026413 (Smarty_Internal_Template $_smarty_tpl) {
 $_smarty_tpl->_checkPlugins(array(0=>array('file'=>'/home/sho73359/domains/shop-ai.vn/public_html/vendor/smarty/smarty/libs/plugins/modifier.number_format.php','function'=>'smarty_modifier_number_format',),1=>array('file'=>'/home/sho73359/domains/shop-ai.vn/public_html/vendor/smarty/smarty/libs/plugins/modifier.date_format.php','function'=>'smarty_modifier_date_format',),));
 $_smarty_tpl->_subTemplateRender('file:_head.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array(), 0, false);
 $_smarty_tpl->_subTemplateRender('file:_header.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array(), 0, false);
@@ -58,27 +58,19 @@ $_smarty_tpl->_subTemplateRender('file:_header.tpl', $_smarty_tpl->cache_id, $_s
 
               </a>
             </li>
-            <li <?php if ($_smarty_tpl->tpl_vars['view']->value == "recharge") {?>class="active" <?php }?>>
+                                    <li>
               <a href="<?php echo $_smarty_tpl->tpl_vars['system']->value['system_url'];?>
-/shop-ai/recharge">
-                <i class="fa fa-credit-card main-icon mr-2" style="width: 24px; height: 24px; font-size: 18px;"></i>
-                <?php echo __("Nạp tiền");?>
-
-              </a>
-            </li>
-                                    <li <?php if ($_smarty_tpl->tpl_vars['view']->value == "transactions") {?>class="active" <?php }?>>
-              <a href="<?php echo $_smarty_tpl->tpl_vars['system']->value['system_url'];?>
-/shop-ai/transactions">
-                <i class="fa fa-history main-icon mr-2" style="width: 24px; height: 24px; font-size: 18px;"></i>
-                <?php echo __("Lịch sử giao dịch");?>
+/shop-ai/pricing">
+                <i class="fa fa-list-alt main-icon mr-2" style="width: 24px; height: 24px; font-size: 18px;"></i>
+                <?php echo __("Bảng giá");?>
 
               </a>
             </li>
             <li>
               <a href="<?php echo $_smarty_tpl->tpl_vars['system']->value['system_url'];?>
-/shop-ai/pricing">
-                <i class="fa fa-list-alt main-icon mr-2" style="width: 24px; height: 24px; font-size: 18px;"></i>
-                <?php echo __("Bảng giá");?>
+/finance/recharge">
+                <i class="fa fa-wallet main-icon mr-2" style="width: 24px; height: 24px; font-size: 18px;"></i>
+                <?php echo __("Nạp tiền");?>
 
               </a>
             </li>
@@ -101,24 +93,17 @@ $_smarty_tpl->_subTemplateRender('file:_header.tpl', $_smarty_tpl->cache_id, $_s
 
             </a>
           </li>
-          <li <?php if ($_smarty_tpl->tpl_vars['view']->value == "recharge") {?>class="active" <?php }?>>
+                              <li>
             <a href="<?php echo $_smarty_tpl->tpl_vars['system']->value['system_url'];?>
-/shop-ai/recharge">
-              <?php echo __("Nạp tiền");?>
-
-            </a>
-          </li>
-                              <li <?php if ($_smarty_tpl->tpl_vars['view']->value == "transactions") {?>class="active" <?php }?>>
-            <a href="<?php echo $_smarty_tpl->tpl_vars['system']->value['system_url'];?>
-/shop-ai/transactions">
-              <?php echo __("Giao dịch");?>
+/shop-ai/pricing">
+              <?php echo __("Bảng giá");?>
 
             </a>
           </li>
           <li>
             <a href="<?php echo $_smarty_tpl->tpl_vars['system']->value['system_url'];?>
-/shop-ai/pricing">
-              <?php echo __("Bảng giá");?>
+/finance/recharge">
+              <?php echo __("Nạp tiền");?>
 
             </a>
           </li>
@@ -419,7 +404,8 @@ $_smarty_tpl->tpl_vars['transaction']->do_else = true;
 if ($_from !== null) foreach ($_from as $_smarty_tpl->tpl_vars['transaction']->value) {
 $_smarty_tpl->tpl_vars['transaction']->do_else = false;
 ?>
-                                                        <?php if ($_smarty_tpl->tpl_vars['transaction']->value['type'] == 'recharge') {?>
+                                                        <?php $_smarty_tpl->_assignInScope('is_credit', ($_smarty_tpl->tpl_vars['transaction']->value['type'] == 'recharge' || $_smarty_tpl->tpl_vars['transaction']->value['type'] == 'otp_refund'));?>
+                                                        <?php if ($_smarty_tpl->tpl_vars['is_credit']->value) {?>
                               <?php $_smarty_tpl->_assignInScope('balance_after', $_smarty_tpl->tpl_vars['running_balance']->value);?>
                               <?php $_smarty_tpl->_assignInScope('running_balance', $_smarty_tpl->tpl_vars['running_balance']->value-$_smarty_tpl->tpl_vars['transaction']->value['amount']);?>
                             <?php } else { ?>
@@ -430,15 +416,15 @@ $_smarty_tpl->tpl_vars['transaction']->do_else = false;
                               <td>#<?php echo $_smarty_tpl->tpl_vars['transaction']->value['transaction_id'];?>
 </td>
                               <td>
-                                <strong class="<?php if ($_smarty_tpl->tpl_vars['transaction']->value['type'] == 'recharge') {?>text-success<?php } else { ?>text-danger<?php }?>">
-                                  <?php if ($_smarty_tpl->tpl_vars['transaction']->value['type'] == 'recharge') {?>+<?php } else { ?>-<?php }
+                                <strong class="<?php if ($_smarty_tpl->tpl_vars['is_credit']->value) {?>text-success<?php } else { ?>text-danger<?php }?>">
+                                  <?php if ($_smarty_tpl->tpl_vars['is_credit']->value) {?>+<?php } else { ?>-<?php }
 echo number_format($_smarty_tpl->tpl_vars['transaction']->value['amount'],0,',','.');?>
  VNĐ
                                 </strong>
                               </td>
                               <td>
-                                <span class="badge <?php if ($_smarty_tpl->tpl_vars['transaction']->value['type'] == 'recharge') {?>bg-success<?php } else { ?>bg-danger<?php }?>">
-                                  <?php if ($_smarty_tpl->tpl_vars['transaction']->value['type'] == 'recharge') {
+                                <span class="badge <?php if ($_smarty_tpl->tpl_vars['is_credit']->value) {?>bg-success<?php } else { ?>bg-danger<?php }?>">
+                                  <?php if ($_smarty_tpl->tpl_vars['is_credit']->value) {
 echo __("Nạp Tiền");
 } else {
 echo __("Trừ tiền");
@@ -496,7 +482,8 @@ $_smarty_tpl->tpl_vars['transaction']->do_else = true;
 if ($_from !== null) foreach ($_from as $_smarty_tpl->tpl_vars['transaction']->value) {
 $_smarty_tpl->tpl_vars['transaction']->do_else = false;
 ?>
-                                                <?php if ($_smarty_tpl->tpl_vars['transaction']->value['type'] == 'recharge') {?>
+                                                <?php $_smarty_tpl->_assignInScope('is_credit_mobile', ($_smarty_tpl->tpl_vars['transaction']->value['type'] == 'recharge' || $_smarty_tpl->tpl_vars['transaction']->value['type'] == 'otp_refund'));?>
+                                                <?php if ($_smarty_tpl->tpl_vars['is_credit_mobile']->value) {?>
                           <?php $_smarty_tpl->_assignInScope('balance_after_mobile', $_smarty_tpl->tpl_vars['running_balance_mobile']->value);?>
                           <?php $_smarty_tpl->_assignInScope('running_balance_mobile', $_smarty_tpl->tpl_vars['running_balance_mobile']->value-$_smarty_tpl->tpl_vars['transaction']->value['amount']);?>
                         <?php } else { ?>
@@ -508,14 +495,14 @@ $_smarty_tpl->tpl_vars['transaction']->do_else = false;
                             <div class="row align-items-center">
                               <div class="col-8">
                                 <div class="d-flex align-items-center mb-2">
-                                  <span class="badge <?php if ($_smarty_tpl->tpl_vars['transaction']->value['type'] == 'recharge') {?>bg-success<?php } else { ?>bg-danger<?php }?> mr10">
-                                    <?php if ($_smarty_tpl->tpl_vars['transaction']->value['type'] == 'recharge') {?>Nạp Tiền<?php } else { ?>Trừ tiền<?php }?>
+                                  <span class="badge <?php if ($_smarty_tpl->tpl_vars['is_credit_mobile']->value) {?>bg-success<?php } else { ?>bg-danger<?php }?> mr10">
+                                    <?php if ($_smarty_tpl->tpl_vars['is_credit_mobile']->value) {?>Nạp Tiền<?php } else { ?>Trừ tiền<?php }?>
                                   </span>
                                   <small class="text-muted">#<?php echo $_smarty_tpl->tpl_vars['transaction']->value['transaction_id'];?>
 </small>
                                 </div>
-                                <h6 class="mb-1 <?php if ($_smarty_tpl->tpl_vars['transaction']->value['type'] == 'recharge') {?>text-success<?php } else { ?>text-danger<?php }?> font-weight-bold">
-                                  <?php if ($_smarty_tpl->tpl_vars['transaction']->value['type'] == 'recharge') {?>+<?php } else { ?>-<?php }
+                                <h6 class="mb-1 <?php if ($_smarty_tpl->tpl_vars['is_credit_mobile']->value) {?>text-success<?php } else { ?>text-danger<?php }?> font-weight-bold">
+                                  <?php if ($_smarty_tpl->tpl_vars['is_credit_mobile']->value) {?>+<?php } else { ?>-<?php }
 echo number_format($_smarty_tpl->tpl_vars['transaction']->value['amount'],0,',','.');?>
  VNĐ
                                 </h6>
@@ -761,10 +748,13 @@ echo $_smarty_tpl->tpl_vars['user']->value->_data['user_id'];
 ' : '<?php echo __("Thất bại");?>
 ';
                     
+                    // Xác định loại giao dịch: cộng tiền (recharge, otp_refund) hay trừ tiền
+                    var isCredit = (transaction.type === 'recharge' || transaction.type === 'otp_refund');
+                    
                     html += '<tr>';
                     html += '<td>' + transaction.created_at + '</td>';
-                    html += '<td><span class="badge badge-' + (transaction.type === 'recharge' ? 'success' : 'danger') + '">' + 
-                           (transaction.type === 'recharge' ? '<?php echo __("Nạp tiền");?>
+                    html += '<td><span class="badge badge-' + (isCredit ? 'success' : 'danger') + '">' + 
+                           (isCredit ? '<?php echo __("Nạp tiền");?>
 ' : '<?php echo __("Trừ tiền");?>
 ') + '</span></td>';
                     html += '<td class="text-right">' + formatMoney(transaction.amount) + ' VNĐ</td>';
@@ -792,12 +782,14 @@ echo $_smarty_tpl->tpl_vars['user']->value->_data['user_id'];
 ' : '<?php echo __("Thất bại");?>
 ';
                     
-                    var typeClass = transaction.type === 'recharge' ? 'success' : 'danger';
-                    var typeText = transaction.type === 'recharge' ? '<?php echo __("Nạp tiền");?>
+                    // Xác định loại giao dịch: cộng tiền (recharge, otp_refund) hay trừ tiền
+                    var isCredit = (transaction.type === 'recharge' || transaction.type === 'otp_refund');
+                    var typeClass = isCredit ? 'success' : 'danger';
+                    var typeText = isCredit ? '<?php echo __("Nạp tiền");?>
 ' : '<?php echo __("Trừ tiền");?>
 ';
-                    var amountClass = transaction.type === 'recharge' ? 'text-success' : 'text-danger';
-                    var amountPrefix = transaction.type === 'recharge' ? '+' : '-';
+                    var amountClass = isCredit ? 'text-success' : 'text-danger';
+                    var amountPrefix = isCredit ? '+' : '-';
                     
                     html += '<div class="card mb-3 transaction-card">';
                     html += '  <div class="card-body p-3">';
@@ -1663,19 +1655,19 @@ $_smarty_tpl->tpl_vars['item']->do_else = false;
                               <td>
                                 <?php if ($_smarty_tpl->tpl_vars['item']->value['status'] == "pending") {?>
                                   <span class="badge badge-info">
-                                    <i class="fa fa-spinner fa-spin" style="margin-right: 8px;"></i>Đang check...
+                                    <i class="fa fa-spinner fa-spin mr-2"></i>Đang check...
                                   </span>
                                 <?php } elseif ($_smarty_tpl->tpl_vars['item']->value['status'] == "success") {?>
                                   <span class="badge badge-success">
-                                    <i class="fa fa-check" style="margin-right: 8px;"></i>Thành công
+                                    <i class="fa fa-check mr-2"></i>Thành công
                                   </span>
                                 <?php } elseif ($_smarty_tpl->tpl_vars['item']->value['status'] == "not_found") {?>
                                   <span class="badge badge-secondary">
-                                    <i class="fa fa-user-times" style="margin-right: 8px;"></i>Không tìm thấy
+                                    <i class="fa fa-user-times mr-2"></i>Không tìm thấy
                                   </span>
                                 <?php } else { ?>
                                   <span class="badge badge-danger">
-                                    <i class="fa fa-exclamation-triangle" style="margin-right: 8px;"></i>Lỗi
+                                    <i class="fa fa-exclamation-triangle mr-2"></i>Lỗi
                                   </span>
                                 <?php }?>
                               </td>
@@ -1730,19 +1722,19 @@ $_smarty_tpl->tpl_vars['item']->do_else = false;
                                     <div class="col-5 text-right">
                                       <?php if ($_smarty_tpl->tpl_vars['item']->value['status'] == "pending") {?>
                                         <span class="badge badge-info">
-                                          <i class="fa fa-spinner fa-spin" style="margin-right: 8px;"></i>Đang check...
+                                          <i class="fa fa-spinner fa-spin mr-2"></i>Đang check...
                                         </span>
                                       <?php } elseif ($_smarty_tpl->tpl_vars['item']->value['status'] == "success") {?>
                                         <span class="badge badge-success">
-                                          <i class="fa fa-check" style="margin-right: 8px;"></i>Thành công
+                                          <i class="fa fa-check mr-2"></i>Thành công
                                         </span>
                                       <?php } elseif ($_smarty_tpl->tpl_vars['item']->value['status'] == "not_found") {?>
                                         <span class="badge badge-secondary">
-                                          <i class="fa fa-user-times" style="margin-right: 8px;"></i>Không tìm thấy
+                                          <i class="fa fa-user-times mr-2"></i>Không tìm thấy
                                         </span>
                                       <?php } else { ?>
                                         <span class="badge badge-danger">
-                                          <i class="fa fa-exclamation-triangle" style="margin-right: 8px;"></i>Lỗi
+                                          <i class="fa fa-exclamation-triangle mr-2"></i>Lỗi
                                         </span>
                                       <?php }?>
                                     </div>
@@ -2311,6 +2303,36 @@ $_smarty_tpl->tpl_vars['i']->first = $_smarty_tpl->tpl_vars['i']->iteration === 
                 <strong>Shopee Phone Checker</strong>
               </div>
               <div class="card-body">
+                <!-- Quick Action Cards -->
+                <div class="row mb-4">
+                  <div class="col-md-6 mb-3 mb-md-0">
+                    <a href="<?php echo $_smarty_tpl->tpl_vars['system']->value['system_url'];?>
+/shop-ai/pricing" class="text-decoration-none">
+                      <div class="card h-100 shadow-sm hover-lift" style="border: 2px solid #e9ecef; transition: all 0.3s ease;">
+                        <div class="card-body text-center p-4">
+                          <i class="fa fa-list-alt fa-3x mb-3" style="color: #667eea;"></i>
+                          <h5 class="card-title mb-2"><?php echo __("Bảng giá");?>
+</h5>
+                          <p class="text-muted small mb-0">Xem bảng giá check số điện thoại</p>
+                        </div>
+                      </div>
+                    </a>
+                  </div>
+                  <div class="col-md-6">
+                    <a href="<?php echo $_smarty_tpl->tpl_vars['system']->value['system_url'];?>
+/finance/recharge" class="text-decoration-none">
+                      <div class="card h-100 shadow-sm hover-lift" style="border: 2px solid #e9ecef; transition: all 0.3s ease; background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);">
+                        <div class="card-body text-center p-4">
+                          <i class="fa fa-wallet fa-3x mb-3" style="color: #28a745;"></i>
+                          <h5 class="card-title mb-2"><?php echo __("Nạp tiền");?>
+</h5>
+                          <p class="text-muted small mb-0">Nạp tiền vào tài khoản để sử dụng dịch vụ</p>
+                        </div>
+                      </div>
+                    </a>
+                  </div>
+                </div>
+                
                 <!-- Combined Check & Filter Section -->
                 <div class="combined-section mb-4">
                   <div class="row">
@@ -2443,6 +2465,44 @@ $_smarty_tpl->tpl_vars['i']->first = $_smarty_tpl->tpl_vars['i']->iteration === 
                             </a>
                           </div>
                         </div>
+                        
+                        <!-- Admin Contact Info -->
+                        <?php if ($_smarty_tpl->tpl_vars['admin_info']->value) {?>
+                        <div class="admin-contact-info mt-3 p-3" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; color: white;">
+                          <div class="text-center mb-2">
+                            <small class="opacity-75">
+                              <i class="fa fa-headset mr-1"></i>Liên hệ hỗ trợ khi cần
+                            </small>
+                          </div>
+                          <div class="d-flex align-items-center justify-content-center flex-wrap">
+                            <a href="<?php echo $_smarty_tpl->tpl_vars['system']->value['system_url'];?>
+/<?php echo $_smarty_tpl->tpl_vars['admin_info']->value['user_name'];?>
+" class="text-white d-flex align-items-center" style="text-decoration: none;">
+                              <img src="<?php echo $_smarty_tpl->tpl_vars['admin_info']->value['user_picture'];?>
+" alt="Admin" class="rounded-circle" style="width: 50px; height: 50px; border: 2px solid rgba(255,255,255,0.3); margin-right: 5px;">
+                              <div class="d-flex align-items-center">
+                                <span class="font-weight-bold"><?php echo $_smarty_tpl->tpl_vars['admin_info']->value['name'];?>
+</span>
+                                <?php if ($_smarty_tpl->tpl_vars['admin_info']->value['user_verified']) {?>
+                                  <span class="ml-2" data-bs-toggle="tooltip" title='<?php echo __("Verified User");?>
+'>
+                                    <?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"verified_badge",'width'=>"15px",'height'=>"15px"), 0, true);
+?>
+                                  </span>
+                                <?php }?>
+                              </div>
+                            </a>
+                            <?php if ($_smarty_tpl->tpl_vars['admin_info']->value['zalo']) {?>
+                            <div class="ml-3">
+                              <small>
+                                <i class="fab fa-zalo mr-1"></i>Zalo: <strong><?php echo $_smarty_tpl->tpl_vars['admin_info']->value['zalo'];?>
+</strong>
+                              </small>
+                            </div>
+                            <?php }?>
+                          </div>
+                        </div>
+                        <?php }?>
                       </div>
                     </div>
                   </div>
@@ -2989,6 +3049,12 @@ $_smarty_tpl->tpl_vars['i']->first = $_smarty_tpl->tpl_vars['i']->iteration === 
                 color: #dc3545;
                 font-size: 12px;
                 margin-top: 4px;
+              }
+              
+              /* Quick Action Cards Hover Effect */
+              .hover-lift:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 20px rgba(0,0,0,0.15) !important;
               }
               </style>
 

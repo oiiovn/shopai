@@ -130,23 +130,23 @@
         </div>
         <!-- profile-avatar -->
 
-        <!-- profile-name -->
-        <div class="profile-name-wrapper">
+        <!-- profile-name: giữa trên mobile, trái trên desktop -->
+        <div class="profile-name-wrapper text-center text-md-start">
           <a href="{$system['system_url']}/pages/{$spage['page_name']}">{$spage['page_title']}</a>
           {if $spage['page_verified'] == '1'}
-            <span class="verified-badge" data-bs-toggle="tooltip" title='{__("Verified Page")}'>
-              {include file='__svg_icons.tpl' icon="verified_badge" width="30px" height="30px"}
+            <span class="verified-badge verified-badge-profile" data-bs-toggle="tooltip" title='{__("Verified Page")}'>
+              {include file='__svg_icons.tpl' icon="verified_badge" width="20px" height="20px"}
             </span>
           {elseif $spage['page_verified'] == '2'}
-            <span class="verified-badge-gray" data-bs-toggle="tooltip" title='{__("Business Verified")}'>
-              {include file='__svg_icons.tpl' icon="verified_badge_gray" width="30px" height="30px"}
+            <span class="verified-badge-gray verified-badge-profile" data-bs-toggle="tooltip" title='{__("Business Verified")}'>
+              {include file='__svg_icons.tpl' icon="verified_badge_gray" width="20px" height="20px"}
             </span>
           {/if}
         </div>
         <!-- profile-name -->
 
-        <!-- profile-buttons -->
-        <div class="profile-buttons-wrapper">
+        <!-- profile-buttons: giữa trên mobile -->
+        <div class="profile-buttons-wrapper text-center text-md-start">
           <!-- like -->
           {if $spage['i_like']}
             <button type="button" class="btn btn-md rounded-pill btn-primary js_unlike-page" data-id="{$spage['page_id']}">
@@ -286,6 +286,29 @@
         {/if}
       </div>
       <!-- profile-tabs -->
+
+      {if $spage['page_business_type_id'] == 1 && $spage['i_admin']}
+        {assign var="__virtual_orders_tab" value=$virtual_orders_tab|default:'create'}
+        <div class="card mt-3 mb-3 page-virtual-orders-nav">
+          <div class="card-body py-2">
+            <div class="d-flex flex-wrap justify-content-center gap-2">
+              <a href="{$system['system_url']}/pages/{$spage['page_name']}/virtual-orders?tab=guide" class="btn btn-sm d-flex align-items-center justify-content-center text-center px-3 virtual-orders-tab-link {if $view == 'virtual-orders' && $__virtual_orders_tab == 'guide'}btn-primary{else}btn-outline-light border-0 rounded-0{/if}" data-order-tab="guide">
+                <span class="virtual-orders-icon-wrap virtual-orders-icon-wrap-sm me-2 d-inline-flex align-items-center justify-content-center">
+                  <img src="https://img.icons8.com/color/240/youtube-play.png" alt="" class="virtual-orders-icon">
+                </span>
+                <span>{__("Xem hướng dẫn")}</span>
+              </a>
+              <a href="{$system['system_url']}/pages/{$spage['page_name']}/virtual-orders?tab=create" class="btn btn-sm d-flex align-items-center justify-content-center text-center px-3 virtual-orders-tab-link {if $view == 'virtual-orders' && $__virtual_orders_tab == 'create'}btn-primary{else}btn-outline-light border-0 rounded-0{/if}" data-order-tab="create">{__("Tạo đơn ảo")}</a>
+              <a href="{$system['system_url']}/pages/{$spage['page_name']}/virtual-orders?tab=new" class="btn btn-sm d-flex align-items-center justify-content-center text-center px-3 virtual-orders-tab-link {if $view == 'virtual-orders' && $__virtual_orders_tab == 'new'}btn-primary{else}btn-outline-light border-0 rounded-0{/if}" data-order-tab="new">{__("Đơn mới")}</a>
+              <a href="{$system['system_url']}/pages/{$spage['page_name']}/virtual-orders?tab=received" class="btn btn-sm d-flex align-items-center justify-content-center text-center px-3 virtual-orders-tab-link {if $view == 'virtual-orders' && $__virtual_orders_tab == 'received'}btn-primary{else}btn-outline-light border-0 rounded-0{/if}" data-order-tab="received">{__("Đã nhận")}</a>
+              <a href="{$system['system_url']}/pages/{$spage['page_name']}/virtual-orders?tab=placed" class="btn btn-sm d-flex align-items-center justify-content-center text-center px-3 virtual-orders-tab-link {if $view == 'virtual-orders' && $__virtual_orders_tab == 'placed'}btn-primary{else}btn-outline-light border-0 rounded-0{/if}" data-order-tab="placed">{__("Đã đặt")}</a>
+              <a href="{$system['system_url']}/pages/{$spage['page_name']}/virtual-orders?tab=reviewed" class="btn btn-sm d-flex align-items-center justify-content-center text-center px-3 virtual-orders-tab-link {if $view == 'virtual-orders' && $__virtual_orders_tab == 'reviewed'}btn-primary{else}btn-outline-light border-0 rounded-0{/if}" data-order-tab="reviewed">{__("Đã đánh giá")}</a>
+              <a href="{$system['system_url']}/pages/{$spage['page_name']}/virtual-orders?tab=completed" class="btn btn-sm d-flex align-items-center justify-content-center text-center px-3 virtual-orders-tab-link {if $view == 'virtual-orders' && $__virtual_orders_tab == 'completed'}btn-primary{else}btn-outline-light border-0 rounded-0{/if}" data-order-tab="completed">{__("Hoàn thành")}</a>
+              <a href="{$system['system_url']}/pages/{$spage['page_name']}/virtual-orders?tab=failed" class="btn btn-sm d-flex align-items-center justify-content-center text-center px-3 virtual-orders-tab-link {if $view == 'virtual-orders' && $__virtual_orders_tab == 'failed'}btn-primary{else}btn-outline-light border-0 rounded-0{/if}" data-order-tab="failed">{__("Thất bại")}</a>
+            </div>
+          </div>
+        </div>
+      {/if}
 
       <!-- profile-content -->
       <div class="row">
@@ -590,6 +613,11 @@
 
           </div>
           <!-- right panel -->
+
+        {elseif $view == "virtual-orders"}
+          <div class="col-12" id="js-virtual-orders-container" data-active-tab="{$__virtual_orders_tab|default:'create'}">
+            {include file='page.virtual-orders.tpl'}
+          </div>
 
         {elseif $view == "photos"}
           <!-- photos -->
@@ -1456,11 +1484,11 @@
                   <div class="card-body">
                     <div class="text-center">
                       {if $spage['page_verified'] == '1'}
-                        {include file='__svg_icons.tpl' icon="verified_badge" class="main-icon mb10" width="60px" height="60px"}
+                        {include file='__svg_icons.tpl' icon="verified_badge" class="main-icon mb10" width="40px" height="40px"}
                         <h4 class="text-info">{__("Premium Verified")}</h4>
                         <p class="mt20">{__("This page has blue verification badge")}</p>
                       {elseif $spage['page_verified'] == '2'}
-                        {include file='__svg_icons.tpl' icon="verified_badge_gray" class="main-icon mb10" width="60px" height="60px"}
+                        {include file='__svg_icons.tpl' icon="verified_badge_gray" class="main-icon mb10" width="40px" height="40px"}
                         <h4 class="text-secondary">{__("Business Verified")}</h4>
                         <p class="mt20">{__("This page has gray verification badge")}</p>
                         
@@ -1487,7 +1515,7 @@
                       <div class="col-md-6">
                         <div class="card verification-option" onclick="selectVerificationLevel('gray')">
                           <div class="card-body text-center">
-                            {include file='__svg_icons.tpl' icon="verified_badge_gray" width="48px" height="48px"}
+                            {include file='__svg_icons.tpl' icon="verified_badge_gray" width="38px" height="38px"}
                             <h6 class="mt-2">{__("Gray Badge")}</h6>
                             <p class="text-muted small">{__("Basic business verification")}</p>
                             <ul class="list-unstyled small text-start">
@@ -1501,7 +1529,7 @@
                       <div class="col-md-6">
                         <div class="card verification-option" onclick="selectVerificationLevel('blue')">
                           <div class="card-body text-center">
-                            {include file='__svg_icons.tpl' icon="verified_badge" width="48px" height="48px"}
+                            {include file='__svg_icons.tpl' icon="verified_badge" width="38px" height="38px"}
                             <h6 class="mt-2">{__("Blue Badge")}</h6>
                             <p class="text-muted small">{__("Premium verification")}</p>
                             <ul class="list-unstyled small text-start">
@@ -1837,5 +1865,225 @@
   </div>
 </div>
 <!-- page content -->
+
+{if $spage['page_business_type_id'] == 1 && $spage['i_admin']}
+  <style>
+    .page-virtual-orders-nav .virtual-orders-tab-link.btn-outline-light {
+      background-color: transparent;
+      color: #212529;
+      border-color: transparent;
+      transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .page-virtual-orders-nav .virtual-orders-tab-link.btn-outline-light:hover,
+    .page-virtual-orders-nav .virtual-orders-tab-link.btn-outline-light:focus {
+      background-color: rgba(26, 115, 232, 0.12);
+      color: #1a73e8;
+      border-color: rgba(26, 115, 232, 0.3);
+      border-radius: 999px;
+      box-shadow: 0 2px 6px rgba(26, 115, 232, 0.25);
+    }
+    .page-virtual-orders-nav .virtual-orders-tab-link.btn-primary {
+      border-radius: 999px;
+      box-shadow: 0 2px 6px rgba(26, 115, 232, 0.3);
+    }
+    .virtual-orders-icon-wrap {
+      border-radius: 50%;
+      background-color: #ffffff;
+      transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .virtual-orders-icon-wrap-sm {
+      width: 24px;
+      height: 24px;
+    }
+    .virtual-orders-icon-wrap-lg {
+      width: 32px;
+      height: 32px;
+    }
+    .virtual-orders-icon {
+      width: 16px;
+      height: 16px;
+    }
+    .virtual-orders-icon-lg {
+      width: 20px;
+      height: 20px;
+    }
+    .page-virtual-orders-guide .guide-playlist .list-group-item {
+      border-radius: 12px;
+      margin-bottom: 10px;
+      border: 1px solid #e9ecef;
+      transition: all 0.2s ease;
+    }
+    .page-virtual-orders-guide .guide-playlist .list-group-item.active {
+      background-color: #1a73e8;
+      border-color: #1a73e8;
+      color: #fff;
+      box-shadow: 0 8px 20px rgba(26, 115, 232, 0.25);
+    }
+    .page-virtual-orders-guide .guide-playlist .list-group-item.active small,
+    .page-virtual-orders-guide .guide-playlist .list-group-item.active .fw-semibold {
+      color: #fff !important;
+    }
+    .page-virtual-orders-guide .guide-player-wrapper {
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 12px 24px rgba(26, 115, 232, 0.15);
+    }
+    body.night-mode .page-virtual-orders-nav .virtual-orders-tab-link.btn-outline-light {
+      background-color: transparent;
+      color: #e2e8f0;
+      border-color: transparent;
+    }
+    body.night-mode .page-virtual-orders-nav .virtual-orders-tab-link.btn-outline-light:hover,
+    body.night-mode .page-virtual-orders-nav .virtual-orders-tab-link.btn-outline-light:focus {
+      background-color: rgba(99, 179, 237, 0.12);
+      color: #63b3ed;
+      border-color: rgba(99, 179, 237, 0.35);
+      box-shadow: 0 2px 8px rgba(99, 179, 237, 0.35);
+    }
+    body.night-mode .virtual-orders-icon-wrap {
+      background-color: #2d3748;
+    }
+    body.night-mode .page-virtual-orders-guide .guide-playlist .list-group-item {
+      background-color: #1a202c;
+      border-color: #2d3748;
+      color: #e2e8f0;
+    }
+    body.night-mode .page-virtual-orders-guide .guide-playlist .list-group-item:hover {
+      background-color: #222c3c;
+    }
+    body.night-mode .page-virtual-orders-guide .guide-playlist .list-group-item.active {
+      background-color: #2b6cb0;
+      border-color: #2b6cb0;
+      color: #f7fafc !important;
+      box-shadow: 0 10px 24px rgba(43, 108, 176, 0.35);
+    }
+    body.night-mode .page-virtual-orders-guide .guide-playlist .list-group-item small,
+    body.night-mode .page-virtual-orders-guide .guide-playlist .list-group-item .fw-semibold {
+      color: inherit !important;
+    }
+    body.night-mode .page-virtual-orders-guide .guide-player-wrapper {
+      box-shadow: 0 12px 30px rgba(15, 32, 55, 0.55);
+    }
+    body.night-mode .page-virtual-orders-guide .guide-player-title,
+    body.night-mode .page-virtual-orders-guide .guide-player-desc {
+      color: #e2e8f0;
+    }
+  </style>
+  <script>
+    (function ($) {
+      $(function () {
+        var $nav = $('.page-virtual-orders-nav');
+        if (!$nav.length) {
+          return;
+        }
+
+        function getContainer() {
+          return $('#js-virtual-orders-container');
+        }
+
+        function setNavState(activeTab) {
+          $nav.find('a[data-order-tab]').each(function () {
+            var $item = $(this);
+            var tab = $item.data('order-tab');
+            var isActive = tab === activeTab;
+            if (isActive) {
+              $item.removeClass('btn-outline-light text-dark border-0 rounded-0').addClass('btn-primary text-white');
+            } else {
+              $item.removeClass('btn-primary text-white').addClass('btn-outline-light text-dark border-0 rounded-0');
+            }
+          });
+        }
+
+        function buildAjaxUrl(url) {
+          try {
+            var ajaxUrl = new URL(url, window.location.origin);
+            ajaxUrl.searchParams.set('ajax', '1');
+            return ajaxUrl.toString();
+          } catch (error) {
+            if (url.indexOf('ajax=1') === -1) {
+              url += (url.indexOf('?') === -1 ? '?' : '&') + 'ajax=1';
+            }
+            return url;
+          }
+        }
+
+        function loadTab(url, tab, pushState) {
+          var $container = getContainer();
+          if (!$container.length) {
+            window.location.href = url;
+            return;
+          }
+
+          setNavState(tab);
+          $container.attr('data-active-tab', tab);
+          $container.html('<div class="text-center py-5 virtual-orders-spinner"><span class="spinner-border text-primary" role="status"></span></div>');
+
+          $.get(buildAjaxUrl(url))
+            .done(function (response) {
+              if (response && response.html) {
+                $container.html(response.html);
+                var nextTab = response.tab || tab;
+                $container.attr('data-active-tab', nextTab);
+                setNavState(nextTab);
+                if (pushState && window.history && window.history.pushState) {
+                  window.history.pushState({ tab: nextTab }, '', url);
+                }
+              } else if (response && response.error) {
+                alert(response.message || 'Đã xảy ra lỗi, vui lòng thử lại.');
+              } else {
+                window.location.href = url;
+              }
+            })
+            .fail(function () {
+              window.location.href = url;
+            });
+        }
+
+        $nav.on('click', 'a[data-order-tab]', function (event) {
+          var $link = $(this);
+          var tab = $link.data('order-tab');
+          if (!tab) {
+            return;
+          }
+          var $containerCheck = getContainer();
+          if (!$containerCheck.length) {
+            return;
+          }
+          if ($link.hasClass('btn-primary')) {
+            event.preventDefault();
+            return;
+          }
+          event.preventDefault();
+          var url = $link.attr('href');
+          loadTab(url, tab, true);
+        });
+
+        var $initialContainer = getContainer();
+        if ($initialContainer.length) {
+          var initialTab = $initialContainer.data('active-tab') || $nav.find('a.btn-primary').data('order-tab') || 'create';
+          setNavState(initialTab);
+
+          $(window).on('popstate', function () {
+            var currentUrl = window.location.href;
+            if (currentUrl.indexOf('/virtual-orders') === -1) {
+              return;
+            }
+            var tab = 'create';
+            try {
+              var parsed = new URL(currentUrl);
+              tab = parsed.searchParams.get('tab') || 'create';
+            } catch (error) {
+              var matches = currentUrl.match(/tab=([^&]+)/);
+              if (matches) {
+                tab = decodeURIComponent(matches[1]);
+              }
+            }
+            loadTab(currentUrl, tab, false);
+          });
+        }
+      });
+    })(jQuery);
+  </script>
+{/if}
 
 {include file='_footer.tpl'}

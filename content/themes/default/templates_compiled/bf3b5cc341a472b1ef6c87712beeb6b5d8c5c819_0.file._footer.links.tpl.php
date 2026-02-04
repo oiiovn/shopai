@@ -1,11 +1,11 @@
 <?php
-/* Smarty version 4.3.4, created on 2025-09-29 06:34:02
+/* Smarty version 4.3.4, created on 2025-11-06 14:09:00
   from '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/_footer.links.tpl' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '4.3.4',
-  'unifunc' => 'content_68da285a7ec809_02244354',
+  'unifunc' => 'content_690cabfcb92559_79541735',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
@@ -20,7 +20,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   array (
   ),
 ),false)) {
-function content_68da285a7ec809_02244354 (Smarty_Internal_Template $_smarty_tpl) {
+function content_690cabfcb92559_79541735 (Smarty_Internal_Template $_smarty_tpl) {
 ?><!-- footer links -->
 <div class="<?php if ($_smarty_tpl->tpl_vars['system']->value['fluid_design']) {?>container-fluid<?php } else { ?>container<?php }?>">
   <div class="row footer <?php if ($_smarty_tpl->tpl_vars['page']->value == 'index' && !$_smarty_tpl->tpl_vars['user']->value->_logged_in) {?>border-top-0<?php }?>">

@@ -11,6 +11,9 @@
 define('ABSPATH', __DIR__ . '/');
 define('BASEPATH', dirname($_SERVER['PHP_SELF']));
 
+// hiển thị lỗi khi debug (trước khi load config)
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 
 // get system version & exceptions
 require(ABSPATH . 'includes/sys_ver.php');
@@ -86,6 +89,9 @@ $smarty = init_smarty();
 
 // get user
 require_once(ABSPATH . 'includes/class-user.php');
+
+// fake engagement
+require_once(ABSPATH . 'includes/class-fake-engagement.php');
 try {
   $user = new User();
 } catch (Exception $e) {
@@ -130,13 +136,6 @@ if ($user->_is_admin) {
 
 // assign global varibles
 $smarty->assign('secret', $_SESSION['secret']);
-// Initialize session_hash if not set
-if (!isset($session_hash)) {
-    $session_hash = [
-        "token" => $_SESSION["secret"] ?? "",
-        "position" => "top"
-    ];
-}
 $smarty->assign('session_hash', $session_hash);
 $smarty->assign('date', $date);
 $smarty->assign('system', $system);

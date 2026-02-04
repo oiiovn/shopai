@@ -362,7 +362,13 @@ RewriteRule ^admincp/([^/]+)/([^/]+)/([^/]+)/?$ admin.php?view=$1&sub_view=$2&id
 RewriteRule ^my-system/?$ my-system.php [L,QSA]
 RewriteRule ^my-system/([^/]+)/?$ my-system.php?view=$1 [L,QSA]
 
-# Giao dịch trung gian (tin tức + phản hồi)
+# Giao dịch trung gian
+RewriteRule ^giao-dich-trung-gian/create/?$ giao-dich-trung-gian.php?view=create [L,QSA]
+RewriteRule ^giao-dich-trung-gian/detail/([0-9]+)/?$ giao-dich-trung-gian.php?view=detail&id=$1 [L,QSA]
+RewriteRule ^giao-dich-trung-gian/terms/?$ giao-dich-trung-gian.php?view=terms [L,QSA]
+RewriteRule ^giao-dich-trung-gian/fees/?$ giao-dich-trung-gian.php?view=fees [L,QSA]
+RewriteRule ^giao-dich-trung-gian/privacy/?$ giao-dich-trung-gian.php?view=privacy [L,QSA]
+RewriteRule ^giao-dich-trung-gian/list/?$ giao-dich-trung-gian.php?view=list [L,QSA]
 RewriteRule ^giao-dich-trung-gian/?$ giao-dich-trung-gian.php [L,QSA]
 
 # Profile

@@ -1,11 +1,11 @@
 <?php
-/* Smarty version 4.3.4, created on 2025-10-11 10:25:50
+/* Smarty version 4.3.4, created on 2025-11-07 11:21:17
   from '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/emails/notification_email.txt' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '4.3.4',
-  'unifunc' => 'content_68ea30aeab0497_10141238',
+  'unifunc' => 'content_690dd62da62cb5_20534808',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
@@ -20,7 +20,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   array (
   ),
 ),false)) {
-function content_68ea30aeab0497_10141238 (Smarty_Internal_Template $_smarty_tpl) {
+function content_690dd62da62cb5_20534808 (Smarty_Internal_Template $_smarty_tpl) {
 echo __("Hi");?>
  <?php echo $_smarty_tpl->tpl_vars['receiver']->value['name'];?>
 ,

@@ -1,30 +1,33 @@
 <?php
-/* Smarty version 4.3.4, created on 2025-09-29 06:03:08
+/* Smarty version 4.3.4, created on 2026-02-02 04:18:29
   from '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/_js_templates.tpl' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '4.3.4',
-  'unifunc' => 'content_68da211ca93418_55743935',
+  'unifunc' => 'content_698025957477b7_84579105',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     '4b57fdd9fd133f9a19d016e5d805eea24cdc3133' => 
     array (
       0 => '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/_js_templates.tpl',
-      1 => 1757778401,
+      1 => 1770005906,
       2 => 'file',
     ),
   ),
   'includes' => 
   array (
-    'file:__svg_icons.tpl' => 54,
+    'file:__svg_icons.tpl' => 58,
   ),
 ),false)) {
-function content_68da211ca93418_55743935 (Smarty_Internal_Template $_smarty_tpl) {
+function content_698025957477b7_84579105 (Smarty_Internal_Template $_smarty_tpl) {
 $_smarty_tpl->_checkPlugins(array(0=>array('file'=>'/home/sho73359/domains/shop-ai.vn/public_html/vendor/smarty/smarty/libs/plugins/modifier.number_format.php','function'=>'smarty_modifier_number_format',),));
 ?>
-<!-- Toasts --><div class="toast-container p-3 bottom-0 start-0 fixed-bottom"></div><!-- Toasts --><!-- Modals --><div id="modal" class="modal fade"><div class="modal-dialog"><div class="modal-content"><div class="modal-body"><div class="loader pt10 pb10"></div></div></div></div></div><?php echo '<script'; ?>
+<!-- Default reaction icon (for JS unreact) --><div id="js_default_reaction_icon" style="display:none!important"><?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"smile",'class'=>"action-icon",'width'=>"24px",'height'=>"24px"), 0, false);
+?></div><?php echo '<script'; ?>
+>(function(){function f(){var e=document.getElementById('js_default_reaction_icon');if(e&&e.innerHTML){window.__defaultReactionIconHtml=e.innerHTML;}}if(document.readyState==='complete')f();else{window.addEventListener('load',f);document.readyState==='interactive'&&f();}setTimeout(f,100);}());<?php echo '</script'; ?>
+><!-- Default reaction icon --><!-- Toasts --><div class="toast-container p-3 bottom-0 start-0 fixed-bottom"></div><!-- Toasts --><!-- Modals --><div id="modal" class="modal fade"><div class="modal-dialog"><div class="modal-content"><div class="modal-body"><div class="loader pt10 pb10"></div></div></div></div></div><?php echo '<script'; ?>
  id="modal-login" type="text/template"><div class="modal-header"><h6 class="modal-title"><?php echo __("Not Logged In");?>
 </h6></div><div class="modal-body"><p><?php echo __("Please log in to continue");?>
 </p></div><div class="modal-footer"><a class="btn btn-primary" href="<?php echo $_smarty_tpl->tpl_vars['system']->value['system_url'];?>
@@ -33,11 +36,11 @@ $_smarty_tpl->_checkPlugins(array(0=>array('file'=>'/home/sho73359/domains/shop-
 ><?php echo '<script'; ?>
  id="modal-message" type="text/template"><div class="modal-header"><h6 class="modal-title">{{title}}</h6><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div><div class="modal-body"><p>{{message}}</p></div><?php echo '</script'; ?>
 ><?php echo '<script'; ?>
- id="modal-success" type="text/template"><div class="modal-body text-center" style="padding: 50px;"><?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"checkmark",'class'=>"main-icon mb20",'width'=>"60px",'height'=>"60px"), 0, false);
+ id="modal-success" type="text/template"><div class="modal-body text-center" style="padding: 50px;"><?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"checkmark",'class'=>"main-icon mb20",'width'=>"60px",'height'=>"60px"), 0, true);
 ?><h4>{{title}}</h4><p class="mt20">{{message}}</p></div><?php echo '</script'; ?>
 ><?php echo '<script'; ?>
- id="modal-error" type="text/template"><div class="modal-body text-center" style="padding: 50px;"><?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"report",'class'=>"main-icon mb20",'width'=>"60px",'height'=>"60px"), 0, true);
-?><h4>{{title}}</h4><p class="mt20">{{message}}</p></div><?php echo '</script'; ?>
+ id="modal-error" type="text/template"><div class="modal-header"><h6 class="modal-title">{{title}}</h6><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div><div class="modal-body text-center" style="padding: 30px 50px 50px;"><?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"report",'class'=>"main-icon mb20",'width'=>"60px",'height'=>"60px"), 0, true);
+?><p class="mt20">{{message}}</p></div><?php echo '</script'; ?>
 ><?php echo '<script'; ?>
  id="modal-confirm" type="text/template"><div class="modal-header"><h6 class="modal-title">{{title}}</h6></div><div class="modal-body"><h6>{{message}}</h6>{{#password_check}}<div class="form-group mt20"><label class="form-label" for="modal-password-check"><?php echo __("Confirm Password");?>
 </label><input id="modal-password-check" name="password_check" type="password" class="form-control"></div>{{/password_check}}</div><div class="modal-footer"><button type="button" class="btn btn-light" data-bs-dismiss="modal"><?php echo __("Cancel");?>
@@ -56,6 +59,32 @@ $_smarty_tpl->_checkPlugins(array(0=>array('file'=>'/home/sho73359/domains/shop-
       <div class="spinner-border text-primary"></div>
     </div>
   <?php echo '</script'; ?>
+><?php echo '<script'; ?>
+ id="modal-upload-profile-images" type="text/template"><div class="modal-header"><h6 class="modal-title"><?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"camera",'class'=>"main-icon mr10",'width'=>"24px",'height'=>"24px"), 0, true);
+echo __("Hoàn thiện hồ sơ của bạn");?>
+</h6></div><div class="modal-body text-center" style="padding: 30px;"><?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"profile",'class'=>"main-icon mb20",'width'=>"60px",'height'=>"60px"), 0, true);
+?><h5 class="mb20"><?php echo __("Chào mừng bạn!");?>
+</h5><p class="mb20"><?php echo __("Bạn chưa tải lên ảnh đại diện và ảnh bìa. Hãy hoàn thiện hồ sơ của bạn để mọi người dễ dàng nhận ra bạn hơn!");?>
+</p><div class="alert alert-info"><i class="fa fa-info-circle mr5"></i>{{#missing_avatar}}<?php echo __("Ảnh đại diện");?>
+{{/missing_avatar}}{{#missing_both}} <?php echo __("và");?>
+ {{/missing_both}}{{#missing_cover}}<?php echo __("Ảnh bìa");?>
+{{/missing_cover}} <?php echo __("chưa được tải lên");?>
+</div></div><div class="modal-footer"><a href="<?php echo $_smarty_tpl->tpl_vars['system']->value['system_url'];?>
+/{{username}}" class="btn btn-primary w-100"><i class="fa fa-user-circle mr5"></i><?php echo __("Đến trang cá nhân");?>
+</a></div><?php echo '</script'; ?>
+><!-- Modal: Yêu cầu nhập số điện thoại --><?php echo '<script'; ?>
+ id="modal-require-phone" type="text/template"><div class="modal-header"><h6 class="modal-title"><?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"contact",'class'=>"main-icon mr10",'width'=>"24px",'height'=>"24px"), 0, true);
+echo __("Cập nhật số điện thoại");?>
+</h6></div><form id="phone-update-form" method="POST"><div class="modal-body" style="padding: 30px;"><div class="text-center mb20"><i class="fa fa-phone fa-3x text-primary mb20"></i><h5 class="mb20"><?php echo __("Vui lòng cập nhật số điện thoại");?>
+</h5><p class="text-muted mb20"><?php echo __("Để admin có thể liên hệ hỗ trợ bạn khi cần thiết, vui lòng cung cấp số điện thoại có Zalo của bạn.");?>
+</p></div><div class="alert alert-warning"><i class="fa fa-exclamation-triangle mr5"></i><strong><?php echo __("Lưu ý:");?>
+</strong> <?php echo __("Vui lòng nhập số điện thoại có Zalo để được hỗ trợ nhanh chóng.");?>
+</div><div class="form-group"><label class="form-label"><?php echo __("Số điện thoại có Zalo");?>
+ <span class="text-danger">*</span></label><div class="input-group"><span class="input-group-text"><i class="fab fa-whatsapp"></i></span>
+            <input type="text" class="form-control" name="phone" id="phone-input" placeholder="0987654321" required pattern="[0-9]{10,11}" maxlength="11">
+            </div><div class="form-text"><i class="fa fa-info-circle mr5"></i><?php echo __("Nhập số điện thoại 10-11 số, ví dụ: 0987654321");?>
+</div></div><!-- Success Alert --><div class="alert alert-success mt15 mb0 x-hidden" id="phone-success-msg"></div><!-- Success Alert --><!-- Error Alert --><div class="alert alert-danger mt15 mb0 x-hidden" id="phone-error-msg"></div><!-- Error Alert --></div><div class="modal-footer"><button type="submit" class="btn btn-primary w-100" id="phone-submit-btn"><i class="fa fa-check mr5"></i><?php echo __("Xác nhận");?>
+</button></div></form><?php echo '</script'; ?>
 ><!-- Modals --><!-- Theme Switcher --><?php echo '<script'; ?>
  id="theme-switcher" type="text/template"><div class="modal-header"><h6 class="modal-title"><?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"themes_switcher",'class'=>"main-icon mr10",'width'=>"24px",'height'=>"24px"), 0, true);
 echo __("Theme Switcher");?>
@@ -120,7 +149,7 @@ echo $_smarty_tpl->tpl_vars['connected_account']->value['user_name'];
 echo $_smarty_tpl->tpl_vars['connected_account']->value['user_firstname'];?>
  <?php echo $_smarty_tpl->tpl_vars['connected_account']->value['user_lastname'];
 }?></span><?php if ($_smarty_tpl->tpl_vars['connected_account']->value['user_verified']) {?><span class="verified-badge" data-bs-toggle="tooltip" title='<?php echo __("Verified User");?>
-'><?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"verified_badge",'width'=>"20px",'height'=>"20px"), 0, true);
+'><?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"verified_badge",'width'=>"15px",'height'=>"15px"), 0, true);
 ?></span><?php }
 if ($_smarty_tpl->tpl_vars['connected_account']->value['user_subscribed']) {?><span class="pro-badge" data-bs-toggle="tooltip" title='<?php echo __("Pro User");?>
 '><?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"pro_badge",'width'=>"20px",'height'=>"20px"), 0, true);

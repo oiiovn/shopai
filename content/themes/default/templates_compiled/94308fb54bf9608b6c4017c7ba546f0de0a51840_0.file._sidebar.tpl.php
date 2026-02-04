@@ -1,27 +1,27 @@
 <?php
-/* Smarty version 4.3.4, created on 2025-10-02 11:50:46
+/* Smarty version 4.3.4, created on 2026-01-31 03:52:51
   from '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/_sidebar.tpl' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '4.3.4',
-  'unifunc' => 'content_68de67169b8b42_24730522',
+  'unifunc' => 'content_697d7c932e3714_08226940',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     '94308fb54bf9608b6c4017c7ba546f0de0a51840' => 
     array (
       0 => '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/_sidebar.tpl',
-      1 => 1759405750,
+      1 => 1769831564,
       2 => 'file',
     ),
   ),
   'includes' => 
   array (
-    'file:__svg_icons.tpl' => 29,
+    'file:__svg_icons.tpl' => 30,
   ),
 ),false)) {
-function content_68de67169b8b42_24730522 (Smarty_Internal_Template $_smarty_tpl) {
+function content_697d7c932e3714_08226940 (Smarty_Internal_Template $_smarty_tpl) {
 ?><div class="card main-side-nav-card">
   <div class="card-body with-nav">
     <ul class="main-side-nav">
@@ -214,13 +214,14 @@ function content_68de67169b8b42_24730522 (Smarty_Internal_Template $_smarty_tpl)
 </small>
       </li>
 
+            
       <?php if ($_smarty_tpl->tpl_vars['user']->value->_logged_in) {?>
-        <li <?php if ($_smarty_tpl->tpl_vars['page']->value == "people") {?>class="active" <?php }?>>
+        <li <?php if ($_smarty_tpl->tpl_vars['page']->value == "finance") {?>class="active" <?php }?>>
           <a href="<?php echo $_smarty_tpl->tpl_vars['system']->value['system_url'];?>
-/people">
-            <?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"find_people",'class'=>"main-icon mr10",'width'=>"24px",'height'=>"24px"), 0, true);
+/finance">
+            <?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"wallet",'class'=>"main-icon mr10",'width'=>"24px",'height'=>"24px"), 0, true);
 ?>
-            <?php echo __("People");?>
+            <?php echo __("Tài chính");?>
 
           </a>
         </li>
@@ -235,18 +236,21 @@ function content_68de67169b8b42_24730522 (Smarty_Internal_Template $_smarty_tpl)
 
         </a>
       </li>
-      
-      <?php if ($_smarty_tpl->tpl_vars['system']->value['otp_rental_enabled']) {?>
       <li <?php if ($_smarty_tpl->tpl_vars['page']->value == "otp-rental") {?>class="active" <?php }?>>
         <a href="<?php echo $_smarty_tpl->tpl_vars['system']->value['system_url'];?>
-/otp-rental">
-          <i class="fa fa-mobile-alt main-icon mr10" style="width: 24px; height: 24px; font-size: 18px;"></i>
-          <?php echo __("Thuê OTP");?>
-
+/otp-rental?view=rent">
+          <img src="https://img.icons8.com/ios/50/5e72e4/sim-card.png" alt="sim-card" class="main-icon mr10" width="24" height="24">
+          Thuê OTP
         </a>
       </li>
-      <?php }?>
-      
+      <li <?php if ($_smarty_tpl->tpl_vars['page']->value == "buy-account") {?>class="active" <?php }?>>
+        <a href="<?php echo $_smarty_tpl->tpl_vars['system']->value['system_url'];?>
+/buy-account">
+          <?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"profile",'class'=>"main-icon mr10",'width'=>"24px",'height'=>"24px"), 0, true);
+?>
+          Mua Tài Khoản
+        </a>
+      </li>
       <?php if ($_smarty_tpl->tpl_vars['system']->value['google_maps_reviews_enabled']) {?>
       <li <?php if ($_smarty_tpl->tpl_vars['page']->value == "google-maps-reviews") {?>class="active" <?php }?>>
         <a href="<?php echo $_smarty_tpl->tpl_vars['system']->value['system_url'];?>
@@ -421,7 +425,7 @@ echo $_prefixVariable1;?>
         </li>
       <?php }?>
 
-      <!-- explore -->
+  <!-- explore -->
     </ul>
   </div>
 </div><?php }

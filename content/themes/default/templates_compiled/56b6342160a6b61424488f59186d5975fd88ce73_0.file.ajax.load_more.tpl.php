@@ -1,11 +1,11 @@
 <?php
-/* Smarty version 4.3.4, created on 2025-09-29 13:59:19
+/* Smarty version 4.3.4, created on 2025-11-06 20:46:02
   from '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/ajax.load_more.tpl' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '4.3.4',
-  'unifunc' => 'content_68da90b74c0182_74812092',
+  'unifunc' => 'content_690d090a56d2b0_33826108',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
@@ -42,7 +42,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:__feeds_review.tpl' => 1,
   ),
 ),false)) {
-function content_68da90b74c0182_74812092 (Smarty_Internal_Template $_smarty_tpl) {
+function content_690d090a56d2b0_33826108 (Smarty_Internal_Template $_smarty_tpl) {
 if ($_smarty_tpl->tpl_vars['get']->value == 'newsfeed' || $_smarty_tpl->tpl_vars['get']->value == 'posts_profile' || $_smarty_tpl->tpl_vars['get']->value == 'posts_page' || $_smarty_tpl->tpl_vars['get']->value == 'posts_group' || $_smarty_tpl->tpl_vars['get']->value == 'posts_group_pending' || $_smarty_tpl->tpl_vars['get']->value == 'posts_group_pending_all' || $_smarty_tpl->tpl_vars['get']->value == 'posts_event' || $_smarty_tpl->tpl_vars['get']->value == 'posts_event_pending' || $_smarty_tpl->tpl_vars['get']->value == 'posts_event_pending_all' || $_smarty_tpl->tpl_vars['get']->value == 'saved' || $_smarty_tpl->tpl_vars['get']->value == 'memories' || $_smarty_tpl->tpl_vars['get']->value == 'boosted' || $_smarty_tpl->tpl_vars['get']->value == 'popular' || $_smarty_tpl->tpl_vars['get']->value == 'discover') {?>
   <?php $_smarty_tpl->_subTemplateRender('file:_ads.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array(), 0, false);
 ?>

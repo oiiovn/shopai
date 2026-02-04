@@ -13,17 +13,18 @@ require('bootloader.php');
 // Load OpenAI functions
 require_once('includes/openai-functions.php');
 
-// Handle API requests for AJAX calls (only for POST requests with action)
-if (isset($_POST['action']) || (isset($_SERVER['CONTENT_TYPE']) && strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== false)) {
+// Handle API requests for AJAX calls (both POST and GET with action)
+if (isset($_POST['action']) || isset($_GET['action'])) {
     handleAPIRequest();
     exit;
 }
 
 // Handle specific routes for pages (not API calls) - BEFORE user login check
-if (isset($_GET['action'])) {
-    $action = $_GET['action'];
+// Note: API actions are handled above via handleAPIRequest(), so this only handles page view routes
+if (isset($_GET['view'])) {
+    $view = $_GET['view'];
     
-    if ($action == 'submit-proof' && isset($_GET['id'])) {
+    if ($view == 'submit-proof' && isset($_GET['id'])) {
         // Check user login first for submit-proof page
         if (!$user->_logged_in) {
             user_login();
@@ -49,7 +50,7 @@ if (isset($_GET['action'])) {
         $smarty->display('submit-proof.tpl');
         exit;
         
-    } elseif ($action == 'view-proof' && isset($_GET['id'])) {
+    } elseif ($view == 'view-proof' && isset($_GET['id'])) {
         // Check user login first for view-proof page
         if (!$user->_logged_in) {
             user_login();
@@ -83,7 +84,36 @@ if (isset($_GET['action'])) {
         $smarty->display('view-proof.tpl');
         exit;
         
-    } elseif ($action == 'request-details' && isset($_GET['id'])) {
+    } elseif ($view == 'view-penalty' && isset($_GET['id'])) {
+        // Check user login first for view-penalty page
+        if (!$user->_logged_in) {
+            user_login();
+        }
+        
+        // View penalty page
+        $sub_request_id = (int)$_GET['id'];
+        
+        // Get task details with penalty information
+        $task_query = $db->query("
+            SELECT gmsr.*, gmr.place_name, gmr.place_address, gmsr.reward_amount
+            FROM google_maps_review_sub_requests gmsr
+            LEFT JOIN google_maps_review_requests gmr ON gmsr.parent_request_id = gmr.request_id
+            WHERE gmsr.sub_request_id = '{$sub_request_id}'
+            AND gmsr.assigned_user_id = '{$user->_data['user_id']}'
+        ");
+        
+        $task = null;
+        
+        if ($task_query->num_rows > 0) {
+            $task = $task_query->fetch_assoc();
+        }
+        
+        page_header(__("Thông tin lỗi phạt"));
+        $smarty->assign('task', $task);
+        $smarty->display('view-penalty.tpl');
+        exit;
+        
+    } elseif ($view == 'request-details' && isset($_GET['id'])) {
         // Check user login first
         if (!$user->_logged_in) {
             user_login();
@@ -169,13 +199,25 @@ try {
     // Get user's review requests with sub-request counts
     $get_requests = $db->query("
         SELECT 
-            gmr.*,
+            gmr.request_id,
+            gmr.requester_user_id,
+            gmr.place_name,
+            gmr.place_address,
+            gmr.place_url,
+            gmr.status,
+            gmr.created_at,
+            gmr.expires_at,
+            gmr.reward_amount,
+            gmr.target_reviews,
+            gmr.completed_reviews,
+            gmr.total_budget,
+            gmr.updated_at,
             COUNT(CASE WHEN gmsr.parent_request_id IS NOT NULL THEN 1 END) as total_valid_subs,
             COUNT(CASE WHEN gmsr.status IN ('completed', 'verified') AND gmsr.parent_request_id IS NOT NULL THEN 1 END) as completed_subs
         FROM google_maps_review_requests gmr
         LEFT JOIN google_maps_review_sub_requests gmsr ON gmr.request_id = gmsr.parent_request_id
         WHERE gmr.requester_user_id = '{$user->_data['user_id']}'
-        GROUP BY gmr.request_id
+        GROUP BY gmr.request_id, gmr.requester_user_id, gmr.place_name, gmr.place_address, gmr.place_url, gmr.status, gmr.created_at, gmr.expires_at, gmr.reward_amount, gmr.target_reviews, gmr.completed_reviews, gmr.total_budget, gmr.updated_at
         ORDER BY gmr.created_at DESC
     ");
     
@@ -300,6 +342,9 @@ if ($view == 'reward-history') {
 function handleAPIRequest() {
     global $db, $user;
     
+    // Set JSON header first
+    header('Content-Type: application/json; charset=utf-8');
+    
     $action = isset($_GET['action']) ? $_GET['action'] : (isset($_POST['action']) ? $_POST['action'] : '');
     
     switch ($action) {
@@ -314,6 +359,25 @@ function handleAPIRequest() {
             break;
         case 'get_place_info':
             getPlaceInfo();
+            break;
+        case 'get_user_places':
+            getUserPreviousPlaces();
+            break;
+        // GPT Review Templates
+        case 'get_templates':
+            getReviewTemplates();
+            break;
+        case 'create_template':
+            createReviewTemplate();
+            break;
+        case 'update_template':
+            updateReviewTemplate();
+            break;
+        case 'delete_template':
+            deleteReviewTemplate();
+            break;
+        case 'set_default_template':
+            setDefaultTemplate();
             break;
         default:
             echo json_encode(array('error' => 'Invalid action'));
@@ -333,6 +397,7 @@ function createReviewRequest() {
         $place_address = $db->real_escape_string(trim($_POST['place_address'] ?? ''));
         $place_url = $db->real_escape_string(trim($_POST['place_url'] ?? ''));
         $review_template = $db->real_escape_string(trim($_POST['review_template'] ?? ''));
+        $gpt_instructions = $db->real_escape_string(trim($_POST['gpt_instructions'] ?? ''));
         $reward_amount = 10000; // Chi phí cho người tạo chiến dịch
         $reviewer_reward = 5000; // Tiền thưởng cho người đánh giá
         $target_reviews = intval($_POST['target_reviews'] ?? 1);
@@ -454,13 +519,13 @@ function createReviewRequest() {
         }
         
         
-        // Create main request (chiến dịch mẹ) với review_template (đã escape ở trên)
+        // Create main request (chiến dịch mẹ) với review_template và gpt_instructions (đã escape ở trên)
         $insert_main = $db->query("
             INSERT INTO google_maps_review_requests 
-            (requester_user_id, google_place_id, place_name, place_address, place_url, review_template,
+            (requester_user_id, google_place_id, place_name, place_address, place_url, review_template, gpt_instructions,
              reward_amount, target_reviews, total_budget, expires_at, status, created_at, updated_at)
             VALUES 
-            ('{$user->_data['user_id']}', '', '{$place_name}', '{$place_address}', '{$place_url}', '{$review_template}',
+            ('{$user->_data['user_id']}', '', '{$place_name}', '{$place_address}', '{$place_url}', '{$review_template}', '{$gpt_instructions}',
              '{$reward_amount}', '{$target_reviews}', '{$total_budget}', '{$expires_at}', 'active', CONVERT_TZ(NOW(), '+00:00', '+07:00'), CONVERT_TZ(NOW(), '+00:00', '+07:00'))
         ");
         
@@ -479,7 +544,7 @@ function createReviewRequest() {
             
             // Generate unique review content using GPT nếu có API key và review template
             if (!empty($openai_api_key) && !empty($review_template)) {
-                $gpt_result = generateReviewContent($openai_api_key, $place_name, $place_address, $review_template);
+                $gpt_result = generateReviewContent($openai_api_key, $place_name, $place_address, $review_template, $gpt_instructions);
                 
                 if ($gpt_result['success']) {
                     $generated_content = $gpt_result['content'];
@@ -749,4 +814,331 @@ function getPlaceInfo() {
             'user_ratings_total' => 100
         )
     ));
+}
+
+/**
+ * Get user's previously created places
+ */
+function getUserPreviousPlaces() {
+    global $db, $user;
+    
+    try {
+        // Kiểm tra user đã đăng nhập
+        if (!$user->_logged_in) {
+            echo json_encode(array('error' => 'User not logged in'));
+            return;
+        }
+        
+        // Lấy danh sách địa điểm unique đã tạo (GROUP BY để loại duplicate)
+        $query = $db->query("
+            SELECT 
+                place_name,
+                place_address,
+                place_url,
+                review_template,
+                MAX(created_at) as last_used
+            FROM google_maps_review_requests
+            WHERE requester_user_id = '{$user->_data['user_id']}'
+            AND place_name != ''
+            GROUP BY place_name, place_address, place_url, review_template
+            ORDER BY last_used DESC
+            LIMIT 20
+        ");
+        
+        $places = array();
+        if ($query && $query->num_rows > 0) {
+            while ($row = $query->fetch_assoc()) {
+                $places[] = array(
+                    'place_name' => $row['place_name'],
+                    'place_address' => $row['place_address'],
+                    'place_url' => $row['place_url'],
+                    'review_template' => $row['review_template'],
+                    'last_used' => $row['last_used']
+                );
+            }
+        }
+        
+        echo json_encode(array(
+            'success' => true,
+            'places' => $places
+        ));
+        
+    } catch (Exception $e) {
+        echo json_encode(array('error' => $e->getMessage()));
+    }
+}
+
+/**
+ * Get user's review templates
+ */
+function getReviewTemplates() {
+    global $db, $user;
+    
+    try {
+        if (!$user->_logged_in) {
+            echo json_encode(array('error' => 'User not logged in'));
+            return;
+        }
+        
+        $query = $db->query("
+            SELECT 
+                template_id,
+                template_name,
+                template_description,
+                gpt_prompt,
+                is_default,
+                usage_count,
+                created_at
+            FROM google_maps_review_templates
+            WHERE user_id = '{$user->_data['user_id']}'
+            ORDER BY is_default DESC, created_at DESC
+        ");
+        
+        $templates = array();
+        if ($query && $query->num_rows > 0) {
+            while ($row = $query->fetch_assoc()) {
+                $templates[] = $row;
+            }
+        }
+        
+        echo json_encode(array(
+            'success' => true,
+            'templates' => $templates
+        ));
+        
+    } catch (Exception $e) {
+        echo json_encode(array('error' => $e->getMessage()));
+    }
+}
+
+/**
+ * Create new review template
+ */
+function createReviewTemplate() {
+    global $db, $user;
+    
+    try {
+        if (!$user->_logged_in) {
+            echo json_encode(array('error' => 'User not logged in'));
+            return;
+        }
+        
+        $template_name = $db->real_escape_string(trim($_POST['template_name'] ?? ''));
+        $template_description = $db->real_escape_string(trim($_POST['template_description'] ?? ''));
+        $gpt_prompt = $db->real_escape_string(trim($_POST['gpt_prompt'] ?? ''));
+        $is_default = isset($_POST['is_default']) && $_POST['is_default'] == '1' ? 1 : 0;
+        
+        // Validate
+        if (empty($template_name) || empty($gpt_prompt)) {
+            echo json_encode(array('error' => 'Vui lòng điền tên template và nội dung yêu cầu GPT'));
+            return;
+        }
+        
+        // Nếu set làm default, bỏ default của templates khác
+        if ($is_default) {
+            $db->query("
+                UPDATE google_maps_review_templates 
+                SET is_default = 0 
+                WHERE user_id = '{$user->_data['user_id']}'
+            ");
+        }
+        
+        // Insert template
+        $insert = $db->query("
+            INSERT INTO google_maps_review_templates 
+            (user_id, template_name, template_description, gpt_prompt, is_default, created_at, updated_at)
+            VALUES 
+            ('{$user->_data['user_id']}', '{$template_name}', '{$template_description}', 
+             '{$gpt_prompt}', '{$is_default}', NOW(), NOW())
+        ");
+        
+        if (!$insert) {
+            throw new Exception("Lỗi tạo template: " . $db->error);
+        }
+        
+        echo json_encode(array(
+            'success' => true,
+            'template_id' => $db->insert_id,
+            'message' => 'Tạo template thành công'
+        ));
+        
+    } catch (Exception $e) {
+        echo json_encode(array('error' => $e->getMessage()));
+    }
+}
+
+/**
+ * Update review template
+ */
+function updateReviewTemplate() {
+    global $db, $user;
+    
+    try {
+        if (!$user->_logged_in) {
+            echo json_encode(array('error' => 'User not logged in'));
+            return;
+        }
+        
+        $template_id = intval($_POST['template_id'] ?? 0);
+        $template_name = $db->real_escape_string(trim($_POST['template_name'] ?? ''));
+        $template_description = $db->real_escape_string(trim($_POST['template_description'] ?? ''));
+        $gpt_prompt = $db->real_escape_string(trim($_POST['gpt_prompt'] ?? ''));
+        $is_default = isset($_POST['is_default']) && $_POST['is_default'] == '1' ? 1 : 0;
+        
+        if ($template_id <= 0) {
+            echo json_encode(array('error' => 'Template ID không hợp lệ'));
+            return;
+        }
+        
+        // Validate
+        if (empty($template_name) || empty($gpt_prompt)) {
+            echo json_encode(array('error' => 'Vui lòng điền tên template và nội dung yêu cầu GPT'));
+            return;
+        }
+        
+        // Kiểm tra quyền sở hữu
+        $check = $db->query("
+            SELECT template_id FROM google_maps_review_templates 
+            WHERE template_id = '{$template_id}' AND user_id = '{$user->_data['user_id']}'
+        ");
+        
+        if ($check->num_rows == 0) {
+            echo json_encode(array('error' => 'Template không tồn tại hoặc bạn không có quyền'));
+            return;
+        }
+        
+        // Nếu set làm default, bỏ default của templates khác
+        if ($is_default) {
+            $db->query("
+                UPDATE google_maps_review_templates 
+                SET is_default = 0 
+                WHERE user_id = '{$user->_data['user_id']}' AND template_id != '{$template_id}'
+            ");
+        }
+        
+        // Update template
+        $update = $db->query("
+            UPDATE google_maps_review_templates 
+            SET template_name = '{$template_name}',
+                template_description = '{$template_description}',
+                gpt_prompt = '{$gpt_prompt}',
+                is_default = '{$is_default}',
+                updated_at = NOW()
+            WHERE template_id = '{$template_id}' AND user_id = '{$user->_data['user_id']}'
+        ");
+        
+        if (!$update) {
+            throw new Exception("Lỗi cập nhật template: " . $db->error);
+        }
+        
+        echo json_encode(array(
+            'success' => true,
+            'message' => 'Cập nhật template thành công'
+        ));
+        
+    } catch (Exception $e) {
+        echo json_encode(array('error' => $e->getMessage()));
+    }
+}
+
+/**
+ * Delete review template
+ */
+function deleteReviewTemplate() {
+    global $db, $user;
+    
+    try {
+        if (!$user->_logged_in) {
+            echo json_encode(array('error' => 'User not logged in'));
+            return;
+        }
+        
+        $template_id = intval($_POST['template_id'] ?? 0);
+        
+        if ($template_id <= 0) {
+            echo json_encode(array('error' => 'Template ID không hợp lệ'));
+            return;
+        }
+        
+        // Xóa template (chỉ nếu là của user)
+        $delete = $db->query("
+            DELETE FROM google_maps_review_templates 
+            WHERE template_id = '{$template_id}' AND user_id = '{$user->_data['user_id']}'
+        ");
+        
+        if (!$delete) {
+            throw new Exception("Lỗi xóa template: " . $db->error);
+        }
+        
+        if ($db->affected_rows == 0) {
+            echo json_encode(array('error' => 'Template không tồn tại hoặc bạn không có quyền'));
+            return;
+        }
+        
+        echo json_encode(array(
+            'success' => true,
+            'message' => 'Xóa template thành công'
+        ));
+        
+    } catch (Exception $e) {
+        echo json_encode(array('error' => $e->getMessage()));
+    }
+}
+
+/**
+ * Set default template
+ */
+function setDefaultTemplate() {
+    global $db, $user;
+    
+    try {
+        if (!$user->_logged_in) {
+            echo json_encode(array('error' => 'User not logged in'));
+            return;
+        }
+        
+        $template_id = intval($_POST['template_id'] ?? 0);
+        
+        if ($template_id <= 0) {
+            echo json_encode(array('error' => 'Template ID không hợp lệ'));
+            return;
+        }
+        
+        // Kiểm tra quyền sở hữu
+        $check = $db->query("
+            SELECT template_id FROM google_maps_review_templates 
+            WHERE template_id = '{$template_id}' AND user_id = '{$user->_data['user_id']}'
+        ");
+        
+        if ($check->num_rows == 0) {
+            echo json_encode(array('error' => 'Template không tồn tại hoặc bạn không có quyền'));
+            return;
+        }
+        
+        // Bỏ default của tất cả templates
+        $db->query("
+            UPDATE google_maps_review_templates 
+            SET is_default = 0 
+            WHERE user_id = '{$user->_data['user_id']}'
+        ");
+        
+        // Set template này làm default
+        $update = $db->query("
+            UPDATE google_maps_review_templates 
+            SET is_default = 1 
+            WHERE template_id = '{$template_id}' AND user_id = '{$user->_data['user_id']}'
+        ");
+        
+        if (!$update) {
+            throw new Exception("Lỗi set default template: " . $db->error);
+        }
+        
+        echo json_encode(array(
+            'success' => true,
+            'message' => 'Đã đặt làm template mặc định'
+        ));
+        
+    } catch (Exception $e) {
+        echo json_encode(array('error' => $e->getMessage()));
+    }
 }

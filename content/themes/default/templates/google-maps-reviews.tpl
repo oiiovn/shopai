@@ -124,6 +124,12 @@ document.addEventListener('DOMContentLoaded', function() {
               </a>
             </li>
             <li>
+              <a href="javascript:void(0)" onclick="openTemplatesManager()">
+                <i class="fa fa-magic main-icon mr-2" style="width: 24px; height: 24px; font-size: 18px;"></i>
+                Templates GPT
+              </a>
+            </li>
+            <li>
               <a href="{$system['system_url']}/shop-ai/recharge">
                 <i class="fa fa-credit-card main-icon mr-2" style="width: 24px; height: 24px; font-size: 18px;"></i>
                 Nạp tiền
@@ -395,8 +401,8 @@ document.addEventListener('DOMContentLoaded', function() {
                               <h6 class="card-title mb-0" style="max-width: 180px; font-size: 0.75rem; line-height: 1.0;" title="{$task.place_name}">
                                 {$task.place_name}
                               </h6>
-                              <span class="badge badge-{if $task.status == 'assigned'}warning{elseif $task.status == 'completed'}success{elseif $task.status == 'verified'}primary{else}danger{/if} badge-sm font-weight-bold">
-                                {if $task.status == 'assigned'}ĐÃ NHẬN{elseif $task.status == 'completed'}HOÀN THÀNH{elseif $task.status == 'verified'}ĐANG XÁC MINH{else}HẾT HẠN{/if}
+                              <span class="badge badge-{if $task.status == 'assigned'}warning{elseif $task.status == 'completed'}success{elseif $task.status == 'verified'}primary{elseif $task.status == 'timeout'}warning{else}danger{/if} badge-sm font-weight-bold">
+                                {if $task.status == 'assigned'}ĐÃ NHẬN{elseif $task.status == 'completed'}HOÀN THÀNH{elseif $task.status == 'verified'}ĐANG XÁC MINH{elseif $task.status == 'timeout'}HẾT HẠN{else}THẤT BẠI{/if}
                               </span>
                             </div>
                             
@@ -481,7 +487,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                       <i class="fa fa-star mr-1"></i>Đánh giá 5 sao
                                     </a>
                                   {else}
-                                    <a href="https://maps.google.com/?q={$task.place_address|urlencode}" target="_blank" class="btn btn-primary btn-sm">
+                                    <a href="https://maps.google.com/?q={$task.place_address|escape:'url'}" target="_blank" class="btn btn-primary btn-sm">
                                       <i class="fa fa-star mr-1"></i>Đánh giá 5 sao
                                     </a>
                                   {/if}
@@ -513,18 +519,31 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <small class="text-secondary" style="font-size: 0.6rem;">
                                   {$task.verified_at|date_format:"%d/%m"}
                                 </small>
-                              {elseif $task.status == 'expired'}
-                                <div class="d-flex align-items-center" style="gap: 0.1rem;">
-                                  <span class="text-danger small font-weight-bold">
-                                    <i class="fa fa-clock mr-1"></i>Hết hạn
-                                  </span>
-                                  <a href="{$system['system_url']}/google-maps-reviews/view-penalty/{$task.sub_request_id}" class="btn btn-outline-danger btn-sm">
-                                    <i class="fa fa-exclamation-triangle mr-1"></i>Xem lỗi phạt
-                                  </a>
-                                </div>
+                              {elseif $task.status == 'timeout'}
+                                {if $task.verification_notes}
+                                  <small class="text-muted" style="font-size: 0.75rem;">
+                                    {$task.verification_notes}
+                                  </small>
+                                {else}
+                                  <div class="d-flex align-items-center" style="gap: 0.1rem;">
+                                    <span class="text-warning small font-weight-bold">
+                                      <i class="fa fa-clock mr-1"></i>Hết hạn
+                                    </span>
+                                  </div>
+                                {/if}
                                 <small class="text-secondary" style="font-size: 0.6rem;">
                                   {$task.expired_at|date_format:"%d/%m"}
                                 </small>
+                              {elseif $task.status == 'expired'}
+                                <div></div>
+                                <div class="d-flex flex-column align-items-end" style="gap: 0.2rem;">
+                                  <a href="{$system['system_url']}/google-maps-reviews/view-penalty/{$task.sub_request_id}" class="btn btn-outline-danger btn-sm" style="padding: 0.35rem 0.7rem;">
+                                    <i class="fa fa-exclamation-triangle" style="margin-right: 0.4rem;"></i>Xem chi tiết
+                                  </a>
+                                  <small class="text-secondary" style="font-size: 0.6rem;">
+                                    {$task.expired_at|date_format:"%d/%m"}
+                                  </small>
+                                </div>
                               {else}
                                 {if $task.verification_notes}
                                   <small class="text-muted" style="font-size: 0.75rem;">
@@ -655,6 +674,28 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 <!-- THÊM class form-modern -->
                 <form id="createRequestForm" class="form-modern">
+                  
+                  <!-- Dropdown chọn địa điểm đã tạo -->
+                  <div class="mf-group">
+                    <select class="form-control" id="previous_place_selector" style="cursor: pointer;">
+                      <option value="">-- Chọn địa điểm đã tạo trước đó (hoặc nhập mới bên dưới) --</option>
+                    </select>
+                    <label for="previous_place_selector" style="font-size: 0.9rem; color: #007bff;">
+                      ⚡ Điền nhanh từ địa điểm cũ
+                    </label>
+                    <small class="mf-hint">
+                      <i class="fa fa-lightbulb-o"></i> Chọn để tự động điền thông tin, tiết kiệm thời gian!
+                    </small>
+                  </div>
+
+                  <div style="text-align: center; margin: 20px 0; color: #94a3b8; font-size: 0.85rem;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                      <div style="flex: 1; height: 1px; background: linear-gradient(to right, transparent, #e2e8f0, transparent);"></div>
+                      <span>hoặc nhập thông tin mới</span>
+                      <div style="flex: 1; height: 1px; background: linear-gradient(to right, transparent, #e2e8f0, transparent);"></div>
+                    </div>
+                  </div>
+
                   <div class="row g-16">
                     <div class="col-md-6">
                       <div class="mf-group">
@@ -678,13 +719,41 @@ document.addEventListener('DOMContentLoaded', function() {
                     <label for="place_address">Địa chỉ</label>
                   </div>
 
+                  <!-- GPT Template Selector -->
+                  <div class="mf-group">
+                    <select class="form-control" id="gpt_template_selector" style="cursor: pointer;">
+                      <option value="">-- Chọn Template GPT (hoặc tự nhập bên dưới) --</option>
+                    </select>
+                    <label for="gpt_template_selector" style="font-size: 0.9rem; color: #667eea;">
+                      <i class="fa fa-magic mr-1"></i> Template Hướng Dẫn GPT
+                    </label>
+                    <small class="mf-hint">
+                      <i class="fa fa-lightbulb-o mr-1"></i> Chọn template hoặc 
+                      <a href="javascript:void(0)" onclick="openTemplatesManager()" style="color: #007bff; font-weight: 600;">
+                        tạo template mới
+                      </a>
+                    </small>
+                  </div>
+
+                  <!-- Hướng dẫn GPT -->
+                  <div class="mf-group">
+                    <textarea class="form-control" id="gpt_instructions" name="gpt_instructions" rows="3" placeholder=" "></textarea>
+                    <label for="gpt_instructions">
+                      Hướng Dẫn Cho GPT
+                    </label>
+                    <small class="mf-hint">
+                      Hướng dẫn chung cho GPT về tone, phong cách, yêu cầu khi tạo review.
+                    </small>
+                  </div>
+
+                  <!-- Đánh giá mẫu -->
                   <div class="mf-group">
                     <textarea class="form-control" id="review_template" name="review_template" rows="4" placeholder=" "></textarea>
                     <label for="review_template">
-                      Đánh giá mẫu (gợi ý cho GPT)
+                      Đánh Giá Mẫu (Gợi Ý Cho GPT)
                     </label>
                     <small class="mf-hint">
-                      GPT sẽ tạo review 200–300 ký tự, mỗi người nhận task có nội dung khác nhau.
+                      Nội dung review mẫu cụ thể để GPT tham khảo và render theo phong cách tương tự.
                     </small>
                   </div>
 
@@ -1625,6 +1694,12 @@ function initGoogleMapsReviews() {
   // Calculate total immediately on page load
   calculateTotal();
   
+  // Load previous places for quick fill
+  loadPreviousPlaces();
+  
+  // Load GPT templates for quick selection
+  loadGPTTemplatesDropdown();
+  
   // Handle form submission
   var createForm = document.getElementById('createRequestForm');
   if (createForm) {
@@ -1752,6 +1827,217 @@ function calculateTotal() {
       }
     }
   }
+}
+
+/**
+ * Load previous places from database
+ */
+function loadPreviousPlaces() {
+  console.log('🔍 Loading previous places...');
+  
+  var selector = document.getElementById('previous_place_selector');
+  if (!selector) {
+    console.log('❌ Selector not found');
+    return;
+  }
+  
+  fetch('{$system['system_url']}/google-maps-reviews.php?action=get_user_places', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log('✅ Places loaded:', data);
+    
+    if (data.success && data.places && data.places.length > 0) {
+      // Clear existing options except first one
+      selector.innerHTML = '<option value="">-- Chọn địa điểm đã tạo trước đó (hoặc nhập mới bên dưới) --</option>';
+      
+      // Add places to dropdown
+      data.places.forEach(function(place, index) {
+        var option = document.createElement('option');
+        option.value = index;
+        option.textContent = place.place_name + ' - ' + (place.place_address.substring(0, 50) + '...');
+        option.setAttribute('data-place', JSON.stringify(place));
+        selector.appendChild(option);
+      });
+      
+      console.log('✅ Added ' + data.places.length + ' places to dropdown');
+      
+      // Add change event listener
+      selector.addEventListener('change', function() {
+        var selectedOption = this.options[this.selectedIndex];
+        if (selectedOption.value !== '') {
+          var placeData = JSON.parse(selectedOption.getAttribute('data-place'));
+          fillFormWithPlace(placeData);
+        }
+      });
+      
+    } else {
+      console.log('ℹ️ No previous places found');
+    }
+  })
+  .catch(error => {
+    console.error('❌ Error loading places:', error);
+  });
+}
+
+/**
+ * Fill form with selected place data
+ */
+function fillFormWithPlace(place) {
+  console.log('📝 Filling form with place:', place);
+  
+  // Fill form fields
+  var placeNameField = document.getElementById('place_name');
+  var placeUrlField = document.getElementById('place_url');
+  var placeAddressField = document.getElementById('place_address');
+  var reviewTemplateField = document.getElementById('review_template');
+  
+  if (placeNameField) {
+    placeNameField.value = place.place_name || '';
+    // Trigger event to update floating label
+    placeNameField.dispatchEvent(new Event('input'));
+    placeNameField.dispatchEvent(new Event('change'));
+  }
+  
+  if (placeUrlField) {
+    placeUrlField.value = place.place_url || '';
+    placeUrlField.dispatchEvent(new Event('input'));
+    placeUrlField.dispatchEvent(new Event('change'));
+  }
+  
+  if (placeAddressField) {
+    placeAddressField.value = place.place_address || '';
+    placeAddressField.dispatchEvent(new Event('input'));
+    placeAddressField.dispatchEvent(new Event('change'));
+  }
+  
+  if (reviewTemplateField) {
+    reviewTemplateField.value = place.review_template || '';
+    reviewTemplateField.dispatchEvent(new Event('input'));
+    reviewTemplateField.dispatchEvent(new Event('change'));
+  }
+  
+  console.log('✅ Form filled successfully');
+  
+  // Show success notification
+  var notification = document.createElement('div');
+  notification.style.cssText = 'position: fixed; top: 80px; right: 20px; background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 16px 24px; border-radius: 12px; box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3); z-index: 9999; font-size: 14px; animation: slideInRight 0.3s ease-out;';
+  notification.innerHTML = '<i class="fa fa-check-circle mr-2"></i>Đã điền thông tin địa điểm: ' + place.place_name;
+  document.body.appendChild(notification);
+  
+  // Remove notification after 3 seconds
+  setTimeout(function() {
+    notification.style.animation = 'slideOutRight 0.3s ease-out';
+    setTimeout(function() {
+      document.body.removeChild(notification);
+    }, 300);
+  }, 3000);
+}
+
+/**
+ * Load GPT Templates into dropdown
+ */
+function loadGPTTemplatesDropdown() {
+  console.log('🎨 Loading GPT templates dropdown...');
+  
+  var selector = document.getElementById('gpt_template_selector');
+  if (!selector) {
+    console.log('❌ GPT Template selector not found');
+    return;
+  }
+  
+  fetch('{$system['system_url']}/google-maps-reviews.php?action=get_templates', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log('✅ GPT Templates loaded:', data);
+    
+    if (data.success && data.templates && data.templates.length > 0) {
+      // Clear existing options except first one
+      selector.innerHTML = '<option value="">-- Chọn Template GPT (hoặc tự nhập bên dưới) --</option>';
+      
+      // Add templates to dropdown
+      var defaultTemplateId = null;
+      data.templates.forEach(function(template, index) {
+        var option = document.createElement('option');
+        option.value = template.template_id;
+        option.textContent = template.template_name + (template.is_default == 1 ? ' ⭐' : '');
+        option.setAttribute('data-template', JSON.stringify(template));
+        selector.appendChild(option);
+        
+        // Track default template
+        if (template.is_default == 1) {
+          defaultTemplateId = template.template_id;
+        }
+      });
+      
+      console.log('✅ Added ' + data.templates.length + ' templates to dropdown');
+      
+      // Auto-select default template if exists
+      if (defaultTemplateId) {
+        selector.value = defaultTemplateId;
+        var selectedOption = selector.options[selector.selectedIndex];
+        var templateData = JSON.parse(selectedOption.getAttribute('data-template'));
+        fillGPTInstructionsField(templateData);
+        console.log('✅ Auto-selected default template:', templateData.template_name);
+      }
+      
+      // Add change event listener
+      selector.addEventListener('change', function() {
+        var selectedOption = this.options[this.selectedIndex];
+        if (selectedOption.value !== '') {
+          var templateData = JSON.parse(selectedOption.getAttribute('data-template'));
+          fillGPTInstructionsField(templateData);
+        }
+      });
+      
+    } else {
+      console.log('ℹ️ No GPT templates found');
+    }
+  })
+  .catch(error => {
+    console.error('❌ Error loading GPT templates:', error);
+  });
+}
+
+/**
+ * Fill review_template field with selected GPT template
+ */
+function fillGPTInstructionsField(template) {
+  console.log('📝 Filling GPT instructions with:', template);
+  
+  var gptInstructionsField = document.getElementById('gpt_instructions');
+  
+  if (gptInstructionsField) {
+    gptInstructionsField.value = template.gpt_prompt || '';
+    // Trigger event to update floating label
+    gptInstructionsField.dispatchEvent(new Event('input'));
+    gptInstructionsField.dispatchEvent(new Event('change'));
+  }
+  
+  console.log('✅ GPT instructions filled successfully');
+  
+  // Show success notification
+  var notification = document.createElement('div');
+  notification.style.cssText = 'position: fixed; top: 80px; right: 20px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 16px 24px; border-radius: 12px; box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3); z-index: 9999; font-size: 14px; animation: slideInRight 0.3s ease-out;';
+  notification.innerHTML = '<i class="fa fa-magic mr-2"></i>Đã áp dụng template: ' + template.template_name;
+  document.body.appendChild(notification);
+  
+  // Remove notification after 3 seconds
+  setTimeout(function() {
+    notification.style.animation = 'slideOutRight 0.3s ease-out';
+    setTimeout(function() {
+      document.body.removeChild(notification);
+    }, 300);
+  }, 3000);
 }
 
 // Global variable to store current task ID
@@ -2306,6 +2592,574 @@ document.addEventListener('DOMContentLoaded', function(){
     });
   });
 });
+
+// ==================================================
+// GPT TEMPLATES MANAGER FUNCTIONS
+// ==================================================
+
+/**
+ * Open Templates Manager Modal
+ */
+function openTemplatesManager() {
+  console.log('🎨 Opening Templates Manager...');
+  
+  var modal = document.getElementById('templatesManagerModal');
+  if (modal) {
+    modal.style.display = 'block';
+    modal.classList.add('show');
+    document.body.classList.add('modal-open');
+    
+    // Add backdrop if not exists
+    if (!document.getElementById('templatesManagerBackdrop')) {
+      var backdrop = document.createElement('div');
+      backdrop.className = 'modal-backdrop fade show';
+      backdrop.id = 'templatesManagerBackdrop';
+      document.body.appendChild(backdrop);
+      
+      // Close on backdrop click
+      backdrop.onclick = function() {
+        closeTemplatesManager();
+      };
+    }
+    
+    // Add click handlers for close buttons
+    var closeButtons = modal.querySelectorAll('[data-dismiss="modal"]');
+    closeButtons.forEach(function(btn) {
+      btn.onclick = function() {
+        closeTemplatesManager();
+      };
+    });
+  }
+  
+  loadTemplates();
+}
+
+/**
+ * Close Templates Manager Modal
+ */
+function closeTemplatesManager() {
+  console.log('🚪 Closing Templates Manager...');
+  
+  var modal = document.getElementById('templatesManagerModal');
+  if (modal) {
+    modal.style.display = 'none';
+    modal.classList.remove('show');
+    document.body.classList.remove('modal-open');
+  }
+  
+  // Remove backdrop
+  var backdrop = document.getElementById('templatesManagerBackdrop');
+  if (backdrop) {
+    backdrop.remove();
+  }
+}
+
+/**
+ * Load user's templates
+ */
+function loadTemplates() {
+  console.log('📥 Loading templates...');
+  
+  var listContainer = document.getElementById('templatesList');
+  if (!listContainer) return;
+  
+  // Show loading
+  listContainer.innerHTML = '<div class="text-center py-5"><i class="fa fa-spinner fa-spin fa-3x text-muted"></i><p class="mt-3 text-muted">Đang tải templates...</p></div>';
+  
+  fetch('{$system['system_url']}/google-maps-reviews.php?action=get_templates', {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' }
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log('✅ Templates loaded:', data);
+    
+    if (data.success && data.templates) {
+      if (data.templates.length === 0) {
+        listContainer.innerHTML = `
+          <div class="text-center py-5">
+            <i class="fa fa-inbox fa-3x text-muted mb-3"></i>
+            <p class="text-muted">Chưa có template nào. Tạo template đầu tiên nhé!</p>
+            <button class="btn btn-primary mt-3" onclick="openTemplateEditor()">
+              <i class="fa fa-plus mr-1"></i> Tạo Template Đầu Tiên
+            </button>
+          </div>
+        `;
+      } else {
+        renderTemplates(data.templates);
+      }
+    } else {
+      listContainer.innerHTML = '<div class="alert alert-danger">Lỗi: ' + (data.error || 'Không thể tải templates') + '</div>';
+    }
+  })
+  .catch(error => {
+    console.error('❌ Error loading templates:', error);
+    listContainer.innerHTML = '<div class="alert alert-danger">Đã xảy ra lỗi khi tải templates</div>';
+  });
+}
+
+/**
+ * Render templates list
+ */
+function renderTemplates(templates) {
+  var listContainer = document.getElementById('templatesList');
+  if (!listContainer) return;
+  
+  var html = '';
+  templates.forEach(function(tpl) {
+    var isDefault = tpl.is_default == 1;
+    var cardClass = isDefault ? 'template-card default-template' : 'template-card';
+    var starIcon = isDefault ? '<i class="fa fa-star mr-1" style="color: #f59e0b;"></i>' : '';
+    var defaultBadge = isDefault ? '<span class="template-badge default"><i class="fa fa-star mr-1"></i>Mặc định</span>' : '';
+    var usageCount = tpl.usage_count || 0;
+    var description = tpl.template_description ? '<div class="template-description">' + escapeHtml(tpl.template_description) + '</div>' : '';
+    var setDefaultBtn = !isDefault ? '<button class="btn btn-sm btn-warning" onclick="setAsDefaultTemplate(' + tpl.template_id + ')"><i class="fa fa-star mr-1"></i> Đặt mặc định</button>' : '';
+    
+    html += '<div class="' + cardClass + '">' +
+      '<div class="template-header">' +
+        '<div>' +
+          '<div class="template-name">' +
+            starIcon + escapeHtml(tpl.template_name) +
+          '</div>' +
+          description +
+        '</div>' +
+        '<div>' +
+          defaultBadge +
+          '<span class="template-badge usage"><i class="fa fa-chart-line mr-1"></i>' + usageCount + ' lần</span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="template-prompt">' +
+        '<strong><i class="fa fa-comment mr-1"></i>Hướng dẫn GPT:</strong><br>' +
+        escapeHtml(tpl.gpt_prompt) +
+      '</div>' +
+      '<div class="template-actions">' +
+        '<button class="btn btn-sm btn-info" onclick="editTemplate(' + tpl.template_id + ')">' +
+          '<i class="fa fa-edit mr-1"></i> Sửa' +
+        '</button>' +
+        setDefaultBtn +
+        '<button class="btn btn-sm btn-danger" onclick="deleteTemplate(' + tpl.template_id + ', \'' + escapeHtml(tpl.template_name) + '\')">' +
+          '<i class="fa fa-trash mr-1"></i> Xóa' +
+        '</button>' +
+      '</div>' +
+    '</div>';
+  });
+  
+  listContainer.innerHTML = html;
+}
+
+/**
+ * Open Template Editor (Create or Edit)
+ */
+function openTemplateEditor(templateId) {
+  console.log('✏️ Opening template editor for ID:', templateId);
+  
+  // Hide templates manager modal first
+  closeTemplatesManager();
+  
+  // Show template editor modal
+  var editorModal = document.getElementById('templateEditorModal');
+  if (!editorModal) {
+    console.error('❌ Template editor modal not found');
+    return;
+  }
+  
+  editorModal.style.display = 'block';
+  editorModal.classList.add('show');
+  document.body.classList.add('modal-open');
+  
+  // Add backdrop
+  if (!document.getElementById('editorModalBackdrop')) {
+    var backdrop = document.createElement('div');
+    backdrop.className = 'modal-backdrop fade show';
+    backdrop.id = 'editorModalBackdrop';
+    document.body.appendChild(backdrop);
+  }
+  
+  // Add click handlers for close buttons
+  var closeButtons = editorModal.querySelectorAll('[data-dismiss="modal"]');
+  closeButtons.forEach(function(btn) {
+    btn.onclick = function() {
+      closeTemplateEditor();
+    };
+  });
+  
+  // Close when clicking outside modal
+  editorModal.onclick = function(e) {
+    if (e.target === editorModal) {
+      closeTemplateEditor();
+    }
+  };
+  
+  // Reset form
+  var form = document.getElementById('templateEditorForm');
+  if (form) {
+    form.reset();
+  }
+  document.getElementById('edit_template_id').value = '';
+  
+  if (templateId) {
+    // Edit mode: Load template data
+    document.getElementById('templateEditorTitle').innerHTML = '<i class="fa fa-edit mr-2"></i>Chỉnh Sửa Template';
+    
+    // Show loading overlay (không thay đổi innerHTML)
+    showEditorLoading(true);
+    
+    // Find template from current list
+    fetch('{$system['system_url']}/google-maps-reviews.php?action=get_templates', {
+      method: 'GET',
+      credentials: 'same-origin'
+    })
+    .then(response => {
+      console.log('📥 Get templates response:', response.status);
+      return response.json();
+    })
+    .then(data => {
+      console.log('📄 Templates data:', data);
+      
+      // Hide loading
+      showEditorLoading(false);
+      
+      if (data.success && data.templates) {
+        var template = data.templates.find(t => t.template_id == templateId);
+        if (template) {
+          // Fill form with template data
+          document.getElementById('edit_template_id').value = template.template_id;
+          document.getElementById('edit_template_name').value = template.template_name;
+          document.getElementById('edit_template_description').value = template.template_description || '';
+          document.getElementById('edit_gpt_prompt').value = template.gpt_prompt;
+          document.getElementById('edit_is_default').checked = template.is_default == 1;
+        } else {
+          showNotification('error', 'Không tìm thấy template');
+          closeTemplateEditor();
+        }
+      } else {
+        showNotification('error', 'Lỗi tải dữ liệu template: ' + (data.error || 'Unknown'));
+        closeTemplateEditor();
+      }
+    })
+    .catch(error => {
+      console.error('❌ Error loading template:', error);
+      showEditorLoading(false);
+      showNotification('error', 'Đã xảy ra lỗi khi tải template: ' + error.message);
+      closeTemplateEditor();
+    });
+  } else {
+    // Create mode
+    document.getElementById('templateEditorTitle').innerHTML = '<i class="fa fa-plus mr-2"></i>Tạo Template Mới';
+  }
+}
+
+/**
+ * Show/Hide loading overlay in editor
+ */
+function showEditorLoading(show) {
+  var overlay = document.getElementById('editorLoadingOverlay');
+  
+  if (show) {
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.id = 'editorLoadingOverlay';
+      overlay.style.cssText = 'position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.9); display: flex; align-items: center; justify-content: center; z-index: 1000;';
+      overlay.innerHTML = '<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x text-primary"></i><p class="mt-3">Đang tải dữ liệu...</p></div>';
+      
+      var modalBody = document.querySelector('#templateEditorModal .modal-body');
+      if (modalBody) {
+        modalBody.style.position = 'relative';
+        modalBody.appendChild(overlay);
+      }
+    }
+    overlay.style.display = 'flex';
+  } else {
+    if (overlay) {
+      overlay.style.display = 'none';
+    }
+  }
+}
+
+/**
+ * Close Template Editor Modal
+ */
+function closeTemplateEditor() {
+  var editorModal = document.getElementById('templateEditorModal');
+  if (editorModal) {
+    editorModal.style.display = 'none';
+    editorModal.classList.remove('show');
+    document.body.classList.remove('modal-open');
+  }
+  
+  // Remove backdrop
+  var backdrop = document.getElementById('editorModalBackdrop');
+  if (backdrop) {
+    backdrop.remove();
+  }
+  
+  // Show templates manager modal back
+  openTemplatesManager();
+}
+
+/**
+ * Save Template (Create or Update)
+ */
+function saveTemplate() {
+  console.log('💾 Saving template...');
+  
+  var form = document.getElementById('templateEditorForm');
+  if (!form.checkValidity()) {
+    form.reportValidity();
+    return;
+  }
+  
+  // Get save button and show loading
+  var saveBtn = document.querySelector('#templateEditorModal button[onclick="saveTemplate()"]');
+  if (!saveBtn) {
+    saveBtn = document.querySelector('#templateEditorModal .btn-primary');
+  }
+  
+  var originalHtml = saveBtn ? saveBtn.innerHTML : '';
+  if (saveBtn) {
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<i class="fa fa-spinner fa-spin mr-1"></i> Đang lưu...';
+  }
+  
+  var formData = new FormData(form);
+  var templateId = document.getElementById('edit_template_id').value;
+  var action = templateId ? 'update_template' : 'create_template';
+  formData.append('action', action);
+  
+  console.log('📤 Sending', action, 'request...');
+  
+  fetch('{$system['system_url']}/google-maps-reviews.php', {
+    method: 'POST',
+    body: formData,
+    credentials: 'same-origin'
+  })
+  .then(response => {
+    console.log('📥 Response status:', response.status);
+    if (!response.ok) {
+      throw new Error('HTTP error! status: ' + response.status);
+    }
+    return response.json();
+  })
+  .then(data => {
+    console.log('✅ Save response:', data);
+    
+    if (data.success) {
+      // Show success message
+      showNotification('success', data.message || 'Lưu template thành công!');
+      
+      // Close editor modal
+      closeTemplateEditor();
+      
+      // Reload templates list
+      loadTemplates();
+    } else {
+      showNotification('error', data.error || 'Không thể lưu template');
+    }
+  })
+  .catch(error => {
+    console.error('❌ Error saving template:', error);
+    showNotification('error', 'Đã xảy ra lỗi khi lưu template: ' + error.message);
+  })
+  .finally(() => {
+    // Reset button
+    if (saveBtn) {
+      saveBtn.disabled = false;
+      saveBtn.innerHTML = originalHtml;
+    }
+  });
+}
+
+/**
+ * Edit Template
+ */
+function editTemplate(templateId) {
+  openTemplateEditor(templateId);
+}
+
+/**
+ * Delete Template - Show confirmation modal
+ */
+function deleteTemplate(templateId, templateName) {
+  console.log('🗑️ Preparing to delete template:', templateId, templateName);
+  
+  // Store data for confirmation
+  window.pendingDeleteTemplate = {
+    id: templateId,
+    name: templateName
+  };
+  
+  // Update modal content
+  document.getElementById('deleteTemplateName').textContent = templateName;
+  
+  // Show modal
+  var deleteModal = document.getElementById('deleteTemplateModal');
+  if (deleteModal) {
+    deleteModal.style.display = 'block';
+    deleteModal.classList.add('show');
+    document.body.classList.add('modal-open');
+    
+    // Add backdrop
+    var backdrop = document.createElement('div');
+    backdrop.className = 'modal-backdrop fade show';
+    backdrop.id = 'deleteModalBackdrop';
+    document.body.appendChild(backdrop);
+  }
+}
+
+/**
+ * Confirm Delete Template - Actually delete
+ */
+function confirmDeleteTemplate() {
+  if (!window.pendingDeleteTemplate) {
+    console.error('❌ No pending delete operation');
+    return;
+  }
+  
+  var templateId = window.pendingDeleteTemplate.id;
+  var templateName = window.pendingDeleteTemplate.name;
+  
+  console.log('🗑️ Confirming delete for template:', templateId);
+  
+  // Disable button and show loading
+  var confirmBtn = document.getElementById('confirmDeleteBtn');
+  var originalHtml = confirmBtn.innerHTML;
+  confirmBtn.disabled = true;
+  confirmBtn.innerHTML = '<i class="fa fa-spinner fa-spin mr-1"></i> Đang xóa...';
+  
+  var formData = new FormData();
+  formData.append('action', 'delete_template');
+  formData.append('template_id', templateId);
+  
+  fetch('{$system['system_url']}/google-maps-reviews.php', {
+    method: 'POST',
+    body: formData,
+    credentials: 'same-origin'
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log('✅ Delete response:', data);
+    
+    // Close modal
+    closeDeleteModal();
+    
+    if (data.success) {
+      // Show success message
+      showNotification('success', data.message || 'Xóa template thành công!');
+      // Reload templates list
+      loadTemplates();
+    } else {
+      showNotification('error', data.error || 'Không thể xóa template');
+    }
+  })
+  .catch(error => {
+    console.error('❌ Error deleting template:', error);
+    closeDeleteModal();
+    showNotification('error', 'Đã xảy ra lỗi khi xóa template');
+  })
+  .finally(() => {
+    // Reset button
+    confirmBtn.disabled = false;
+    confirmBtn.innerHTML = originalHtml;
+    window.pendingDeleteTemplate = null;
+  });
+}
+
+/**
+ * Close Delete Modal
+ */
+function closeDeleteModal() {
+  var deleteModal = document.getElementById('deleteTemplateModal');
+  if (deleteModal) {
+    deleteModal.style.display = 'none';
+    deleteModal.classList.remove('show');
+    document.body.classList.remove('modal-open');
+  }
+  
+  // Remove backdrop
+  var backdrop = document.getElementById('deleteModalBackdrop');
+  if (backdrop) {
+    backdrop.remove();
+  }
+  
+  window.pendingDeleteTemplate = null;
+}
+
+/**
+ * Show Notification using system modal
+ */
+function showNotification(type, message) {
+  console.log('📢 Notification:', type, message);
+  
+  if (typeof modal === 'function') {
+    // Use system modal if available
+    if (type === 'success') {
+      modal('#modal-success', {
+        title: 'Thành công',
+        message: message
+      });
+    } else {
+      modal('#modal-error', {
+        title: 'Lỗi',
+        message: message
+      });
+    }
+  } else {
+    // Fallback to alert
+    if (type === 'success') {
+      alert('✅ ' + message);
+    } else {
+      alert('❌ ' + message);
+    }
+  }
+}
+
+/**
+ * Set as Default Template
+ */
+function setAsDefaultTemplate(templateId) {
+  console.log('⭐ Setting default template:', templateId);
+  
+  var formData = new FormData();
+  formData.append('action', 'set_default_template');
+  formData.append('template_id', templateId);
+  
+  fetch('{$system['system_url']}/google-maps-reviews.php', {
+    method: 'POST',
+    body: formData,
+    credentials: 'same-origin'
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log('✅ Set default response:', data);
+    
+    if (data.success) {
+      showNotification('success', data.message || 'Đã đặt làm template mặc định!');
+      loadTemplates();
+    } else {
+      showNotification('error', data.error || 'Không thể đặt template mặc định');
+    }
+  })
+  .catch(error => {
+    console.error('❌ Error setting default:', error);
+    showNotification('error', 'Đã xảy ra lỗi khi đặt template mặc định');
+  });
+}
+
+/**
+ * Escape HTML to prevent XSS
+ */
+function escapeHtml(text) {
+  if (!text) return '';
+  var map = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;'
+  };
+  return text.toString().replace(/[&<>"']/g, function(m) { return map[m]; });
+}
+
 </script>
 
 <style>
@@ -2524,7 +3378,8 @@ document.addEventListener('DOMContentLoaded', function(){
 .form-modern .form-control:required:user-invalid{ border-color: var(--mf-invalid); }
 .form-modern .form-control:required:user-valid{ border-color: var(--mf-valid); }
 
-/* Dark mode */
+/* Dark mode - ĐÃ VÔ HIỆU HÓA để giữ chế độ sáng */
+/*
 @media (prefers-color-scheme: dark){
   :root{
     --mf-border:#334155; --mf-border-focus:#60a5fa;
@@ -2538,6 +3393,7 @@ document.addEventListener('DOMContentLoaded', function(){
     box-shadow:0 0 0 var(--mf-ring) rgba(96,165,250,.25);
   }
 }
+*/
 </style>
 
 <!-- Loading and Animation Styles -->
@@ -2622,6 +3478,29 @@ document.addEventListener('DOMContentLoaded', function(){
   100% { background-position: -200% 0; }
 }
 
+/* Notification Animations */
+@keyframes slideInRight {
+  from {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+}
+
 /* Mobile Pills Navigation Styles */
 .mobile-pills-nav {
   padding: 10px;
@@ -2685,6 +3564,306 @@ document.addEventListener('DOMContentLoaded', function(){
   .mobile-pills-nav .btn i {
     font-size: 0.75rem;
   }
+}
+
+/* Modal Close Button Hover Effect */
+.modal-header .close:hover {
+  background: rgba(255,255,255,0.35) !important;
+  transform: rotate(90deg);
+}
+
+.modal-header .close:active {
+  background: rgba(255,255,255,0.5) !important;
+  transform: rotate(90deg) scale(0.95);
+}
+</style>
+
+<!-- ========================================
+     GPT TEMPLATES MANAGER MODAL
+     ======================================== -->
+<div class="modal fade" id="templatesManagerModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;">
+        <h5 class="modal-title">
+          <i class="fa fa-magic mr-2"></i>
+          Quản Lý Templates GPT
+        </h5>
+        <button type="button" class="close" data-dismiss="modal" style="color: white; opacity: 1; background: rgba(255,255,255,0.2); border: none; border-radius: 50%; width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center; transition: all 0.3s; font-size: 24px; line-height: 1;">
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        
+        <!-- Header Actions -->
+        <div class="mb-4" style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <h6 class="mb-0" style="color: #6b7280;">
+              <i class="fa fa-lightbulb-o mr-1"></i>
+              Quản lý templates GPT
+            </h6>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="openTemplateEditor()">
+            <i class="fa fa-plus mr-1"></i> Tạo Template Mới
+          </button>
+        </div>
+
+        <!-- Templates List -->
+        <div id="templatesList" class="templates-list">
+          <!-- Will be populated by JavaScript -->
+          <div class="text-center py-5">
+            <i class="fa fa-spinner fa-spin fa-3x text-muted"></i>
+            <p class="mt-3 text-muted">Đang tải templates...</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================
+     DELETE TEMPLATE CONFIRMATION MODAL
+     ======================================== -->
+<div class="modal fade" id="deleteTemplateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content" style="border-radius: 15px; border: none; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+      <div class="modal-body text-center" style="padding: 40px 30px;">
+        <!-- Icon -->
+        <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+          <i class="fa fa-trash" style="font-size: 36px; color: white;"></i>
+        </div>
+        
+        <!-- Title -->
+        <h4 style="color: #2d3748; margin-bottom: 15px; font-weight: 600;">
+          Xác nhận xóa template?
+        </h4>
+        
+        <!-- Message -->
+        <p style="color: #718096; font-size: 15px; margin-bottom: 10px;">
+          Bạn có chắc chắn muốn xóa template
+        </p>
+        <p style="color: #2d3748; font-weight: 600; font-size: 16px; margin-bottom: 15px;">
+          "<span id="deleteTemplateName"></span>"
+        </p>
+        <p style="color: #e53e3e; font-size: 14px; margin-bottom: 30px;">
+          <i class="fa fa-exclamation-triangle mr-1"></i>
+          Hành động này không thể hoàn tác!
+        </p>
+        
+        <!-- Buttons -->
+        <div style="display: flex; gap: 10px; justify-content: center;">
+          <button type="button" class="btn btn-light" onclick="closeDeleteModal()" style="min-width: 120px; border-radius: 8px; padding: 10px 20px; font-weight: 600;">
+            <i class="fa fa-times mr-1"></i> Hủy
+          </button>
+          <button type="button" class="btn btn-danger" id="confirmDeleteBtn" onclick="confirmDeleteTemplate()" style="min-width: 120px; border-radius: 8px; padding: 10px 20px; font-weight: 600; background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); border: none;">
+            <i class="fa fa-trash mr-1"></i> Xóa ngay
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================
+     TEMPLATE EDITOR MODAL
+     ======================================== -->
+<div class="modal fade" id="templateEditorModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; border: none;">
+        <h5 class="modal-title" id="templateEditorTitle">
+          <i class="fa fa-edit mr-2"></i>
+          Tạo Template Mới
+        </h5>
+        <button type="button" class="close" data-dismiss="modal" style="color: white; opacity: 1; background: rgba(255,255,255,0.2); border: none; border-radius: 50%; width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center; transition: all 0.3s; font-size: 24px; line-height: 1;">
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="templateEditorForm">
+          <input type="hidden" id="edit_template_id" name="template_id" value="">
+          
+          <div class="form-group">
+            <label for="edit_template_name">
+              <i class="fa fa-tag mr-1"></i> Tên Template <span class="text-danger">*</span>
+            </label>
+            <input type="text" class="form-control" id="edit_template_name" name="template_name" 
+                   placeholder="VD: Review Nhà Hàng, Review Spa, Review Khách Sạn..." required>
+            <small class="form-text text-muted">Tên ngắn gọn để dễ nhận biết</small>
+          </div>
+
+          <div class="form-group">
+            <label for="edit_template_description">
+              <i class="fa fa-info-circle mr-1"></i> Mô Tả
+            </label>
+            <input type="text" class="form-control" id="edit_template_description" name="template_description" 
+                   placeholder="Mô tả ngắn về template này...">
+            <small class="form-text text-muted">Tùy chọn: Giải thích template này dùng để làm gì</small>
+          </div>
+
+          <div class="form-group">
+            <label for="edit_gpt_prompt">
+              <i class="fa fa-comment mr-1"></i> Hướng Dẫn Yêu Cầu GPT <span class="text-danger">*</span>
+            </label>
+            <textarea class="form-control" id="edit_gpt_prompt" name="gpt_prompt" rows="6" 
+                      placeholder="VD: Tạo đánh giá chân thực cho nhà hàng, nhấn mạnh chất lượng món ăn, phục vụ, không gian. Dùng ngôn ngữ lịch sự, chuyên nghiệp. Độ dài 200-300 ký tự." required></textarea>
+            <small class="form-text text-muted">
+              <strong>Mục đích:</strong> Hướng dẫn này sẽ được điền vào ô "Đánh giá mẫu" khi chọn template, giúp GPT tạo review đúng phong cách.
+            </small>
+          </div>
+
+          <div class="form-group">
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="edit_is_default" name="is_default" value="1">
+              <label class="custom-control-label" for="edit_is_default">
+                <i class="fa fa-star mr-1"></i> Đặt làm template mặc định
+              </label>
+            </div>
+            <small class="form-text text-muted">Template mặc định sẽ được chọn tự động khi tạo chiến dịch mới</small>
+          </div>
+
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          <i class="fa fa-times mr-1"></i> Hủy
+        </button>
+        <button type="button" class="btn btn-primary" onclick="saveTemplate()">
+          <i class="fa fa-save mr-1"></i> Lưu Template
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+/* Templates Manager Styles */
+.templates-list {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.template-card {
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.template-card:hover {
+  border-color: #667eea;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+  transform: translateY(-2px);
+}
+
+.template-card.default-template {
+  border-color: #f59e0b;
+  background: linear-gradient(135deg, #fff7ed 0%, #fffbeb 100%);
+}
+
+.template-card .template-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  margin-bottom: 12px;
+}
+
+.template-card .template-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 4px;
+}
+
+.template-card .template-description {
+  font-size: 0.9rem;
+  color: #6b7280;
+  margin-bottom: 8px;
+}
+
+.template-card .template-prompt {
+  font-size: 0.85rem;
+  color: #4b5563;
+  background: #f9fafb;
+  padding: 10px;
+  border-radius: 8px;
+  border-left: 3px solid #667eea;
+  margin-bottom: 12px;
+  max-height: 80px;
+  overflow: hidden;
+  position: relative;
+}
+
+.template-card .template-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.template-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-right: 8px;
+}
+
+.template-badge.default {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+}
+
+.template-badge.usage {
+  background: #e5e7eb;
+  color: #6b7280;
+}
+
+/* Modal Styles */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1050;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: rgba(0,0,0,0.5);
+}
+
+.modal.show {
+  display: block;
+}
+
+.modal-dialog {
+  position: relative;
+  width: auto;
+  margin: 30px auto;
+  max-width: 500px;
+}
+
+.modal-content {
+  position: relative;
+  background-color: #fff;
+  border: 1px solid rgba(0,0,0,.2);
+  border-radius: 6px;
+  box-shadow: 0 3px 9px rgba(0,0,0,.5);
+  background-clip: padding-box;
+  outline: 0;
+}
+
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1040;
+  background-color: #000;
 }
 </style>
 

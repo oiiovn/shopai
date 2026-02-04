@@ -123,7 +123,7 @@
         <div class="form-group">
           <div class="input-group">
             <span class="input-group-text bg-transparent"><i class="fas fa-user fa-fw"></i></span>
-            <input name="first_name" type="text" class="form-control" placeholder='{__("First name")}' required>
+            <input name="first_name" type="text" class="form-control" placeholder='{__("First name")}' required autocomplete="given-name">
           </div>
         </div>
         <!-- first name -->
@@ -131,7 +131,7 @@
         <div class="form-group">
           <div class="input-group">
             <span class="input-group-text bg-transparent"><i class="fas fa-user fa-fw"></i></span>
-            <input name="last_name" type="text" class="form-control" placeholder='{__("Last name")}' required>
+            <input name="last_name" type="text" class="form-control" placeholder='{__("Last name")}' required autocomplete="family-name">
           </div>
         </div>
         <!-- last name -->
@@ -139,15 +139,19 @@
         <div class="form-group">
           <div class="input-group">
             <span class="input-group-text bg-transparent"><i class="fas fa-globe fa-fw"></i></span>
-            <input name="username" type="text" class="form-control" placeholder='{__("Username")}' required>
+            <input name="username" id="signup_username" type="text" class="form-control" placeholder='Username' required autocomplete="username" pattern="[a-zA-Z0-9_.]+" minlength="3">
           </div>
+          <div class="form-text text-muted mt5">
+            <small><i class="fas fa-info-circle"></i> {__("Chỉ được dùng chữ cái, số, dấu gạch dưới (_) và dấu chấm (.) - Tối thiểu 3 ký tự")}</small>
+          </div>
+          <div id="username-error" class="invalid-feedback" style="display: none;"></div>
         </div>
         <!-- username -->
         <!-- email -->
         <div class="form-group">
           <div class="input-group">
             <span class="input-group-text bg-transparent"><i class="fas fa-envelope fa-fw"></i></span>
-            <input name="email" type="email" class="form-control" placeholder='{__("Email")}' required>
+            <input name="email" type="email" class="form-control" placeholder='{__("Email")}' required autocomplete="email">
           </div>
         </div>
         <!-- email -->
@@ -166,7 +170,7 @@
           <div class="form-group">
             <div class="input-group">
               <span class="input-group-text bg-transparent"><i class="fas fa-key fa-fw"></i></span>
-              <input name="password" type="password" class="form-control" placeholder='{__("Password")}' required>
+              <input name="password" type="password" class="form-control" placeholder='{__("Password")}' required autocomplete="new-password">
             </div>
           </div>
         </div>
@@ -326,3 +330,67 @@
   </div>
   <!-- signup -->
 </div>
+
+<!-- Username Validation Script -->
+<script>
+$(document).ready(function() {
+  $('#signup_username').on('input', function() {
+    var username = $(this).val();
+    var validPattern = /^[a-zA-Z0-9_.]*$/;
+    var errorDiv = $('#username-error');
+    var inputField = $(this);
+    
+    // Check if contains invalid characters
+    if (username && !validPattern.test(username)) {
+      // Remove invalid characters
+      var cleanUsername = username.replace(/[^a-zA-Z0-9_.]/g, '');
+      $(this).val(cleanUsername);
+      
+      // Show error message
+      errorDiv.html('<i class="fas fa-exclamation-circle"></i> Không được nhập ký tự đặc biệt! Chỉ dùng: a-z, 0-9, _ và .').css({
+        'display': 'block',
+        'color': '#dc3545',
+        'font-size': '0.875em',
+        'margin-top': '5px'
+      });
+      inputField.addClass('is-invalid');
+      
+      // Hide error after 3 seconds
+      setTimeout(function() {
+        errorDiv.fadeOut();
+        if (validPattern.test(inputField.val())) {
+          inputField.removeClass('is-invalid');
+        }
+      }, 3000);
+    } else {
+      inputField.removeClass('is-invalid');
+      
+      // Check minimum length
+      if (username.length > 0 && username.length < 3) {
+        errorDiv.html('<i class="fas fa-info-circle"></i> Username phải có ít nhất 3 ký tự').css({
+          'display': 'block',
+          'color': '#ffc107',
+          'font-size': '0.875em',
+          'margin-top': '5px'
+        });
+      } else if (username.length >= 3) {
+        errorDiv.html('<i class="fas fa-check-circle"></i> Username hợp lệ').css({
+          'display': 'block',
+          'color': '#28a745',
+          'font-size': '0.875em',
+          'margin-top': '5px'
+        });
+        inputField.addClass('is-valid');
+      } else {
+        errorDiv.fadeOut();
+      }
+    }
+  });
+  
+  // Convert to lowercase on blur
+  $('#signup_username').on('blur', function() {
+    $(this).val($(this).val().toLowerCase());
+  });
+});
+</script>
+<!-- Username Validation Script -->

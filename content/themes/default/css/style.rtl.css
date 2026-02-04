@@ -44,7 +44,7 @@
 /* ------------------------------- */
 
 :root {
-    --body-font-family: Poppins, Helvetica, "sans-serif";
+    --body-font-family: Roboto, Arial, Helvetica, sans-serif;
     --body-bg-color: #f0f2f5;
     --body-bg-color-dark: #1E252B;
     --body-color: #111;
@@ -3347,7 +3347,7 @@ body.night-mode .x-image {
 
 /* badges */
 .verified-badge {
-    color: #55acee;
+    color: #114fee;
     display: inline-flex;
     align-items: center;
     margin-right: 3px;
@@ -3392,6 +3392,29 @@ body.night-mode .x-image {
 .privacy-badge {
     color: #fff;
     font-size: 16px;
+}
+
+/* verification badge - profile/page: giống bài post */
+.verified-badge-profile {
+    top: -1px;
+}
+
+.verified-badge-profile svg {
+    top: -0.5px;
+    vertical-align: middle;
+}
+
+.profile-name-wrapper {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+@media (min-width: 992px) {
+    .profile-name-wrapper {
+        justify-content: flex-end;
+    }
 }
 
 .verified-badge:hover,
@@ -4683,6 +4706,8 @@ body.night-mode .post-snippet {
     margin-top: 10px;
     padding: 6px 16px 6px 16px;
     border-top: 1px solid #f4f4f4;
+    position: relative;
+    z-index: 2;
 }
 
 body.night-mode .post-actions {

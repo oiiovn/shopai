@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 4.3.4, created on 2025-10-11 06:34:12
+/* Smarty version 4.3.4, created on 2025-11-06 14:08:59
   from '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/index.newsfeed.tpl' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '4.3.4',
-  'unifunc' => 'content_68e9fa64487ad2_23552571',
+  'unifunc' => 'content_690cabfb4c64c9_25034094',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     'f164dc2f81fd95f43d3fa3e87bdb0f50655a0649' => 
     array (
       0 => '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/index.newsfeed.tpl',
-      1 => 1760164433,
+      1 => 1761234696,
       2 => 'file',
     ),
   ),
@@ -39,7 +39,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:_footer.tpl' => 1,
   ),
 ),false)) {
-function content_68e9fa64487ad2_23552571 (Smarty_Internal_Template $_smarty_tpl) {
+function content_690cabfb4c64c9_25034094 (Smarty_Internal_Template $_smarty_tpl) {
 $_smarty_tpl->_subTemplateRender('file:_head.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array(), 0, false);
 $_smarty_tpl->_subTemplateRender('file:_header.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array(), 0, false);
 ?>
@@ -920,12 +920,16 @@ $_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
     align-items: center;
 }
 
-/* Horizontal scroll container */
+/* Grid 2 hàng scroll ngang */
 .review-tasks-horizontal-scroll {
-    display: flex;
-    overflow-x: auto;
-    gap: 15px;
+    display: grid;
+    grid-template-rows: repeat(2, 120px); /* 2 hàng cố định */
+    grid-auto-flow: column; /* Items flow theo cột (ngang) */
+    grid-auto-columns: 350px; /* Mỗi cột rộng 350px */
+    gap: 12px 15px; /* Gap: row column */
     padding: 0 0 9px 0;
+    overflow-x: auto; /* Scroll ngang */
+    overflow-y: hidden;
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
 }
@@ -941,6 +945,7 @@ $_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
     padding-bottom: 0 !important;
 }
 
+/* Scrollbar cho horizontal scroll */
 .review-tasks-horizontal-scroll::-webkit-scrollbar {
     height: 6px;
 }
@@ -960,9 +965,8 @@ $_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
 }
 
 .review-task-item {
-    flex: 0 0 350px;
-    min-width: 350px;
     height: 120px;
+    width: 350px;
 }
 
 </style>

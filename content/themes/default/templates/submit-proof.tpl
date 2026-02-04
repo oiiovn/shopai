@@ -48,7 +48,7 @@
                             <div class="form-group mb20">
                                 <label for="screenshot">Hình ảnh chụp màn hình đánh giá:</label>
                                 <input type="file" class="form-control" id="screenshot" name="screenshot" accept="image/*" required>
-                                <small class="form-text text-muted">Chọn 1 hình ảnh chụp màn hình đánh giá (JPEG, PNG, GIF - tối đa 5MB)</small>
+                                <small class="form-text text-muted">Chọn 1 hình ảnh chụp màn hình đánh giá (JPEG, PNG, GIF)</small>
                             </div>
                             
                             <div class="form-group mb20">
@@ -248,14 +248,6 @@ if (submitForm) {
         const screenshot = document.getElementById('screenshot').files[0];
         if (!screenshot) {
             showMessage('error', 'Vui lòng chọn ảnh chụp màn hình!');
-            resetForm();
-            return;
-        }
-        
-        // Kiểm tra kích thước file
-        const maxSize = 5 * 1024 * 1024; // 5MB
-        if (screenshot.size > maxSize) {
-            showMessage('error', 'Ảnh quá lớn! Vui lòng chọn ảnh nhỏ hơn 5MB.');
             resetForm();
             return;
         }

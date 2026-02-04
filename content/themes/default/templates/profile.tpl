@@ -134,8 +134,8 @@
         <div class="profile-name-wrapper">
           <a href="{$system['system_url']}/{$profile['user_name']}">{$profile['name']}</a>
           {if $profile['user_verified']}
-            <span class="verified-badge" data-bs-toggle="tooltip" title='{__("Verified User")}'>
-              {include file='__svg_icons.tpl' icon="verified_badge" width="30px" height="30px"}
+            <span class="verified-badge verified-badge-profile" data-bs-toggle="tooltip" title='{__("Verified User")}'>
+              {include file='__svg_icons.tpl' icon="verified_badge" width="20px" height="20px"}
             </span>
           {/if}
           {if $profile['user_subscribed']}
@@ -612,7 +612,7 @@
                     <div class="about-list-item">
                       {include file='__svg_icons.tpl' icon="friends" class="main-icon" width="24px" height="24px"}
                       {__("Followed by")}
-                      <a href="{$system['system_url']}/{$profile['user_name']}/followers">{$profile['followers_count']} {__("people")}</a>
+                      <a href="{$system['system_url']}/{$profile['user_name']}/followers">{if isset($profile['followers_count_formatted'])}{$profile['followers_count_formatted']}{else}{$profile['followers_count']|number_format:0:",":"."}{/if} {__("people")}</a>
                     </div>
                   </li>
                   <!-- info -->
@@ -1117,7 +1117,7 @@
                   <li class="nav-item">
                     <a class="nav-link active" href="{$system['system_url']}/{$profile['user_name']}/followers">
                       {__("Followers")}
-                      <span class="badge rounded-pill bg-info">{$profile['followers_count']}</span>
+                      <span class="badge rounded-pill bg-info">{if isset($profile['followers_count_formatted'])}{$profile['followers_count_formatted']}{else}{$profile['followers_count']|number_format:0:",":"."}{/if}</span>
                     </a>
                   </li>
                   <li class="nav-item">

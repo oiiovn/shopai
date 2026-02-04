@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 4.3.4, created on 2025-10-13 07:29:27
+/* Smarty version 4.3.4, created on 2025-11-11 14:19:29
   from '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/my-system.tpl' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '4.3.4',
-  'unifunc' => 'content_68ecaa5705a3c9_68333461',
+  'unifunc' => 'content_691345f17cfac6_22919312',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     '3acb5f563410df3b84fbe20fc2fa3ea9ba8d4ab6' => 
     array (
       0 => '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/my-system.tpl',
-      1 => 1760340244,
+      1 => 1762861808,
       2 => 'file',
     ),
   ),
@@ -25,7 +25,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:_footer.tpl' => 1,
   ),
 ),false)) {
-function content_68ecaa5705a3c9_68333461 (Smarty_Internal_Template $_smarty_tpl) {
+function content_691345f17cfac6_22919312 (Smarty_Internal_Template $_smarty_tpl) {
 $_smarty_tpl->_subTemplateRender('file:_head.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array(), 0, false);
 $_smarty_tpl->_subTemplateRender('file:_header.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array(), 0, false);
 ?>
@@ -202,6 +202,12 @@ $_smarty_tpl->_subTemplateRender('file:_header.tpl', $_smarty_tpl->cache_id, $_s
                 <strong><i class="fa fa-mobile-alt mr10"></i><?php echo __("Quản Lý Check Số");?>
 </strong>
               </div>
+              <div class="col-auto mb10">
+                <button id="process-pending-btn" class="btn btn-sm btn-danger">
+                  <i class="fa fa-broom mr5"></i><?php echo __("Xử Lý Pending Cũ");?>
+
+                </button>
+              </div>
               <div class="col-auto">
                 <span class="badge badge-warning badge-lg">
                   <i class="fa fa-tools mr5"></i><?php echo __("Đang Phát Triển");?>
@@ -221,6 +227,7 @@ $_smarty_tpl->_subTemplateRender('file:_header.tpl', $_smarty_tpl->cache_id, $_s
             <!-- Message -->
             <h3 class="mb20"><?php echo __("Tính Năng Check Số Đang Được Phát Triển");?>
 </h3>
+            <div id="process-pending-status" class="mb20 text-muted"></div>
             <p class="text-xlg text-muted mb30">
               <?php echo __("Hệ thống kiểm tra và quản lý số điện thoại hiện đang được xây dựng và sẽ sớm ra mắt.");?>
 
@@ -430,6 +437,78 @@ $_smarty_tpl->_subTemplateRender('file:_header.tpl', $_smarty_tpl->cache_id, $_s
 
           </div>
         </div>
+        <?php echo '<script'; ?>
+>
+          $(function() {
+            var $pendingBtn = $('#process-pending-btn');
+            if (!$pendingBtn.length) {
+              return;
+            }
+            
+            var $status = $('#process-pending-status');
+            var originalText = $pendingBtn.html();
+            
+            $pendingBtn.on('click', function() {
+              if ($pendingBtn.prop('disabled')) {
+                return;
+              }
+              
+              if (!confirm('<?php echo __("Bạn có chắc chắn muốn xử lý toàn bộ bản ghi pending cũ không?");?>
+')) {
+                return;
+              }
+              
+              $status.removeClass('text-success text-danger').addClass('text-muted').text('<?php echo __("Đang kiểm tra các bản ghi pending...");?>
+');
+              $pendingBtn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin mr5"></i><?php echo __("Đang xử lý...");?>
+');
+              
+              $.ajax({
+                url: '<?php echo $_smarty_tpl->tpl_vars['system']->value['system_url'];?>
+/includes/ajax/phone-check-history.php',
+                method: 'POST',
+                contentType: 'application/json',
+                dataType: 'json',
+                data: JSON.stringify({
+                  action: 'process_pending',
+                  user_id: <?php echo (($tmp = $_smarty_tpl->tpl_vars['user']->value->_data['user_id'] ?? null)===null||$tmp==='' ? 0 ?? null : $tmp);?>
+,
+                  process_all: true,
+                  minutes_threshold: 5
+                }),
+                success: function(response) {
+                  if (response.success) {
+                    var message = response.message || '<?php echo __("Đã xử lý xong các bản ghi pending.");?>
+';
+                    if (typeof response.processed !== 'undefined') {
+                      message += ' (<?php echo __("Thành công");?>
+: ' + response.processed + ', <?php echo __("Bỏ qua");?>
+: ' + (response.skipped || 0) + ')';
+                    }
+                    
+                    $status.removeClass('text-muted text-danger').addClass('text-success').html(message);
+                    
+                    if (response.errors && response.errors.length) {
+                      $status.append('<br><small>' + response.errors.join('<br>') + '</small>');
+                    }
+                  } else {
+                    $status.removeClass('text-muted text-success').addClass('text-danger').text(response.message || '<?php echo __("Không thể xử lý pending");?>
+');
+                  }
+                },
+                error: function(xhr) {
+                  $status.removeClass('text-muted text-success').addClass('text-danger').text('<?php echo __("Không thể kết nối tới máy chủ. Vui lòng thử lại.");?>
+');
+                  console.error('Process pending error', xhr);
+                },
+                complete: function() {
+                  $pendingBtn.prop('disabled', false).html(originalText);
+                }
+              });
+            });
+          });
+        <?php echo '</script'; ?>
+>
         <!-- number check management -->
       <?php }?>
 

@@ -1,5 +1,10 @@
 {strip}
 
+  <!-- Default reaction icon (for JS unreact) -->
+  <div id="js_default_reaction_icon" style="display:none!important">{include file='__svg_icons.tpl' icon="smile" class="action-icon" width="24px" height="24px"}</div>
+  <script>{literal}(function(){function f(){var e=document.getElementById('js_default_reaction_icon');if(e&&e.innerHTML){window.__defaultReactionIconHtml=e.innerHTML;}}if(document.readyState==='complete')f();else{window.addEventListener('load',f);document.readyState==='interactive'&&f();}setTimeout(f,100);}());{/literal}</script>
+  <!-- Default reaction icon -->
+
   <!-- Toasts -->
   <div class="toast-container p-3 bottom-0 start-0 fixed-bottom">
   </div>
@@ -48,9 +53,12 @@
   </script>
 
   <script id="modal-error" type="text/template">
-    <div class="modal-body text-center" style="padding: 50px;">
+    <div class="modal-header">
+      <h6 class="modal-title">{literal}{{title}}{/literal}</h6>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body text-center" style="padding: 30px 50px 50px;">
       {include file='__svg_icons.tpl' icon="report" class="main-icon mb20" width="60px" height="60px"}
-      <h4>{literal}{{title}}{/literal}</h4>
       <p class="mt20">{literal}{{message}}{/literal}</p>
     </div>
   </script>
@@ -90,6 +98,84 @@
     <div class="modal-body text-center">
       <div class="spinner-border text-primary"></div>
     </div>
+  </script>
+
+  <script id="modal-upload-profile-images" type="text/template">
+    <div class="modal-header">
+      <h6 class="modal-title">
+        {include file='__svg_icons.tpl' icon="camera" class="main-icon mr10" width="24px" height="24px"}
+        {__("Hoàn thiện hồ sơ của bạn")}
+      </h6>
+    </div>
+    <div class="modal-body text-center" style="padding: 30px;">
+      {include file='__svg_icons.tpl' icon="profile" class="main-icon mb20" width="60px" height="60px"}
+      <h5 class="mb20">{__("Chào mừng bạn!")}</h5>
+      <p class="mb20">{__("Bạn chưa tải lên ảnh đại diện và ảnh bìa. Hãy hoàn thiện hồ sơ của bạn để mọi người dễ dàng nhận ra bạn hơn!")}</p>
+      <div class="alert alert-info">
+        <i class="fa fa-info-circle mr5"></i>
+        {literal}{{#missing_avatar}}{/literal}{__("Ảnh đại diện")}{literal}{{/missing_avatar}}{/literal}{literal}{{#missing_both}}{/literal} {__("và")} {literal}{{/missing_both}}{/literal}{literal}{{#missing_cover}}{/literal}{__("Ảnh bìa")}{literal}{{/missing_cover}}{/literal} {__("chưa được tải lên")}
+      </div>
+    </div>
+    <div class="modal-footer">
+      <a href="{$system['system_url']}/{literal}{{username}}{/literal}" class="btn btn-primary w-100">
+        <i class="fa fa-user-circle mr5"></i>
+        {__("Đến trang cá nhân")}
+      </a>
+    </div>
+  </script>
+
+  <!-- Modal: Yêu cầu nhập số điện thoại -->
+  <script id="modal-require-phone" type="text/template">
+    <div class="modal-header">
+      <h6 class="modal-title">
+        {include file='__svg_icons.tpl' icon="contact" class="main-icon mr10" width="24px" height="24px"}
+        {__("Cập nhật số điện thoại")}
+      </h6>
+    </div>
+    <form id="phone-update-form" method="POST">
+      <div class="modal-body" style="padding: 30px;">
+        <div class="text-center mb20">
+          <i class="fa fa-phone fa-3x text-primary mb20"></i>
+          <h5 class="mb20">{__("Vui lòng cập nhật số điện thoại")}</h5>
+          <p class="text-muted mb20">
+            {__("Để admin có thể liên hệ hỗ trợ bạn khi cần thiết, vui lòng cung cấp số điện thoại có Zalo của bạn.")}
+          </p>
+        </div>
+        
+        <div class="alert alert-warning">
+          <i class="fa fa-exclamation-triangle mr5"></i>
+          <strong>{__("Lưu ý:")}</strong> {__("Vui lòng nhập số điện thoại có Zalo để được hỗ trợ nhanh chóng.")}
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">{__("Số điện thoại có Zalo")} <span class="text-danger">*</span></label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="fab fa-whatsapp"></i></span>
+            {literal}
+            <input type="text" class="form-control" name="phone" id="phone-input" placeholder="0987654321" required pattern="[0-9]{10,11}" maxlength="11">
+            {/literal}
+          </div>
+          <div class="form-text">
+            <i class="fa fa-info-circle mr5"></i>
+            {__("Nhập số điện thoại 10-11 số, ví dụ: 0987654321")}
+          </div>
+        </div>
+        
+        <!-- Success Alert -->
+        <div class="alert alert-success mt15 mb0 x-hidden" id="phone-success-msg"></div>
+        <!-- Success Alert -->
+        
+        <!-- Error Alert -->
+        <div class="alert alert-danger mt15 mb0 x-hidden" id="phone-error-msg"></div>
+        <!-- Error Alert -->
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary w-100" id="phone-submit-btn">
+          <i class="fa fa-check mr5"></i>
+          {__("Xác nhận")}
+        </button>
+      </div>
+    </form>
   </script>
   <!-- Modals -->
 
@@ -348,7 +434,7 @@
                     </span>
                     {if $connected_account['user_verified']}
                       <span class="verified-badge" data-bs-toggle="tooltip" title='{__("Verified User")}'>
-                        {include file='__svg_icons.tpl' icon="verified_badge" width="20px" height="20px"}
+                        {include file='__svg_icons.tpl' icon="verified_badge" width="15px" height="15px"}
                       </span>
                     {/if}
                     {if $connected_account['user_subscribed']}

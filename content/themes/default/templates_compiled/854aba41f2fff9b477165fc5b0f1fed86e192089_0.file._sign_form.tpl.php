@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 4.3.4, created on 2025-09-29 06:39:04
+/* Smarty version 4.3.4, created on 2025-11-06 14:14:46
   from '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/_sign_form.tpl' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '4.3.4',
-  'unifunc' => 'content_68da2988cfa123_08828113',
+  'unifunc' => 'content_690cad56df80e8_66862241',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     '854aba41f2fff9b477165fc5b0f1fed86e192089' => 
     array (
       0 => '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/_sign_form.tpl',
-      1 => 1759061979,
+      1 => 1761225281,
       2 => 'file',
     ),
   ),
@@ -21,7 +21,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:__custom_fields.tpl' => 1,
   ),
 ),false)) {
-function content_68da2988cfa123_08828113 (Smarty_Internal_Template $_smarty_tpl) {
+function content_690cad56df80e8_66862241 (Smarty_Internal_Template $_smarty_tpl) {
 ?><div class="card card-register">
 
   <!-- signin -->
@@ -180,7 +180,7 @@ echo __($_prefixVariable1);?>
           <div class="input-group">
             <span class="input-group-text bg-transparent"><i class="fas fa-user fa-fw"></i></span>
             <input name="first_name" type="text" class="form-control" placeholder='<?php echo __("First name");?>
-' required>
+' required autocomplete="given-name">
           </div>
         </div>
         <!-- first name -->
@@ -189,7 +189,7 @@ echo __($_prefixVariable1);?>
           <div class="input-group">
             <span class="input-group-text bg-transparent"><i class="fas fa-user fa-fw"></i></span>
             <input name="last_name" type="text" class="form-control" placeholder='<?php echo __("Last name");?>
-' required>
+' required autocomplete="family-name">
           </div>
         </div>
         <!-- last name -->
@@ -197,9 +197,13 @@ echo __($_prefixVariable1);?>
         <div class="form-group">
           <div class="input-group">
             <span class="input-group-text bg-transparent"><i class="fas fa-globe fa-fw"></i></span>
-            <input name="username" type="text" class="form-control" placeholder='<?php echo __("Username");?>
-' required>
+            <input name="username" id="signup_username" type="text" class="form-control" placeholder='Username' required autocomplete="username" pattern="[a-zA-Z0-9_.]+" minlength="3">
           </div>
+          <div class="form-text text-muted mt5">
+            <small><i class="fas fa-info-circle"></i> <?php echo __("Chỉ được dùng chữ cái, số, dấu gạch dưới (_) và dấu chấm (.) - Tối thiểu 3 ký tự");?>
+</small>
+          </div>
+          <div id="username-error" class="invalid-feedback" style="display: none;"></div>
         </div>
         <!-- username -->
         <!-- email -->
@@ -207,7 +211,7 @@ echo __($_prefixVariable1);?>
           <div class="input-group">
             <span class="input-group-text bg-transparent"><i class="fas fa-envelope fa-fw"></i></span>
             <input name="email" type="email" class="form-control" placeholder='<?php echo __("Email");?>
-' required>
+' required autocomplete="email">
           </div>
         </div>
         <!-- email -->
@@ -228,7 +232,7 @@ echo __($_prefixVariable1);?>
             <div class="input-group">
               <span class="input-group-text bg-transparent"><i class="fas fa-key fa-fw"></i></span>
               <input name="password" type="password" class="form-control" placeholder='<?php echo __("Password");?>
-' required>
+' required autocomplete="new-password">
             </div>
           </div>
         </div>
@@ -456,5 +460,71 @@ echo __($_prefixVariable2);?>
     </div>
   </div>
   <!-- signup -->
-</div><?php }
+</div>
+
+<!-- Username Validation Script -->
+<?php echo '<script'; ?>
+>
+$(document).ready(function() {
+  $('#signup_username').on('input', function() {
+    var username = $(this).val();
+    var validPattern = /^[a-zA-Z0-9_.]*$/;
+    var errorDiv = $('#username-error');
+    var inputField = $(this);
+    
+    // Check if contains invalid characters
+    if (username && !validPattern.test(username)) {
+      // Remove invalid characters
+      var cleanUsername = username.replace(/[^a-zA-Z0-9_.]/g, '');
+      $(this).val(cleanUsername);
+      
+      // Show error message
+      errorDiv.html('<i class="fas fa-exclamation-circle"></i> Không được nhập ký tự đặc biệt! Chỉ dùng: a-z, 0-9, _ và .').css({
+        'display': 'block',
+        'color': '#dc3545',
+        'font-size': '0.875em',
+        'margin-top': '5px'
+      });
+      inputField.addClass('is-invalid');
+      
+      // Hide error after 3 seconds
+      setTimeout(function() {
+        errorDiv.fadeOut();
+        if (validPattern.test(inputField.val())) {
+          inputField.removeClass('is-invalid');
+        }
+      }, 3000);
+    } else {
+      inputField.removeClass('is-invalid');
+      
+      // Check minimum length
+      if (username.length > 0 && username.length < 3) {
+        errorDiv.html('<i class="fas fa-info-circle"></i> Username phải có ít nhất 3 ký tự').css({
+          'display': 'block',
+          'color': '#ffc107',
+          'font-size': '0.875em',
+          'margin-top': '5px'
+        });
+      } else if (username.length >= 3) {
+        errorDiv.html('<i class="fas fa-check-circle"></i> Username hợp lệ').css({
+          'display': 'block',
+          'color': '#28a745',
+          'font-size': '0.875em',
+          'margin-top': '5px'
+        });
+        inputField.addClass('is-valid');
+      } else {
+        errorDiv.fadeOut();
+      }
+    }
+  });
+  
+  // Convert to lowercase on blur
+  $('#signup_username').on('blur', function() {
+    $(this).val($(this).val().toLowerCase());
+  });
+});
+<?php echo '</script'; ?>
+>
+<!-- Username Validation Script --><?php }
 }

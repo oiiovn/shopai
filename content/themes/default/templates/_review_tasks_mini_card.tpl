@@ -61,7 +61,7 @@
                         <span class="verified-badge d-inline-flex align-items-center ml-1"
                               data-bs-toggle="tooltip"
                               title='{__("Verified User")}'>
-                          {include file='__svg_icons.tpl' icon="verified_badge" width="12px" height="12px"}
+                          {include file='__svg_icons.tpl' icon="verified_badge" width="15px" height="15px"}
                         </span>
                       {/if}
                     </small>

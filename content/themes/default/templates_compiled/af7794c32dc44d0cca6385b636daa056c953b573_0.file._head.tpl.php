@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 4.3.4, created on 2025-10-13 06:16:00
+/* Smarty version 4.3.4, created on 2026-02-02 04:44:58
   from '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/_head.tpl' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '4.3.4',
-  'unifunc' => 'content_68ec9920b7afe2_90328516',
+  'unifunc' => 'content_69802bcaa93fd9_68347804',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     'af7794c32dc44d0cca6385b636daa056c953b573' => 
     array (
       0 => '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/_head.tpl',
-      1 => 1760336098,
+      1 => 1770007493,
       2 => 'file',
     ),
   ),
@@ -21,7 +21,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:_head.css.tpl' => 1,
   ),
 ),false)) {
-function content_68ec9920b7afe2_90328516 (Smarty_Internal_Template $_smarty_tpl) {
+function content_69802bcaa93fd9_68347804 (Smarty_Internal_Template $_smarty_tpl) {
 $_smarty_tpl->_checkPlugins(array(0=>array('file'=>'/home/sho73359/domains/shop-ai.vn/public_html/vendor/smarty/smarty/libs/plugins/modifier.truncate.php','function'=>'smarty_modifier_truncate',),));
 ?>
 <!doctype html>
@@ -36,6 +36,10 @@ $_smarty_tpl->_checkPlugins(array(0=>array('file'=>'/home/sho73359/domains/shop-
     <meta name="generator" content="Sngine">
     <meta name="version" content="<?php echo $_smarty_tpl->tpl_vars['system']->value['system_version'];?>
 ">
+    
+    <!-- Google AdSense Verification -->
+    <meta name="google-adsense-account" content="ca-pub-5850644658369651">
+    <!-- Google AdSense Verification -->
 
     <!-- Title -->
     <title><?php echo smarty_modifier_truncate($_smarty_tpl->tpl_vars['page_title']->value,70);?>
@@ -70,6 +74,16 @@ $_smarty_tpl->_checkPlugins(array(0=>array('file'=>'/home/sho73359/domains/shop-
 " />
     <!-- Twitter-Meta -->
 
+    <!-- Preconnect/DNS-Prefetch cho tài nguyên ngoài -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+    <link rel="dns-prefetch" href="https://unpkg.com">
+    <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com">
+    <link rel="dns-prefetch" href="https://ajax.googleapis.com">
+    <link rel="dns-prefetch" href="https://instant.page">
+    <!-- Preconnect/DNS-Prefetch -->
+
     <!-- Favicon -->
     <?php if ($_smarty_tpl->tpl_vars['system']->value['system_favicon_default']) {?>
       <link rel="shortcut icon" href="<?php echo $_smarty_tpl->tpl_vars['system']->value['system_url'];?>
@@ -82,10 +96,11 @@ $_smarty_tpl->_checkPlugins(array(0=>array('file'=>'/home/sho73359/domains/shop-
     <?php }?>
     <!-- Favicon -->
 
-    <!-- Fonts [Poppins|Font-Awesome] -->
-    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" rel="stylesheet" crossorigin="anonymous" />
+    <!-- Fonts [Roboto|Font-Awesome] -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" crossorigin="anonymous" />
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" crossorigin="anonymous" /></noscript>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <!-- Fonts [Poppins|Font-Awesome] -->
+    <!-- Fonts -->
 
     <!-- CSS -->
     <?php if ($_smarty_tpl->tpl_vars['system']->value['language']['dir'] == "LTR") {?>
@@ -109,6 +124,23 @@ $_smarty_tpl->_checkPlugins(array(0=>array('file'=>'/home/sho73359/domains/shop-
     <?php $_smarty_tpl->_subTemplateRender('file:_head.css.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array(), 0, false);
 ?>
     <!-- CSS Customized -->
+
+    <!-- Header trong suốt (glassmorphism) -->
+    <style type="text/css">
+    .main-header {
+      background: rgba(255, 255, 255, 0.75) !important;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    body.night-mode .main-header {
+      background: rgba(38, 45, 52, 0.85) !important;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    </style>
+    <!-- Header trong suốt -->
 
     <!-- Header Custom JavaScript -->
     <?php if ($_smarty_tpl->tpl_vars['system']->value['custome_js_header']) {?>
@@ -164,6 +196,14 @@ $_smarty_tpl->_checkPlugins(array(0=>array('file'=>'/home/sho73359/domains/shop-
     <?php echo '</script'; ?>
 >
     <?php }?>
+
+    <!-- Google AdSense - load sau khi trang ready -->
+    <?php echo '<script'; ?>
+>
+    window.addEventListener('load', function(){ var s=document.createElement('script'); s.async=true; s.src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5850644658369651'; s.crossOrigin='anonymous'; document.head.appendChild(s); });
+    <?php echo '</script'; ?>
+>
+    <!-- Google AdSense -->
 
 </head><?php }
 }

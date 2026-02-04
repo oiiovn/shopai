@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 4.3.4, created on 2025-09-29 06:03:08
+/* Smarty version 4.3.4, created on 2026-01-31 14:31:54
   from '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/__svg_icons.tpl' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '4.3.4',
-  'unifunc' => 'content_68da211c7133f0_20957692',
+  'unifunc' => 'content_697e125a44eba0_15788775',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     '46010067e210b223446738be0aaa97f96cfdd4ed' => 
     array (
       0 => '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/__svg_icons.tpl',
-      1 => 1758365288,
+      1 => 1769869910,
       2 => 'file',
     ),
   ),
@@ -240,7 +240,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:../images/svg/fluid_vertical.svg' => 1,
   ),
 ),false)) {
-function content_68da211c7133f0_20957692 (Smarty_Internal_Template $_smarty_tpl) {
+function content_697e125a44eba0_15788775 (Smarty_Internal_Template $_smarty_tpl) {
 ?><div class="svg-container <?php if ((isset($_smarty_tpl->tpl_vars['class']->value))) {
 echo $_smarty_tpl->tpl_vars['class']->value;
 }?>" style="<?php if ((isset($_smarty_tpl->tpl_vars['width']->value))) {?>width:<?php echo $_smarty_tpl->tpl_vars['width']->value;?>

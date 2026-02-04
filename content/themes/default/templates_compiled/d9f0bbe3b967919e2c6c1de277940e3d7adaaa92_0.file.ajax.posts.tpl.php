@@ -1,11 +1,11 @@
 <?php
-/* Smarty version 4.3.4, created on 2025-09-29 10:22:43
+/* Smarty version 4.3.4, created on 2025-11-07 04:30:02
   from '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/ajax.posts.tpl' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '4.3.4',
-  'unifunc' => 'content_68da5df398abd5_70179272',
+  'unifunc' => 'content_690d75ca316226_04921891',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
@@ -22,7 +22,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:_no_data.tpl' => 1,
   ),
 ),false)) {
-function content_68da5df398abd5_70179272 (Smarty_Internal_Template $_smarty_tpl) {
+function content_690d75ca316226_04921891 (Smarty_Internal_Template $_smarty_tpl) {
 if ($_smarty_tpl->tpl_vars['_get']->value) {?>
   <?php if ($_smarty_tpl->tpl_vars['posts']->value) {?>
     <ul>

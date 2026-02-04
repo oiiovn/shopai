@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 4.3.4, created on 2025-09-29 06:03:14
+/* Smarty version 4.3.4, created on 2026-02-02 04:13:26
   from '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/__feeds_post.tpl' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '4.3.4',
-  'unifunc' => 'content_68da2122edaf41_14272295',
+  'unifunc' => 'content_69802466781e17_67529443',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     'c140dd91bc8df35c29d7077b139242d58a86c36e' => 
     array (
       0 => '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/__feeds_post.tpl',
-      1 => 1698405314,
+      1 => 1770005566,
       2 => 'file',
     ),
   ),
@@ -20,11 +20,11 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   array (
     'file:__feeds_post.body.tpl' => 1,
     'file:__reaction_emojis.tpl' => 3,
-    'file:__svg_icons.tpl' => 3,
+    'file:__svg_icons.tpl' => 4,
     'file:__feeds_post.comments.tpl' => 1,
   ),
 ),false)) {
-function content_68da2122edaf41_14272295 (Smarty_Internal_Template $_smarty_tpl) {
+function content_69802466781e17_67529443 (Smarty_Internal_Template $_smarty_tpl) {
 if (!$_smarty_tpl->tpl_vars['standalone']->value) {?><li><?php }?>
   <!-- post -->
   <div class="post 
@@ -198,9 +198,10 @@ $_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
               <div class="reaction-btn">
                 <?php if (!$_smarty_tpl->tpl_vars['post']->value['i_react']) {?>
                   <div class="reaction-btn-icon">
-                    <i class="far fa-smile fa-fw action-icon"></i>
+                    <?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"smile",'class'=>"action-icon",'width'=>"24px",'height'=>"24px"), 0, false);
+?>
                   </div>
-                  <span class="reaction-btn-name d-none d-xl-inline-block"><?php echo __("React");?>
+                  <span class="reaction-btn-name d-none"><?php echo __("React");?>
 </span>
                 <?php } else { ?>
                   <div class="reaction-btn-icon">
@@ -209,7 +210,7 @@ $_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
 ?>
                     </div>
                   </div>
-                  <span class="reaction-btn-name" style="color: <?php echo $_smarty_tpl->tpl_vars['reactions']->value[$_smarty_tpl->tpl_vars['post']->value['i_reaction']]['color'];?>
+                  <span class="reaction-btn-name d-none" style="color: <?php echo $_smarty_tpl->tpl_vars['reactions']->value[$_smarty_tpl->tpl_vars['post']->value['i_reaction']]['color'];?>
 ;"><?php echo __($_smarty_tpl->tpl_vars['reactions']->value[$_smarty_tpl->tpl_vars['post']->value['i_reaction']]['title']);?>
 </span>
                 <?php }?>
@@ -225,7 +226,7 @@ $_smarty_tpl->tpl_vars['reaction']->do_else = true;
 if ($_from !== null) foreach ($_from as $_smarty_tpl->tpl_vars['reaction']->value) {
 $_smarty_tpl->tpl_vars['reaction']->do_else = false;
 $_smarty_tpl->tpl_vars['reaction']->iteration++;
-$__foreach_reaction_20_saved = $_smarty_tpl->tpl_vars['reaction'];
+$__foreach_reaction_1_saved = $_smarty_tpl->tpl_vars['reaction'];
 ?>
                   <div class="reactions_item reaction reaction-<?php echo $_smarty_tpl->tpl_vars['reaction']->iteration;?>
  js_react-post" data-reaction="<?php echo $_smarty_tpl->tpl_vars['reaction']->value['reaction'];?>
@@ -236,7 +237,7 @@ $__foreach_reaction_20_saved = $_smarty_tpl->tpl_vars['reaction'];
 ?>
                   </div>
                 <?php
-$_smarty_tpl->tpl_vars['reaction'] = $__foreach_reaction_20_saved;
+$_smarty_tpl->tpl_vars['reaction'] = $__foreach_reaction_1_saved;
 }
 $_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
               </div>
@@ -246,9 +247,9 @@ $_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
 
             <!-- comment -->
             <div class="action-btn js_comment <?php if ($_smarty_tpl->tpl_vars['post']->value['comments_disabled']) {?>x-hidden<?php }?>">
-              <?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"comment",'class'=>"action-icon mr5",'width'=>"24px",'height'=>"24px"), 0, false);
+              <?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"comment",'class'=>"action-icon mr5",'width'=>"24px",'height'=>"24px"), 0, true);
 ?>
-              <span class="d-none d-xl-inline-block"><?php echo __("Comment");?>
+              <span class="d-none"><?php echo __("Comment");?>
 </span>
             </div>
             <!-- comment -->
@@ -259,7 +260,7 @@ $_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
 ">
                 <?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"share",'class'=>"action-icon mr5",'width'=>"24px",'height'=>"24px"), 0, true);
 ?>
-                <span class="d-none d-xl-inline-block"><?php echo __("Share");?>
+                <span class="d-none"><?php echo __("Share");?>
 </span>
               </div>
             <?php }?>
@@ -271,7 +272,7 @@ $_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
 "}'>
                 <?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"tip",'class'=>"action-icon mr5",'width'=>"24px",'height'=>"24px"), 0, true);
 ?>
-                <span class="ml5 d-none d-xl-inline-block"><?php echo __("Tip");?>
+                <span class="ml5 d-none"><?php echo __("Tip");?>
 </span>
               </div>
             <?php }?>

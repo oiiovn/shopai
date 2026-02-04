@@ -26,7 +26,7 @@
         </span>
         {if $post['post_author_verified']}
           <span class="verified-badge" data-bs-toggle="tooltip" title='{if $post['user_type'] == "user"}{__("Verified User")}{else}{__("Verified Page")}{/if}'>
-            {include file='__svg_icons.tpl' icon="verified_badge" width="20px" height="20px"}
+            {include file='__svg_icons.tpl' icon="verified_badge" width="15px" height="15px"}
           </span>
         {/if}
         {if $post['user_subscribed']}
@@ -129,16 +129,16 @@
         <div class="reaction-btn">
           {if !$photo['i_react']}
             <div class="reaction-btn-icon">
-              <i class="far fa-smile fa-fw action-icon"></i>
+              {include file='__svg_icons.tpl' icon="smile" class="action-icon" width="24px" height="24px"}
             </div>
-            <span class="reaction-btn-name d-none d-xl-inline-block">{__("React")}</span>
+            <span class="reaction-btn-name d-none">{__("React")}</span>
           {else}
             <div class="reaction-btn-icon">
               <div class="inline-emoji no_animation">
                 {include file='__reaction_emojis.tpl' _reaction=$photo['i_reaction']}
               </div>
             </div>
-            <span class="reaction-btn-name" style="color: {$reactions[$photo['i_reaction']]['color']};">{__($reactions[$photo['i_reaction']]['title'])}</span>
+            <span class="reaction-btn-name d-none" style="color: {$reactions[$photo['i_reaction']]['color']};">{__($reactions[$photo['i_reaction']]['title'])}</span>
           {/if}
         </div>
         <!-- reaction-btn -->
@@ -158,7 +158,7 @@
       <!-- comment -->
       <span class="action-btn js_comment {if $post['comments_disabled']}x-hidden{/if}">
         {include file='__svg_icons.tpl' icon="comment" class="action-icon mr5" width="16px" height="16px"}
-        <span class="d-none d-xl-inline-block">{__("Comment")}</span>
+        <span class="d-none">{__("Comment")}</span>
       </span>
       <!-- comment -->
 
@@ -166,7 +166,7 @@
       {if $post['privacy'] == "public"}
         <div class="action-btn" data-toggle="modal" data-url="posts/share.php?do=create&post_id={$post['post_id']}&photo_id={$photo['photo_id']}">
           {include file='__svg_icons.tpl' icon="share" class="action-icon mr5" width="16px" height="16px"}
-          <span class="d-none d-xl-inline-block">{__("Share")}</span>
+          <span class="d-none">{__("Share")}</span>
         </div>
       {/if}
       <!-- share -->

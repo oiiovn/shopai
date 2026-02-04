@@ -37,16 +37,16 @@
             </span>
             {if $_comment['author_verified'] == '1'}
               <span class="verified-badge" data-bs-toggle="tooltip" title='{if $_comment['author_type'] == "user"}{__("Verified User")}{else}{__("Verified Page")}{/if}'>
-                {include file='__svg_icons.tpl' icon="verified_badge" width="20px" height="20px"}
+                {include file='__svg_icons.tpl' icon="verified_badge" width="15px" height="15px"}
               </span>
             {elseif $_comment['author_verified'] == '2'}
               <span class="verified-badge-gray" data-bs-toggle="tooltip" title='{if $_comment['author_type'] == "user"}{__("Verified Business")}{else}{__("Business Verified")}{/if}'>
-                {include file='__svg_icons.tpl' icon="verified_badge_gray" width="20px" height="20px"}
+                {include file='__svg_icons.tpl' icon="verified_badge_gray" width="15px" height="15px"}
               </span>
             {/if}
             {if $_comment['user_subscribed']}
               <span class="pro-badge" data-bs-toggle="tooltip" title='{__($_comment['package_name'])} {__('Member')}'>
-                {include file='__svg_icons.tpl' icon="pro_badge" width="20px" height="20px"}
+                {include file='__svg_icons.tpl' icon="pro_badge" width="15px" height="15px"}
               </span>
             {/if}
           </div>
@@ -68,16 +68,16 @@
             <div class="reaction-btn">
               {if !$_comment['i_react']}
                 <div class="reaction-btn-icon d-none">
-                  <i class="fa fa-smile fa-fw"></i>
+                  {include file='__svg_icons.tpl' icon="smile" class="action-icon" width="16px" height="16px"}
                 </div>
-                <span class="reaction-btn-name text-link">{__("React")}</span>
+                <span class="reaction-btn-name text-link d-none">{__("React")}</span>
               {else}
                 <div class="reaction-btn-icon d-none">
                   <div class="inline-emoji no_animation">
                     {include file='__reaction_emojis.tpl' _reaction=$_comment['i_reaction']}
                   </div>
                 </div>
-                <span class="reaction-btn-name text-link" style="color: {$reactions[$_comment['i_reaction']]['color']};">{__($reactions[$_comment['i_reaction']]['title'])}</span>
+                <span class="reaction-btn-name text-link d-none" style="color: {$reactions[$_comment['i_reaction']]['color']};">{__($reactions[$_comment['i_reaction']]['title'])}</span>
               {/if}
             </div>
             <!-- reaction-btn -->

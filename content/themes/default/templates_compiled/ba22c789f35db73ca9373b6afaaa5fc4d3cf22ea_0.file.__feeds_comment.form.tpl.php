@@ -1,11 +1,11 @@
 <?php
-/* Smarty version 4.3.4, created on 2025-09-29 06:03:15
+/* Smarty version 4.3.4, created on 2025-11-06 14:08:59
   from '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/__feeds_comment.form.tpl' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '4.3.4',
-  'unifunc' => 'content_68da2123161a99_67644538',
+  'unifunc' => 'content_690cabfbbea9b0_96345044',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
@@ -21,7 +21,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:__svg_icons.tpl' => 2,
   ),
 ),false)) {
-function content_68da2123161a99_67644538 (Smarty_Internal_Template $_smarty_tpl) {
+function content_690cabfbbea9b0_96345044 (Smarty_Internal_Template $_smarty_tpl) {
 ?><div class="comment js_comment-form <?php if ($_smarty_tpl->tpl_vars['post']->value['comments_disabled']) {?>x-hidden<?php }?>" data-handle="<?php echo $_smarty_tpl->tpl_vars['_handle']->value;?>
 " data-id="<?php echo $_smarty_tpl->tpl_vars['_id']->value;?>
 ">

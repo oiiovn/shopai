@@ -1,11 +1,11 @@
 <?php
-/* Smarty version 4.3.4, created on 2025-09-29 09:51:33
+/* Smarty version 4.3.4, created on 2025-11-06 14:08:50
   from '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/__feeds_conversation.tpl' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '4.3.4',
-  'unifunc' => 'content_68da56a567caf9_96852959',
+  'unifunc' => 'content_690cabf27f0c71_52401147',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
@@ -20,7 +20,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   array (
   ),
 ),false)) {
-function content_68da56a567caf9_96852959 (Smarty_Internal_Template $_smarty_tpl) {
+function content_690cabf27f0c71_52401147 (Smarty_Internal_Template $_smarty_tpl) {
 ?><li class="feeds-item <?php if (!$_smarty_tpl->tpl_vars['conversation']->value['seen']) {?>unread<?php }?>" data-last-message="<?php echo $_smarty_tpl->tpl_vars['conversation']->value['last_message_id'];?>
 ">
   <?php if ($_smarty_tpl->tpl_vars['conversation']->value['multiple_recipients']) {?>

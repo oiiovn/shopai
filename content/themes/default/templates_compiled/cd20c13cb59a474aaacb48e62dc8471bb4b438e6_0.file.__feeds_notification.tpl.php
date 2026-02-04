@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 4.3.4, created on 2025-09-29 06:03:14
+/* Smarty version 4.3.4, created on 2026-01-31 14:42:46
   from '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/__feeds_notification.tpl' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '4.3.4',
-  'unifunc' => 'content_68da2122c4da72_81690238',
+  'unifunc' => 'content_697e14e6431ad5_43092457',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     'cd20c13cb59a474aaacb48e62dc8471bb4b438e6' => 
     array (
       0 => '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/__feeds_notification.tpl',
-      1 => 1685288946,
+      1 => 1769870534,
       2 => 'file',
     ),
   ),
@@ -22,7 +22,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:__reaction_emojis.tpl' => 1,
   ),
 ),false)) {
-function content_68da2122c4da72_81690238 (Smarty_Internal_Template $_smarty_tpl) {
+function content_697e14e6431ad5_43092457 (Smarty_Internal_Template $_smarty_tpl) {
 ?><li class="feeds-item <?php if (!$_smarty_tpl->tpl_vars['notification']->value['seen']) {?>unread<?php }?>" data-id="<?php echo $_smarty_tpl->tpl_vars['notification']->value['notification_id'];?>
 ">
   <a class="data-container" href="<?php echo $_smarty_tpl->tpl_vars['notification']->value['url'];?>
@@ -38,7 +38,7 @@ function content_68da2122c4da72_81690238 (Smarty_Internal_Template $_smarty_tpl)
         <?php if ($_smarty_tpl->tpl_vars['notification']->value['user_verified']) {?>
           <span class="verified-badge" data-bs-toggle="tooltip" title='<?php echo __("Verified User");?>
 '>
-            <?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"verified_badge",'width'=>"20px",'height'=>"20px"), 0, false);
+            <?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"verified_badge",'width'=>"15px",'height'=>"15px"), 0, false);
 ?>
           </span>
         <?php }?>

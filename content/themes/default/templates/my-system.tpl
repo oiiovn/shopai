@@ -142,11 +142,30 @@
 
       {if $view == "number-check"}
         <!-- number check management -->
+        <div class="card mb20">
+          <div class="card-body">
+            <div class="row align-items-center">
+              <div class="col-auto">
+                <i class="fa fa-trash-alt fa-2x text-muted"></i>
+              </div>
+              <div class="col">
+                <h6 class="mb0 text-muted">{__("Tổng số lần xoá lịch sử (toàn hệ thống)")}</h6>
+                <p class="mb0 font-weight-bold text-lg">{$phone_check_history_delete_count|default:0}</p>
+                <small class="text-muted">{__("Mỗi lần user bấm \"Xoá hết not_found & error\" trong Lịch sử check được tính là 1 lần")}</small>
+              </div>
+            </div>
+          </div>
+        </div>
         <div class="card">
           <div class="card-header bg-gradient-info text-white">
             <div class="row align-items-center">
               <div class="col">
                 <strong><i class="fa fa-mobile-alt mr10"></i>{__("Quản Lý Check Số")}</strong>
+              </div>
+              <div class="col-auto mb10">
+                <button id="process-pending-btn" class="btn btn-sm btn-danger">
+                  <i class="fa fa-broom mr5"></i>{__("Xử Lý Pending Cũ")}
+                </button>
               </div>
               <div class="col-auto">
                 <span class="badge badge-warning badge-lg">
@@ -165,6 +184,7 @@
             
             <!-- Message -->
             <h3 class="mb20">{__("Tính Năng Check Số Đang Được Phát Triển")}</h3>
+            <div id="process-pending-status" class="mb20 text-muted"></div>
             <p class="text-xlg text-muted mb30">
               {__("Hệ thống kiểm tra và quản lý số điện thoại hiện đang được xây dựng và sẽ sớm ra mắt.")}
             </p>
@@ -340,6 +360,66 @@
 
           </div>
         </div>
+        <script>
+          $(function() {
+            var $pendingBtn = $('#process-pending-btn');
+            if (!$pendingBtn.length) {
+              return;
+            }
+            
+            var $status = $('#process-pending-status');
+            var originalText = $pendingBtn.html();
+            
+            $pendingBtn.on('click', function() {
+              if ($pendingBtn.prop('disabled')) {
+                return;
+              }
+              
+              if (!confirm('{__("Bạn có chắc chắn muốn xử lý toàn bộ bản ghi pending cũ không?")}')) {
+                return;
+              }
+              
+              $status.removeClass('text-success text-danger').addClass('text-muted').text('{__("Đang kiểm tra các bản ghi pending...")}');
+              $pendingBtn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin mr5"></i>{__("Đang xử lý...")}');
+              
+              $.ajax({
+                url: '{$system['system_url']}/includes/ajax/phone-check-history.php',
+                method: 'POST',
+                contentType: 'application/json',
+                dataType: 'json',
+                data: JSON.stringify({
+                  action: 'process_pending',
+                  user_id: {$user->_data.user_id|default:0},
+                  process_all: true,
+                  minutes_threshold: 5
+                }),
+                success: function(response) {
+                  if (response.success) {
+                    var message = response.message || '{__("Đã xử lý xong các bản ghi pending.")}';
+                    if (typeof response.processed !== 'undefined') {
+                      message += ' ({__("Thành công")}: ' + response.processed + ', {__("Bỏ qua")}: ' + (response.skipped || 0) + ')';
+                    }
+                    
+                    $status.removeClass('text-muted text-danger').addClass('text-success').html(message);
+                    
+                    if (response.errors && response.errors.length) {
+                      $status.append('<br><small>' + response.errors.join('<br>') + '</small>');
+                    }
+                  } else {
+                    $status.removeClass('text-muted text-success').addClass('text-danger').text(response.message || '{__("Không thể xử lý pending")}');
+                  }
+                },
+                error: function(xhr) {
+                  $status.removeClass('text-muted text-success').addClass('text-danger').text('{__("Không thể kết nối tới máy chủ. Vui lòng thử lại.")}');
+                  console.error('Process pending error', xhr);
+                },
+                complete: function() {
+                  $pendingBtn.prop('disabled', false).html(originalText);
+                }
+              });
+            });
+          });
+        </script>
         <!-- number check management -->
       {/if}
 

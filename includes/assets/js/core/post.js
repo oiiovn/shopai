@@ -23,6 +23,8 @@ api['albums/action'] = ajax_path + "albums/action.php";
 /* forums */
 api['forums/delete'] = ajax_path + "forums/delete.php";
 
+/* default reaction icon (heart) when unreact */
+var __defaultReactionIconHtml = '<div class="svg-container action-icon" style="width:24px;height:24px"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="90" zoomAndPan="magnify" viewBox="0 0 67.5 67.499996" height="90" preserveAspectRatio="xMidYMid meet" version="1.0"><path fill="#545454" d="M 33.476562 61.996094 C 33.046875 61.992188 32.769531 61.75 32.707031 61.691406 L 7.921875 36.90625 C 2.023438 31.570312 -0.00390625 23.433594 2.746094 16.679688 C 5.949219 8.808594 14.035156 6.753906 14.582031 6.625 C 21.53125 5.003906 28.957031 8.027344 33.484375 14.191406 C 38.011719 8.027344 45.441406 5.003906 52.390625 6.625 C 52.738281 6.707031 60.984375 8.714844 64.226562 16.679688 C 66.996094 23.488281 64.914062 31.613281 59.046875 36.90625 L 34.265625 61.691406 C 34.203125 61.75 33.917969 61.996094 33.476562 61.996094 Z M 15.019531 8.511719 C 14.5625 8.617188 7.378906 10.425781 4.539062 17.410156 C 2.070312 23.472656 3.960938 30.734375 9.238281 35.488281 L 9.273438 35.519531 L 33.484375 59.734375 L 57.714844 35.503906 L 57.734375 35.488281 C 63.011719 30.734375 64.898438 23.472656 62.433594 17.410156 C 59.566406 10.363281 52.257812 8.582031 51.949219 8.511719 C 45.363281 6.976562 38.273438 10.15625 34.300781 16.421875 L 33.484375 17.714844 L 32.667969 16.421875 C 28.699219 10.117188 21.546875 6.984375 15.019531 8.511719 Z M 15.019531 8.511719 " fill-opacity="1" fill-rule="nonzero"/></svg></div>';
 
 // initialize voice recording global vars
 var voice_recording_encoding = voice_notes_encoding;
@@ -2397,17 +2399,40 @@ $(function () {
     var reactions = _this.find('.reactions-container:first');
     reactions.removeAttr('style').hide();
   }
+  var _reactionsHideTimeout = null;
   /* reactions toggle */
   $('body').on('mouseenter', '.reactions-wrapper', function () {
     if (!is_iPad() && $(window).width() >= 970) {
-      /* desktop -> show the reactions */
+      clearTimeout(_reactionsHideTimeout);
+      _reactionsHideTimeout = null;
       _show_reactions(this);
     }
   });
   $('body').on('mouseleave', '.reactions-wrapper', function () {
     if (!is_iPad() && $(window).width() >= 970) {
-      /* desktop -> hide the reactions */
-      _hide_reactions(this);
+      var _wrapper = $(this);
+      clearTimeout(_reactionsHideTimeout);
+      _reactionsHideTimeout = setTimeout(function () {
+        _hide_reactions(_wrapper[0]);
+        _reactionsHideTimeout = null;
+      }, 250);
+    }
+  });
+  $('body').on('mouseenter', '.reactions-container', function () {
+    if (!is_iPad() && $(window).width() >= 970) {
+      clearTimeout(_reactionsHideTimeout);
+      _reactionsHideTimeout = null;
+    }
+  });
+  $('body').on('mouseleave', '.reactions-container', function () {
+    if (!is_iPad() && $(window).width() >= 970) {
+      var _container = $(this);
+      var _wrapper = _container.closest('.reactions-wrapper');
+      clearTimeout(_reactionsHideTimeout);
+      _reactionsHideTimeout = setTimeout(function () {
+        _hide_reactions(_wrapper[0]);
+        _reactionsHideTimeout = null;
+      }, 250);
     }
   });
   $('body').on('click', '.reactions-wrapper', function () {
@@ -2449,7 +2474,7 @@ $(function () {
         /* change reaction-btn-name */
         _parent.find('.reaction-btn-name:first').text(__['React']).removeAttr('style');
         /* change reaction-btn-icon */
-        _parent.find('.reaction-btn-icon:first').html('<i class="far fa-smile fa-lg fa-fw"></i>');
+        _parent.find('.reaction-btn-icon:first').html(__defaultReactionIconHtml);
         /* hide reactions-container */
         _parent.find('.reactions-container:visible').removeAttr('style').hide();
         /* AJAX */
@@ -2518,7 +2543,7 @@ $(function () {
       /* change reaction-btn-name */
       _parent.find('.reaction-btn-name:first').text(__['React']).removeClass('blue red yellow orange');
       /* change reaction-btn-icon */
-      _parent.find('.reaction-btn-icon:first').html('<i class="far fa-smile fa-lg fa-fw"></i>');
+      _parent.find('.reaction-btn-icon:first').html(__defaultReactionIconHtml);
       /* hide reactions-container */
       _parent.find('.reactions-container:visible').removeAttr('style').hide();
       /* AJAX */

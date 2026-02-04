@@ -200,16 +200,26 @@ function initialize() {
 
 // modal
 function modal() {
-    if (arguments[0] == "#modal-login" || arguments[0] == "#chat-calling" || arguments[0] == "#chat-ringing") {
+    var modalId = arguments[0];
+    var staticModals = ["#modal-login", "#chat-calling", "#chat-ringing", "#modal-upload-profile-images", "#modal-require-phone"];
+    var isStaticModal = staticModals.indexOf(modalId) !== -1;
+
+    if (isStaticModal) {
         /* disable the backdrop (don't close modal when click outside) */
         if ($('#modal').data('bs.modal')) {
-            $('#modal').data('bs.modal').options = { backdrop: 'static', keyboard: false };
-        } else {
-            $('#modal').modal({ backdrop: 'static', keyboard: false });
+            $('#modal').data('bs.modal')._config.backdrop = 'static';
+            $('#modal').data('bs.modal')._config.keyboard = false;
         }
     }
+
     /* check if the modal not visible, show it */
-    if (!$('#modal').is(":visible")) $('#modal').modal('show');
+    if (!$('#modal').is(":visible")) {
+        if (isStaticModal) {
+            $('#modal').modal({ backdrop: 'static', keyboard: false });
+        }
+        $('#modal').modal('show');
+    }
+
     /* prepare modal size */
     $('.modal-dialog').removeClass('modal-sm modal-lg modal-xl');
     switch (arguments[2]) {
@@ -223,8 +233,20 @@ function modal() {
             $('.modal-dialog').addClass('modal-xl');
             break;
     }
+
     /* update the modal-content with the rendered template */
     $('.modal-content:last').html(render_template(arguments[0], arguments[1]));
+
+    /* for static modals, ensure settings persist */
+    if (isStaticModal) {
+        setTimeout(function () {
+            if ($('#modal').data('bs.modal')) {
+                $('#modal').data('bs.modal')._config.backdrop = 'static';
+                $('#modal').data('bs.modal')._config.keyboard = false;
+            }
+        }, 50);
+    }
+
     /* initialize modal if the function defined (user logged in) */
     if (typeof initialize_modal === "function") {
         initialize_modal();

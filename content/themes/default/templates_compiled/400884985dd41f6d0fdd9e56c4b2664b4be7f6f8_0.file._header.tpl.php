@@ -1,11 +1,11 @@
 <?php
-/* Smarty version 4.3.4, created on 2025-10-13 04:34:25
+/* Smarty version 4.3.4, created on 2025-11-06 14:08:59
   from '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/_header.tpl' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '4.3.4',
-  'unifunc' => 'content_68ec8151561d46_27974661',
+  'unifunc' => 'content_690cabfb60e562_55170834',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
@@ -26,7 +26,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:_ads.tpl' => 1,
   ),
 ),false)) {
-function content_68ec8151561d46_27974661 (Smarty_Internal_Template $_smarty_tpl) {
+function content_690cabfb60e562_55170834 (Smarty_Internal_Template $_smarty_tpl) {
 $_smarty_tpl->_checkPlugins(array(0=>array('file'=>'/home/sho73359/domains/shop-ai.vn/public_html/vendor/smarty/smarty/libs/plugins/modifier.number_format.php','function'=>'smarty_modifier_number_format',),));
 if (!$_smarty_tpl->tpl_vars['user']->value->_logged_in) {?>
 

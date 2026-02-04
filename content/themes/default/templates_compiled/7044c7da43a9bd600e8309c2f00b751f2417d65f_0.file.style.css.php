@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 4.3.4, created on 2025-10-10 06:56:40
+/* Smarty version 4.3.4, created on 2026-02-02 05:21:22
   from '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/css/style.css' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '4.3.4',
-  'unifunc' => 'content_68e8ae28591c49_20513877',
+  'unifunc' => 'content_69803452a4b591_22333583',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     '7044c7da43a9bd600e8309c2f00b751f2417d65f' => 
     array (
       0 => '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/css/style.css',
-      1 => 1759061293,
+      1 => 1770009664,
       2 => 'file',
     ),
   ),
@@ -20,7 +20,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   array (
   ),
 ),false)) {
-function content_68e8ae28591c49_20513877 (Smarty_Internal_Template $_smarty_tpl) {
+function content_69803452a4b591_22333583 (Smarty_Internal_Template $_smarty_tpl) {
 ?>/**
  * Index:
  *
@@ -67,7 +67,7 @@ function content_68e8ae28591c49_20513877 (Smarty_Internal_Template $_smarty_tpl)
 /* ------------------------------- */
 
 :root {
-  --body-font-family: Poppins, Helvetica, "sans-serif";
+  --body-font-family: Roboto, Arial, Helvetica, sans-serif;
   --body-bg-color: #f0f2f5;
   --body-bg-color-dark: #1E252B;
   --body-color: #111;
@@ -3370,7 +3370,7 @@ body.night-mode .x-image {
 
 /* badges */
 .verified-badge {
-  color: #2196f3;
+  color: #114fee;
 }
 
 /* gray verified badge */
@@ -3396,6 +3396,30 @@ body.night-mode .x-image {
   display: inline-block;
   position: relative;
   top: -0.5px; /* Điều chỉnh thêm để căn chỉnh hoàn hảo */
+}
+
+/* verification badge - profile/page: giống bài post */
+.verified-badge-profile {
+  top: -1px;
+}
+
+.verified-badge-profile svg {
+  top: -0.5px;
+  vertical-align: middle;
+}
+
+.profile-name-wrapper {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
+}
+
+@media (min-width: 992px) {
+  .profile-name-wrapper {
+    justify-content: flex-start;
+  }
 }
 
 /* verification badge tooltips */
@@ -4748,6 +4772,8 @@ body.night-mode .post-snippet {
   margin-top: 10px;
   padding: 6px 16px 6px 16px;
   border-top: 1px solid #f4f4f4;
+  position: relative;
+  z-index: 2;
 }
 
 body.night-mode .post-actions {

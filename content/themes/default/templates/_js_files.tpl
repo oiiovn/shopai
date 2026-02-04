@@ -281,10 +281,10 @@
   <!-- Initialize -->
 
   <!-- Dependencies Libs [jQuery|Bootstrap] -->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js" {if !$user->_logged_in}defer{/if}>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js">
     
   </script>
-  <script src="{$system['system_url']}/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js" {if !$user->_logged_in}defer{/if}>
+  <script src="{$system['system_url']}/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js" defer>
     
   </script>
   <!-- Dependencies Libs [jQuery|Bootstrap] -->
@@ -308,14 +308,14 @@
   <script src="{$system['system_url']}/node_modules/moment/min/moment-with-locales.min.js" {if !$user->_logged_in}defer{/if}>
     
   </script>
-  <script src="https://unpkg.com/video.js@7.21.1/dist/video.min.js" {if !$user->_logged_in}defer{/if}>
+  <script src="https://unpkg.com/video.js@7.21.1/dist/video.min.js" defer>
     
   </script>
-  <link href="https://unpkg.com/@silvermine/videojs-quality-selector/dist/css/quality-selector.css" rel="stylesheet">
-  <script src="https://unpkg.com/@silvermine/videojs-quality-selector/dist/js/silvermine-videojs-quality-selector.min.js" {if !$user->_logged_in}defer{/if}>
+  <link href="https://unpkg.com/@silvermine/videojs-quality-selector/dist/css/quality-selector.css" rel="stylesheet" media="print" onload="this.media='all'">
+  <script src="https://unpkg.com/@silvermine/videojs-quality-selector/dist/js/silvermine-videojs-quality-selector.min.js" defer>
     
   </script>
-  <link href="https://unpkg.com/video.js@7.21.1/dist/video-js.min.css" rel="stylesheet">
+  <link href="https://unpkg.com/video.js@7.21.1/dist/video-js.min.css" rel="stylesheet" media="print" onload="this.media='all'">
   {if $system['auto_play_videos']}
     <script src="{$system['system_url']}/node_modules/jquery-fracs/dist/jquery.fracs.min.js" {if !$user->_logged_in}defer{/if}>
       
@@ -448,8 +448,7 @@
   <!-- Dependencies Plugins -->
 
   <!-- System [JS] -->
-  <script src="{$system['system_url']}/includes/assets/js/core/core.js" {if !$user->_logged_in}defer{/if}>
-    
+  <script src="{$system['system_url']}/includes/assets/js/core/core.js">
   </script>
   {if $user->_logged_in}
     <script src="{$system['system_url']}/includes/assets/js/core/user.js"></script>

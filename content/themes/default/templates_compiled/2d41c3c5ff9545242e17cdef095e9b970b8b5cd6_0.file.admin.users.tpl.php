@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 4.3.4, created on 2025-09-30 02:35:37
+/* Smarty version 4.3.4, created on 2026-01-22 09:30:29
   from '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/admin.users.tpl' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '4.3.4',
-  'unifunc' => 'content_68db41f9211997_77274987',
+  'unifunc' => 'content_6971ee3575ba33_82079959',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     '2d41c3c5ff9545242e17cdef095e9b970b8b5cd6' => 
     array (
       0 => '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/admin.users.tpl',
-      1 => 1759062248,
+      1 => 1769074220,
       2 => 'file',
     ),
   ),
@@ -22,7 +22,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:__svg_icons.tpl' => 4,
   ),
 ),false)) {
-function content_68db41f9211997_77274987 (Smarty_Internal_Template $_smarty_tpl) {
+function content_6971ee3575ba33_82079959 (Smarty_Internal_Template $_smarty_tpl) {
 $_smarty_tpl->_checkPlugins(array(0=>array('file'=>'/home/sho73359/domains/shop-ai.vn/public_html/vendor/smarty/smarty/libs/plugins/modifier.capitalize.php','function'=>'smarty_modifier_capitalize',),1=>array('file'=>'/home/sho73359/domains/shop-ai.vn/public_html/vendor/smarty/smarty/libs/plugins/modifier.date_format.php','function'=>'smarty_modifier_date_format',),2=>array('file'=>'/home/sho73359/domains/shop-ai.vn/public_html/vendor/smarty/smarty/libs/plugins/modifier.number_format.php','function'=>'smarty_modifier_number_format',),));
 ?>
 <div class="card">
@@ -524,6 +524,13 @@ $_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
                   <input type="text" class="form-control" name="user_email" value="<?php echo $_smarty_tpl->tpl_vars['data']->value['user_email'];?>
 ">
                 </div>
+                <?php if ($_smarty_tpl->tpl_vars['data']->value['user_phone']) {?>
+                  <div class="form-text mt-2">
+                    <i class="fas fa-phone mr5"></i><strong><?php echo __("Phone Number");?>
+:</strong> <?php echo $_smarty_tpl->tpl_vars['data']->value['user_phone'];?>
+
+                  </div>
+                <?php }?>
               </div>
             </div>
 
@@ -2129,7 +2136,7 @@ $_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
                       <option value="2">🥈 Silver - 27,000 VNĐ (Min: 1,000,000 VNĐ)</option>
                       <option value="3">🥇 Gold - 23,000 VNĐ (Min: 5,000,000 VNĐ)</option>
                       <option value="4">🏅 Platinum - 20,000 VNĐ (Min: 10,000,000 VNĐ)</option>
-                      <option value="5">🐀𳠠Diamond - 17,000 VNĐ (Min: 20,000,000 VNĐ)</option>
+                      <option value="5">💎 Diamond - 17,000 VNĐ (Min: 20,000,000 VNĐ)</option>
                       <option value="6">❤️‍🔥 Ruby - 14,000 VNĐ (Min: 35,000,000 VNĐ)</option>
                       <option value="7">🪐 Titan - 10,000 VNĐ (Min: 50,000,000 VNĐ)</option>
                       <option value="8">👑 Legend - 5,000 VNĐ (Min: 55,000,000 VNĐ)</option>

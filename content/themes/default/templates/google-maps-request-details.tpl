@@ -141,7 +141,7 @@
                                 <strong>{if $sub.user_firstname}{$sub.user_firstname} {$sub.user_lastname}{else}{$sub.user_name}{/if}</strong>
                                 {if $sub.user_verified}
                                   <span class="verified-badge ml-1">
-                                    {include file='__svg_icons.tpl' icon="verified_badge" width="14px" height="14px"}
+                                    {include file='__svg_icons.tpl' icon="verified_badge" width="15px" height="15px"}
                                   </span>
                                 {/if}
                               </div>

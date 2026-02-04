@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 4.3.4, created on 2025-09-29 06:03:15
+/* Smarty version 4.3.4, created on 2026-02-02 04:24:12
   from '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/images/svg/share.svg' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '4.3.4',
-  'unifunc' => 'content_68da212313cab1_12912087',
+  'unifunc' => 'content_698026ec7ef4e7_08123535',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     '3855b7fe5da684abf21841da0cf53f39535aaa0e' => 
     array (
       0 => '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/images/svg/share.svg',
-      1 => 1685105898,
+      1 => 1770006243,
       2 => 'file',
     ),
   ),
@@ -20,6 +20,6 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   array (
   ),
 ),false)) {
-function content_68da212313cab1_12912087 (Smarty_Internal_Template $_smarty_tpl) {
-?><svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs" width="512" height="512" x="0" y="0" viewBox="0 0 24 24" style="enable-background:new 0 0 512 512" xml:space="preserve" class=""><g><path d="M10 3H7a4 4 0 0 0-4 4v10a4 4 0 0 0 4 4h10a4 4 0 0 0 4-4v-3h-2v3a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h3zm7.586 2-6.293 6.293 1.414 1.414L19 6.414V10h2V4a1 1 0 0 0-1-1h-6v2z" fill="#000000" data-original="#000000"></path></g></svg><?php }
+function content_698026ec7ef4e7_08123535 (Smarty_Internal_Template $_smarty_tpl) {
+?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="90" zoomAndPan="magnify" viewBox="0 0 67.5 67.499996" height="90" preserveAspectRatio="xMidYMid meet" version="1.0"><defs><clipPath id="94565ec06a"><path d="M 0 2.742188 L 67 2.742188 L 67 64.535156 L 0 64.535156 Z M 0 2.742188 " clip-rule="nonzero"/></clipPath></defs><g clip-path="url(#94565ec06a)"><path fill="#545454" d="M 2.109375 64.257812 C 2.054688 64.257812 2 64.253906 1.945312 64.246094 C 1.519531 64.175781 1.179688 63.84375 1.101562 63.417969 C 0.988281 62.8125 0.0273438 57.289062 1.019531 50.21875 C 1.582031 46.199219 2.671875 42.394531 4.25 38.90625 C 6.207031 34.589844 8.933594 30.746094 12.351562 27.476562 C 19.949219 20.214844 28.789062 17.789062 35.171875 17.070312 L 35.171875 3.851562 C 35.171875 3.441406 35.414062 3.070312 35.792969 2.90625 C 36.167969 2.746094 36.605469 2.820312 36.902344 3.101562 L 66.648438 31.175781 C 66.855469 31.371094 66.972656 31.640625 66.972656 31.921875 C 66.972656 32.203125 66.855469 32.476562 66.648438 32.667969 L 36.902344 60.742188 C 36.605469 61.023438 36.167969 61.101562 35.792969 60.9375 C 35.414062 60.777344 35.171875 60.40625 35.171875 59.996094 L 35.171875 44.3125 C 29.367188 44.429688 23.855469 45.808594 18.773438 48.414062 C 9.925781 52.953125 5.097656 59.957031 3.007812 63.730469 C 2.824219 64.058594 2.480469 64.257812 2.109375 64.257812 Z M 37.226562 6.230469 L 37.226562 18 C 37.226562 18.53125 36.820312 18.972656 36.292969 19.019531 C 30.183594 19.574219 21.320312 21.75 13.769531 28.964844 C 7.875 34.597656 4.269531 41.84375 3.054688 50.503906 C 2.5 54.464844 2.582031 57.898438 2.765625 60.175781 C 5.472656 56.078125 10.253906 50.476562 17.835938 46.585938 C 23.445312 43.710938 29.550781 42.25 35.980469 42.25 C 36.054688 42.25 36.128906 42.25 36.203125 42.25 C 36.769531 42.253906 37.226562 42.714844 37.226562 43.277344 L 37.226562 57.613281 L 64.449219 31.921875 Z M 37.226562 6.230469 " fill-opacity="1" fill-rule="nonzero"/></g></svg><?php }
 }

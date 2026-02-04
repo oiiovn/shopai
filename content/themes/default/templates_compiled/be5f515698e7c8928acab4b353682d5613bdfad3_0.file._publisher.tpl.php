@@ -1,11 +1,11 @@
 <?php
-/* Smarty version 4.3.4, created on 2025-09-29 06:03:14
+/* Smarty version 4.3.4, created on 2025-11-06 14:08:59
   from '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/_publisher.tpl' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '4.3.4',
-  'unifunc' => 'content_68da2122de2b82_88449656',
+  'unifunc' => 'content_690cabfb8f5da8_18523034',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
@@ -22,7 +22,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:__categories.recursive_options.tpl' => 1,
   ),
 ),false)) {
-function content_68da2122de2b82_88449656 (Smarty_Internal_Template $_smarty_tpl) {
+function content_690cabfb8f5da8_18523034 (Smarty_Internal_Template $_smarty_tpl) {
 ?><div class="publisher-overlay"></div>
 
 <div class="x-form publisher" data-handle="<?php echo $_smarty_tpl->tpl_vars['_handle']->value;?>

@@ -18,7 +18,7 @@
         </span>
         {if $_user['user_verified']}
           <span class="verified-badge" data-bs-toggle="tooltip" title='{__("Verified User")}'>
-            {include file='__svg_icons.tpl' icon="verified_badge" width="20px" height="20px"}
+            {include file='__svg_icons.tpl' icon="verified_badge" width="15px" height="15px"}
           </span>
         {/if}
         {if $_user['user_subscribed']}
@@ -256,7 +256,7 @@
           </span>
           {if $_user['user_verified']}
             <span class="verified-badge" data-bs-toggle="tooltip" title='{__("Verified User")}'>
-              {include file='__svg_icons.tpl' icon="verified_badge" width="20px" height="20px"}
+              {include file='__svg_icons.tpl' icon="verified_badge" width="15px" height="15px"}
             </span>
           {/if}
           {if $_user['user_subscribed']}

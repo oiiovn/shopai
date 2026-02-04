@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 4.3.4, created on 2025-09-29 13:05:06
+/* Smarty version 4.3.4, created on 2025-10-28 12:24:03
   from '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/submit-proof.tpl' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '4.3.4',
-  'unifunc' => 'content_68da840224e918_64322560',
+  'unifunc' => 'content_6900b5e3befd71_03561836',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     '4d2eae787cddfa1606cf29eccbc077379e4fa895' => 
     array (
       0 => '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/submit-proof.tpl',
-      1 => 1759064125,
+      1 => 1761654241,
       2 => 'file',
     ),
   ),
@@ -22,7 +22,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:_footer.tpl' => 1,
   ),
 ),false)) {
-function content_68da840224e918_64322560 (Smarty_Internal_Template $_smarty_tpl) {
+function content_6900b5e3befd71_03561836 (Smarty_Internal_Template $_smarty_tpl) {
 $_smarty_tpl->_checkPlugins(array(0=>array('file'=>'/home/sho73359/domains/shop-ai.vn/public_html/vendor/smarty/smarty/libs/plugins/modifier.number_format.php','function'=>'smarty_modifier_number_format',),));
 $_smarty_tpl->_subTemplateRender('file:_head.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array(), 0, false);
 ?>
@@ -80,7 +80,7 @@ $_smarty_tpl->_subTemplateRender('file:_head.tpl', $_smarty_tpl->cache_id, $_sma
                             <div class="form-group mb20">
                                 <label for="screenshot">Hình ảnh chụp màn hình đánh giá:</label>
                                 <input type="file" class="form-control" id="screenshot" name="screenshot" accept="image/*" required>
-                                <small class="form-text text-muted">Chọn 1 hình ảnh chụp màn hình đánh giá (JPEG, PNG, GIF - tối đa 5MB)</small>
+                                <small class="form-text text-muted">Chọn 1 hình ảnh chụp màn hình đánh giá (JPEG, PNG, GIF)</small>
                             </div>
                             
                             <div class="form-group mb20">
@@ -282,14 +282,6 @@ if (submitForm) {
         const screenshot = document.getElementById('screenshot').files[0];
         if (!screenshot) {
             showMessage('error', 'Vui lòng chọn ảnh chụp màn hình!');
-            resetForm();
-            return;
-        }
-        
-        // Kiểm tra kích thước file
-        const maxSize = 5 * 1024 * 1024; // 5MB
-        if (screenshot.size > maxSize) {
-            showMessage('error', 'Ảnh quá lớn! Vui lòng chọn ảnh nhỏ hơn 5MB.');
             resetForm();
             return;
         }

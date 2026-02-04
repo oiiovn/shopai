@@ -1,29 +1,29 @@
 <?php
-/* Smarty version 4.3.4, created on 2025-09-29 10:04:59
+/* Smarty version 4.3.4, created on 2026-02-02 04:47:30
   from '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/__feeds_post_photo.tpl' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '4.3.4',
-  'unifunc' => 'content_68da59cbebf080_50880703',
+  'unifunc' => 'content_69802c620bc043_74128932',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     '3b7deb0a03475fd6e505674748f1d4b67495f81f' => 
     array (
       0 => '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/__feeds_post_photo.tpl',
-      1 => 1692279972,
+      1 => 1770005587,
       2 => 'file',
     ),
   ),
   'includes' => 
   array (
-    'file:__svg_icons.tpl' => 5,
+    'file:__svg_icons.tpl' => 6,
     'file:__reaction_emojis.tpl' => 3,
     'file:__feeds_post.comments.tpl' => 1,
   ),
 ),false)) {
-function content_68da59cbebf080_50880703 (Smarty_Internal_Template $_smarty_tpl) {
+function content_69802c620bc043_74128932 (Smarty_Internal_Template $_smarty_tpl) {
 ?><!-- post body -->
 <div class="post-body <?php if ($_smarty_tpl->tpl_vars['_lightbox']->value) {?>pt0<?php }?>">
 
@@ -64,7 +64,7 @@ echo __("Verified User");
 } else {
 echo __("Verified Page");
 }?>'>
-            <?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"verified_badge",'width'=>"20px",'height'=>"20px"), 0, true);
+            <?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"verified_badge",'width'=>"15px",'height'=>"15px"), 0, true);
 ?>
           </span>
         <?php }?>
@@ -208,9 +208,10 @@ $_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
         <div class="reaction-btn">
           <?php if (!$_smarty_tpl->tpl_vars['photo']->value['i_react']) {?>
             <div class="reaction-btn-icon">
-              <i class="far fa-smile fa-fw action-icon"></i>
+              <?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"smile",'class'=>"action-icon",'width'=>"24px",'height'=>"24px"), 0, true);
+?>
             </div>
-            <span class="reaction-btn-name d-none d-xl-inline-block"><?php echo __("React");?>
+            <span class="reaction-btn-name d-none"><?php echo __("React");?>
 </span>
           <?php } else { ?>
             <div class="reaction-btn-icon">
@@ -219,7 +220,7 @@ $_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
 ?>
               </div>
             </div>
-            <span class="reaction-btn-name" style="color: <?php echo $_smarty_tpl->tpl_vars['reactions']->value[$_smarty_tpl->tpl_vars['photo']->value['i_reaction']]['color'];?>
+            <span class="reaction-btn-name d-none" style="color: <?php echo $_smarty_tpl->tpl_vars['reactions']->value[$_smarty_tpl->tpl_vars['photo']->value['i_reaction']]['color'];?>
 ;"><?php echo __($_smarty_tpl->tpl_vars['reactions']->value[$_smarty_tpl->tpl_vars['photo']->value['i_reaction']]['title']);?>
 </span>
           <?php }?>
@@ -258,7 +259,7 @@ $_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
       <span class="action-btn js_comment <?php if ($_smarty_tpl->tpl_vars['post']->value['comments_disabled']) {?>x-hidden<?php }?>">
         <?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"comment",'class'=>"action-icon mr5",'width'=>"16px",'height'=>"16px"), 0, true);
 ?>
-        <span class="d-none d-xl-inline-block"><?php echo __("Comment");?>
+        <span class="d-none"><?php echo __("Comment");?>
 </span>
       </span>
       <!-- comment -->
@@ -270,7 +271,7 @@ $_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
 ">
           <?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"share",'class'=>"action-icon mr5",'width'=>"16px",'height'=>"16px"), 0, true);
 ?>
-          <span class="d-none d-xl-inline-block"><?php echo __("Share");?>
+          <span class="d-none"><?php echo __("Share");?>
 </span>
         </div>
       <?php }?>

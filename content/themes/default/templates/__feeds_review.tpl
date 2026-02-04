@@ -13,12 +13,12 @@
       </span>
       {if $_review['user_verified']}
         <span class="verified-badge" data-bs-toggle="tooltip" title='{__("Verified User")}'>
-          {include file='__svg_icons.tpl' icon="verified_badge" width="20px" height="20px"}
+          {include file='__svg_icons.tpl' icon="verified_badge" width="15px" height="15px"}
         </span>
       {/if}
       {if $_review['user_subscribed']}
         <span class="pro-badge" data-bs-toggle="tooltip" title='{__("Pro User")}'>
-          {include file='__svg_icons.tpl' icon="pro_badge" width="20px" height="20px"}
+          {include file='__svg_icons.tpl' icon="pro_badge" width="15px" height="15px"}
         </span>
       {/if}
     </div>
@@ -71,11 +71,11 @@
               </span>
               {if $_review['page_verified'] == '1'}
                 <span class="verified-badge" data-bs-toggle="tooltip" title='{__("Verified Page")}'>
-                  {include file='__svg_icons.tpl' icon="verified_badge" width="20px" height="20px"}
+                  {include file='__svg_icons.tpl' icon="verified_badge" width="15px" height="15px"}
                 </span>
               {elseif $_review['page_verified'] == '2'}
                 <span class="verified-badge-gray" data-bs-toggle="tooltip" title='{__("Business Verified")}'>
-                  {include file='__svg_icons.tpl' icon="verified_badge_gray" width="20px" height="20px"}
+                  {include file='__svg_icons.tpl' icon="verified_badge_gray" width="15px" height="15px"}
                 </span>
               {/if}
             </div>

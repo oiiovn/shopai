@@ -1,11 +1,11 @@
 <?php
-/* Smarty version 4.3.4, created on 2025-09-29 11:09:59
+/* Smarty version 4.3.4, created on 2025-11-06 14:08:59
   from '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/phuong_nhi_widget.tpl' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '4.3.4',
-  'unifunc' => 'content_68da69075dc6d6_87194810',
+  'unifunc' => 'content_690cabfbebb794_90279749',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
@@ -20,7 +20,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   array (
   ),
 ),false)) {
-function content_68da69075dc6d6_87194810 (Smarty_Internal_Template $_smarty_tpl) {
+function content_690cabfbebb794_90279749 (Smarty_Internal_Template $_smarty_tpl) {
 ?><div id="chatgpt-widget" class="chatgpt-widget">
         <div id="chatgpt-toggle" class="chatgpt-toggle">
         <img src="src="/TCSN/Script/content/uploads/photos/2025/09/sngine_fe74c972cc54d5d8a5169d0807eb26c7_cropped.jpg?v=1" alt="Phương Nhi" class="toggle-avatar" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">

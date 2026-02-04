@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 4.3.4, created on 2025-09-29 06:03:15
+/* Smarty version 4.3.4, created on 2026-01-31 14:36:36
   from '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/__feeds_post.body.tpl' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '4.3.4',
-  'unifunc' => 'content_68da21230d4ff6_13550398',
+  'unifunc' => 'content_697e1374c96350_93360293',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     'c3060a3cd06c1644affb8f485024b81bcbeb7cb6' => 
     array (
       0 => '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/__feeds_post.body.tpl',
-      1 => 1758365288,
+      1 => 1769870193,
       2 => 'file',
     ),
   ),
@@ -26,7 +26,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:_need_subscription.tpl' => 1,
   ),
 ),false)) {
-function content_68da21230d4ff6_13550398 (Smarty_Internal_Template $_smarty_tpl) {
+function content_697e1374c96350_93360293 (Smarty_Internal_Template $_smarty_tpl) {
 $_smarty_tpl->_checkPlugins(array(0=>array('file'=>'/home/sho73359/domains/shop-ai.vn/public_html/vendor/smarty/smarty/libs/plugins/modifier.truncate.php','function'=>'smarty_modifier_truncate',),1=>array('file'=>'/home/sho73359/domains/shop-ai.vn/public_html/vendor/smarty/smarty/libs/plugins/modifier.date_format.php','function'=>'smarty_modifier_date_format',),));
 ?>
 <!-- post header -->
@@ -406,7 +406,7 @@ echo __("Verified User");
 } else {
 echo __("Verified Page");
 }?>'>
-          <?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"verified_badge",'width'=>"20px",'height'=>"20px"), 0, true);
+          <?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"verified_badge",'width'=>"15px",'height'=>"15px"), 0, true);
 ?>
         </span>
       <?php } elseif ($_smarty_tpl->tpl_vars['_post']->value['post_author_verified'] == '2') {?>
@@ -415,7 +415,7 @@ echo __("Verified Business");
 } else {
 echo __("Business Verified");
 }?>'>
-          <?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"verified_badge_gray",'width'=>"20px",'height'=>"20px"), 0, true);
+          <?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"verified_badge_gray",'width'=>"15px",'height'=>"15px"), 0, true);
 ?>
         </span>
       <?php }?>
@@ -758,6 +758,10 @@ echo __("is");?>
  <?php echo __("Custom People");?>
 '></i>
           <?php }?>
+        <?php }?>
+        <?php if ($_smarty_tpl->tpl_vars['_post']->value['user_type'] == 'user' && $_smarty_tpl->tpl_vars['_post']->value['user_current_city']) {?>
+          - <span><?php echo $_smarty_tpl->tpl_vars['_post']->value['user_current_city'];?>
+</span>
         <?php }?>
       <?php }?>
       <?php if ($_smarty_tpl->tpl_vars['_post']->value['for_subscriptions']) {?>

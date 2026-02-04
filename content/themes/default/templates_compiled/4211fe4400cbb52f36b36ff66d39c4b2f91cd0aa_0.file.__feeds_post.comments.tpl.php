@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 4.3.4, created on 2025-09-29 06:03:15
+/* Smarty version 4.3.4, created on 2026-01-31 14:39:13
   from '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/__feeds_post.comments.tpl' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '4.3.4',
-  'unifunc' => 'content_68da2123152878_90824252',
+  'unifunc' => 'content_697e1411025ff2_20153184',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     '4211fe4400cbb52f36b36ff66d39c4b2f91cd0aa' => 
     array (
       0 => '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/__feeds_post.comments.tpl',
-      1 => 1684863814,
+      1 => 1769870313,
       2 => 'file',
     ),
   ),
@@ -22,7 +22,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:__feeds_comment.tpl' => 2,
   ),
 ),false)) {
-function content_68da2123152878_90824252 (Smarty_Internal_Template $_smarty_tpl) {
+function content_697e1411025ff2_20153184 (Smarty_Internal_Template $_smarty_tpl) {
 ?><div class="post-comments">
   <?php if ($_smarty_tpl->tpl_vars['_is_photo']->value) {?>
 

@@ -47,8 +47,16 @@ try {
       if (strtotime(set_datetime($_POST['end_date'])) < strtotime(set_datetime($_POST['start_date']))) {
         throw new Exception(__("End Date must be after the Start Date"));
       }
+      
+      /* Convert HCM time to UTC for database storage */
+      // Admin nhập giờ VN (UTC+7), trừ 7 giờ để lưu thành UTC
+      $start_timestamp = strtotime(set_datetime($_POST['start_date'])) - (7 * 3600);
+      $end_timestamp = strtotime(set_datetime($_POST['end_date'])) - (7 * 3600);
+      $start_date_utc = date('Y-m-d H:i:s', $start_timestamp);
+      $end_date_utc = date('Y-m-d H:i:s', $end_timestamp);
+      
       /* update */
-      $db->query(sprintf("UPDATE announcements SET name = %s, title = %s, type = %s, code = %s, start_date = %s, end_date = %s WHERE announcement_id = %s", secure($_POST['name']), secure($_POST['title']), secure($_POST['type']), secure($_POST['code']), secure($_POST['start_date'], 'datetime'), secure($_POST['end_date'], 'datetime'), secure($_GET['id'], 'int'))) or _error('SQL_ERROR_THROWEN');
+      $db->query(sprintf("UPDATE announcements SET name = %s, title = %s, type = %s, code = %s, start_date = %s, end_date = %s WHERE announcement_id = %s", secure($_POST['name']), secure($_POST['title']), secure($_POST['type']), secure($_POST['code']), secure($start_date_utc, 'datetime'), secure($end_date_utc, 'datetime'), secure($_GET['id'], 'int'))) or _error('SQL_ERROR_THROWEN');
       /* return */
       return_json(array('success' => true, 'message' => __("Announcement info have been updated")));
       break;
@@ -70,8 +78,16 @@ try {
       if (strtotime(set_datetime($_POST['end_date'])) < strtotime(set_datetime($_POST['start_date']))) {
         throw new Exception(__("End Date must be after the Start Date"));
       }
+      
+      /* Convert HCM time to UTC for database storage */
+      // Admin nhập giờ VN (UTC+7), trừ 7 giờ để lưu thành UTC
+      $start_timestamp = strtotime(set_datetime($_POST['start_date'])) - (7 * 3600);
+      $end_timestamp = strtotime(set_datetime($_POST['end_date'])) - (7 * 3600);
+      $start_date_utc = date('Y-m-d H:i:s', $start_timestamp);
+      $end_date_utc = date('Y-m-d H:i:s', $end_timestamp);
+      
       /* insert */
-      $db->query(sprintf("INSERT INTO announcements (name, title, type, code, start_date, end_date) VALUES (%s, %s, %s, %s, %s, %s)", secure($_POST['name']), secure($_POST['title']), secure($_POST['type']), secure($_POST['code']), secure($_POST['start_date'], 'datetime'), secure($_POST['end_date'], 'datetime'))) or _error('SQL_ERROR_THROWEN');
+      $db->query(sprintf("INSERT INTO announcements (name, title, type, code, start_date, end_date) VALUES (%s, %s, %s, %s, %s, %s)", secure($_POST['name']), secure($_POST['title']), secure($_POST['type']), secure($_POST['code']), secure($start_date_utc, 'datetime'), secure($end_date_utc, 'datetime'))) or _error('SQL_ERROR_THROWEN');
       /* return */
       return_json(array('callback' => 'window.location = "' . $system['system_url'] . '/' . $control_panel['url'] . '/announcements";'));
       break;

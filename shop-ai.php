@@ -40,6 +40,41 @@ function getAllRanksFromDB() {
     }
 }
 
+/**
+ * Get admin info for contact
+ */
+function getAdminInfo() {
+    global $db;
+    
+    try {
+        // Get first admin (user_group = 1)
+        $get_admin = $db->query("
+            SELECT user_id, user_name, user_firstname, user_lastname, user_gender, user_picture, user_verified, user_phone
+            FROM users 
+            WHERE user_group = 1 
+            ORDER BY user_id ASC 
+            LIMIT 1
+        ");
+        
+        if ($get_admin && $get_admin->num_rows > 0) {
+            $admin = $get_admin->fetch_assoc();
+            $admin['user_picture'] = get_picture($admin['user_picture'], $admin['user_gender']);
+            $admin['name'] = $admin['user_firstname'] . ' ' . $admin['user_lastname'];
+            if (empty(trim($admin['name']))) {
+                $admin['name'] = $admin['user_name'];
+            }
+            // Zalo number (có thể lưu trong user_phone hoặc field riêng)
+            $admin['zalo'] = $admin['user_phone'] ?? '';
+            return $admin;
+        }
+        
+        return null;
+    } catch (Exception $e) {
+        error_log("Error getting admin info: " . $e->getMessage());
+        return null;
+    }
+}
+
 // Handle API requests
 if (isset($_GET['action']) || (isset($_SERVER['CONTENT_TYPE']) && strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== false)) {
     handleAPIRequest();
@@ -201,9 +236,8 @@ function checkUserPhoneByUsername($username) {
 function callChecksoAPI($username, $phone = '99') {
     $api_token = '1770dd4e380567afd3668f8a9be69c21c587e08da9c5b75b5269174291ec7076';
     
-    // Try multiple endpoints (HTTP and HTTPS)
+    // Try HTTPS endpoint
     $endpoints = [
-        'http://checkso.pro/search_users_advanced',
         'https://checkso.pro/search_users_advanced'
     ];
     
@@ -227,8 +261,8 @@ function callChecksoAPI($username, $phone = '99') {
             'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
         ]);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 60);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 300); // 5 minutes timeout
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30); // Connection timeout
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
@@ -1013,83 +1047,28 @@ try {
         } // End of login check else
       }
       
+      // Get admin info for contact
+      $admin_info = getAdminInfo();
+      
       // Assign variables to template
       $smarty->assign('is_logged_in', $is_logged_in);
       $smarty->assign('current_balance', $current_balance);
       $smarty->assign('user_rank', $user_rank);
       $smarty->assign('check_history', $check_history);
       $smarty->assign('check_result', $check_result);
+      $smarty->assign('admin_info', $admin_info);
       break;
 
     case 'recharge':
-      // page header
-      page_header(__("Nạp tiền") . ' | ' . __($system['system_title']));
-      
-      // Get current balance for user
-      $user_id = $user->_data['user_id'];
-      $current_balance = getUserBalance($user_id);
-      
-      // Assign balance to template
-      $smarty->assign('current_balance', $current_balance);
-      
-      // handle recharge form submission
-      if (isset($_POST['submit'])) {
-        $amount = $_POST['amount'];
-        
-        // Generate unique content for each user and time
-        $timestamp = time();
-        $random_string = substr(md5(uniqid(rand(), true)), 0, 8);
-        $qr_content = "RZ" . $user_id . $timestamp . $random_string;
-        
-        // Generate QR code using VietQR API
-        $qr_data = generateVietQR($amount, $qr_content);
-        
-        // Lưu QR code mapping vào database
-        saveQRCodeMapping($qr_content, $user_id, $amount);
-        
-        // Assign variables to template
-        $smarty->assign('qr_data', $qr_data);
-        $smarty->assign('qr_content', $qr_content);
-        $smarty->assign('amount', $amount);
-      }
+      // Redirect to finance page
+      header("Location: " . $system['system_url'] . "/finance/recharge");
+      exit;
       break;
 
     case 'transactions':
-      // page header
-      page_header(__("Lịch Sử Giao Dịch Shop-AI") . ' | ' . __($system['system_title']));
-      
-      // Get current user info
-      $user_id = $user->_data['user_id'];
-      $current_balance = getUserBalance($user_id);
-      
-      // Pagination parameters
-      $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
-      $per_page = 10; // 10 giao dịch mỗi trang
-      $offset = ($page - 1) * $per_page;
-      
-      // Get transactions with pagination
-      $shop_ai_transactions = getShopAITransactionsPaginated($user_id, $per_page, $offset);
-      
-      // Get total count for pagination
-      $total_transactions = getTotalShopAITransactions($user_id);
-      $total_pages = ceil($total_transactions / $per_page);
-      
-      // Pagination info
-      $pagination = [
-        'current_page' => $page,
-        'per_page' => $per_page,
-        'total_items' => $total_transactions,
-        'total_pages' => $total_pages,
-        'has_prev' => $page > 1,
-        'has_next' => $page < $total_pages,
-        'prev_page' => $page - 1,
-        'next_page' => $page + 1
-      ];
-      
-      // Assign variables to template
-      $smarty->assign('current_balance', $current_balance);
-      $smarty->assign('shop_ai_transactions', $shop_ai_transactions);
-      $smarty->assign('pagination', $pagination);
+      // Redirect to finance page
+      header("Location: " . $system['system_url'] . "/finance/transactions");
+      exit;
       break;
 
     case 'history':
@@ -1118,6 +1097,9 @@ try {
       // Get statistics
       $stats = getPhoneCheckStats($user_id);
       
+      // Get admin info for contact
+      $admin_info = getAdminInfo();
+      
       // Assign variables to template
       $smarty->assign('current_balance', $current_balance);
       $smarty->assign('history', $history);
@@ -1135,6 +1117,7 @@ try {
         'date_to' => $date_to,
         'limit' => $limit
       ]);
+      $smarty->assign('admin_info', $admin_info);
       break;
 
     case 'bank-accounts':

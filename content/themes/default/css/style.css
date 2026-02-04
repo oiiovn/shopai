@@ -44,7 +44,7 @@
 /* ------------------------------- */
 
 :root {
-  --body-font-family: Poppins, Helvetica, "sans-serif";
+  --body-font-family: Roboto, Arial, Helvetica, sans-serif;
   --body-bg-color: #f0f2f5;
   --body-bg-color-dark: #1E252B;
   --body-color: #111;
@@ -3347,7 +3347,7 @@ body.night-mode .x-image {
 
 /* badges */
 .verified-badge {
-  color: #2196f3;
+  color: #114fee;
 }
 
 /* gray verified badge */
@@ -3373,6 +3373,46 @@ body.night-mode .x-image {
   display: inline-block;
   position: relative;
   top: -0.5px; /* Điều chỉnh thêm để căn chỉnh hoàn hảo */
+}
+
+/* verification badge - profile/page: giống bài post */
+.verified-badge-profile {
+  top: -1px;
+}
+
+.verified-badge-profile svg {
+  top: -0.5px;
+  vertical-align: middle;
+}
+
+.profile-name-wrapper {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
+}
+
+@media (min-width: 992px) {
+  .profile-name-wrapper {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 991px) {
+  .profile-name-wrapper {
+    width: 100%;
+    display: block;
+    text-align: center;
+  }
+  .profile-buttons-wrapper {
+    width: 100%;
+    text-align: center;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+  }
 }
 
 /* verification badge tooltips */

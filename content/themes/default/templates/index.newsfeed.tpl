@@ -697,12 +697,16 @@
     align-items: center;
 }
 
-/* Horizontal scroll container */
+/* Grid 2 hàng scroll ngang */
 .review-tasks-horizontal-scroll {
-    display: flex;
-    overflow-x: auto;
-    gap: 15px;
+    display: grid;
+    grid-template-rows: repeat(2, 120px); /* 2 hàng cố định */
+    grid-auto-flow: column; /* Items flow theo cột (ngang) */
+    grid-auto-columns: 350px; /* Mỗi cột rộng 350px */
+    gap: 12px 15px; /* Gap: row column */
     padding: 0 0 9px 0;
+    overflow-x: auto; /* Scroll ngang */
+    overflow-y: hidden;
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
 }
@@ -718,6 +722,7 @@
     padding-bottom: 0 !important;
 }
 
+/* Scrollbar cho horizontal scroll */
 .review-tasks-horizontal-scroll::-webkit-scrollbar {
     height: 6px;
 }
@@ -737,9 +742,8 @@
 }
 
 .review-task-item {
-    flex: 0 0 350px;
-    min-width: 350px;
     height: 120px;
+    width: 350px;
 }
 
 </style>

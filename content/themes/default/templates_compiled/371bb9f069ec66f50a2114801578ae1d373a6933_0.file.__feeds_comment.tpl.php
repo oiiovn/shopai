@@ -1,30 +1,30 @@
 <?php
-/* Smarty version 4.3.4, created on 2025-09-29 06:03:15
+/* Smarty version 4.3.4, created on 2026-02-02 04:14:28
   from '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/__feeds_comment.tpl' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '4.3.4',
-  'unifunc' => 'content_68da212318eca4_53542013',
+  'unifunc' => 'content_698024a4927369_64435053',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     '371bb9f069ec66f50a2114801578ae1d373a6933' => 
     array (
       0 => '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/__feeds_comment.tpl',
-      1 => 1758365288,
+      1 => 1770005655,
       2 => 'file',
     ),
   ),
   'includes' => 
   array (
-    'file:__svg_icons.tpl' => 5,
+    'file:__svg_icons.tpl' => 6,
     'file:__feeds_comment.text.tpl' => 1,
     'file:__reaction_emojis.tpl' => 3,
     'file:__feeds_comment.tpl' => 2,
   ),
 ),false)) {
-function content_68da212318eca4_53542013 (Smarty_Internal_Template $_smarty_tpl) {
+function content_698024a4927369_64435053 (Smarty_Internal_Template $_smarty_tpl) {
 ?><li>
   <div class="comment <?php if ($_smarty_tpl->tpl_vars['_is_reply']->value) {?>reply<?php }?>" data-id="<?php echo $_smarty_tpl->tpl_vars['_comment']->value['comment_id'];?>
 " id="comment_<?php echo $_smarty_tpl->tpl_vars['_comment']->value['comment_id'];?>
@@ -81,7 +81,7 @@ echo __("Verified User");
 } else {
 echo __("Verified Page");
 }?>'>
-                <?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"verified_badge",'width'=>"20px",'height'=>"20px"), 0, false);
+                <?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"verified_badge",'width'=>"15px",'height'=>"15px"), 0, false);
 ?>
               </span>
             <?php } elseif ($_smarty_tpl->tpl_vars['_comment']->value['author_verified'] == '2') {?>
@@ -90,7 +90,7 @@ echo __("Verified Business");
 } else {
 echo __("Business Verified");
 }?>'>
-                <?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"verified_badge_gray",'width'=>"20px",'height'=>"20px"), 0, true);
+                <?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"verified_badge_gray",'width'=>"15px",'height'=>"15px"), 0, true);
 ?>
               </span>
             <?php }?>
@@ -98,7 +98,7 @@ echo __("Business Verified");
               <span class="pro-badge" data-bs-toggle="tooltip" title='<?php echo __($_smarty_tpl->tpl_vars['_comment']->value['package_name']);?>
  <?php echo __('Member');?>
 '>
-                <?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"pro_badge",'width'=>"20px",'height'=>"20px"), 0, true);
+                <?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"pro_badge",'width'=>"15px",'height'=>"15px"), 0, true);
 ?>
               </span>
             <?php }?>
@@ -123,9 +123,10 @@ echo __("Business Verified");
             <div class="reaction-btn">
               <?php if (!$_smarty_tpl->tpl_vars['_comment']->value['i_react']) {?>
                 <div class="reaction-btn-icon d-none">
-                  <i class="fa fa-smile fa-fw"></i>
+                  <?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"smile",'class'=>"action-icon",'width'=>"16px",'height'=>"16px"), 0, true);
+?>
                 </div>
-                <span class="reaction-btn-name text-link"><?php echo __("React");?>
+                <span class="reaction-btn-name text-link d-none"><?php echo __("React");?>
 </span>
               <?php } else { ?>
                 <div class="reaction-btn-icon d-none">
@@ -134,7 +135,7 @@ echo __("Business Verified");
 ?>
                   </div>
                 </div>
-                <span class="reaction-btn-name text-link" style="color: <?php echo $_smarty_tpl->tpl_vars['reactions']->value[$_smarty_tpl->tpl_vars['_comment']->value['i_reaction']]['color'];?>
+                <span class="reaction-btn-name text-link d-none" style="color: <?php echo $_smarty_tpl->tpl_vars['reactions']->value[$_smarty_tpl->tpl_vars['_comment']->value['i_reaction']]['color'];?>
 ;"><?php echo __($_smarty_tpl->tpl_vars['reactions']->value[$_smarty_tpl->tpl_vars['_comment']->value['i_reaction']]['title']);?>
 </span>
               <?php }?>
@@ -150,7 +151,7 @@ $_smarty_tpl->tpl_vars['reaction']->do_else = true;
 if ($_from !== null) foreach ($_from as $_smarty_tpl->tpl_vars['reaction']->value) {
 $_smarty_tpl->tpl_vars['reaction']->do_else = false;
 $_smarty_tpl->tpl_vars['reaction']->iteration++;
-$__foreach_reaction_28_saved = $_smarty_tpl->tpl_vars['reaction'];
+$__foreach_reaction_0_saved = $_smarty_tpl->tpl_vars['reaction'];
 ?>
                 <div class="reactions_item reaction reaction-<?php echo $_smarty_tpl->tpl_vars['reaction']->iteration;?>
  js_react-comment" data-reaction="<?php echo $_smarty_tpl->tpl_vars['reaction']->value['reaction'];?>
@@ -161,7 +162,7 @@ $__foreach_reaction_28_saved = $_smarty_tpl->tpl_vars['reaction'];
 ?>
                 </div>
               <?php
-$_smarty_tpl->tpl_vars['reaction'] = $__foreach_reaction_28_saved;
+$_smarty_tpl->tpl_vars['reaction'] = $__foreach_reaction_0_saved;
 }
 $_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
             </div>

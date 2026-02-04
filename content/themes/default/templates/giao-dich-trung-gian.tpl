@@ -7,12 +7,28 @@
       {include file='_sidebar.tpl'}
     </div>
     <div class="col-12 sg-offcanvas-mainbar">
+      <div class="gdtg-tabs-bar mb-4">
+        <nav class="gdtg-tabs nav nav-fill" role="tablist">
+          <a class="nav-link active" href="{$system['system_url']}/giao-dich-trung-gian"><i class="fa fa-info-circle gdtg-tabs-ico"></i> Giới thiệu</a>
+          <a class="nav-link" href="{$system['system_url']}/giao-dich-trung-gian/list"><i class="fa fa-list-ul gdtg-tabs-ico"></i> Danh sách giao dịch</a>
+          <a class="nav-link" href="{$system['system_url']}/giao-dich-trung-gian/create"><i class="fa fa-plus-circle gdtg-tabs-ico"></i> Tạo giao dịch</a>
+        </nav>
+      </div>
+      <style>
+      .gdtg-tabs-bar { background: #f1f5f9; border-radius: 12px; padding: 6px; box-shadow: 0 1px 3px rgba(0,0,0,.06); }
+      .gdtg-tabs { display: flex; flex-wrap: wrap; gap: 4px; border: none; }
+      .gdtg-tabs .nav-link { border: none; border-radius: 10px; padding: 0.65rem 1.1rem; font-weight: 500; color: #64748b; transition: background .2s, color .2s; }
+      .gdtg-tabs .nav-link:hover { color: #1e40af; background: rgba(255,255,255,.9); }
+      .gdtg-tabs .nav-link.active { background: #2563eb; color: #fff; font-weight: 600; }
+      .gdtg-tabs-ico { margin-right: 0.4rem; opacity: .9; }
+      @media (max-width: 575px) { .gdtg-tabs .nav-link { padding: 0.5rem 0.75rem; font-size: 0.9rem; } .gdtg-tabs-ico { margin-right: 0.25rem; } }
+      </style>
+
       <div class="card shadow">
         <div class="card-body text-with-list" style="font-size: 1.05rem; line-height: 1.7;">
 
           <h1 class="mb20 text-primary">🔥 GIAO DỊCH ONLINE KHÔNG CÒN "NIỀM TIN MÙ"</h1>
           <p class="lead">Một tính năng trung gian được xây dựng vì cộng đồng – chống lừa đảo – minh bạch từng đồng</p>
-
           <h3 class="mt25 mb10">Bạn đã từng:</h3>
           <ul>
             <li>Chuyển tiền xong… bên kia mất hút?</li>
@@ -72,6 +88,20 @@
           <p>Nếu bạn: ✔️ Từng bị lừa | ✔️ Từng sợ khi giao dịch online | ✔️ Muốn một môi trường mua bán minh bạch hơn<br>
           👉 Bạn đang ở đúng chỗ.</p>
 
+          <h3 class="mt25 mb15">📋 Tài liệu & chính sách</h3>
+          <p class="mb15">Các trang sau nằm trong trang chính Giao Dịch Trung Gian – mở trong tab mới nếu cần:</p>
+          <ul class="list-unstyled">
+            <li class="mb10">
+              <a href="{$system['system_url']}/giao-dich-trung-gian/terms"><i class="fa fa-file-alt mr5 text-primary"></i><strong>📜 Điều khoản dịch vụ (Terms of Service – TOS)</strong></a>
+            </li>
+            <li class="mb10">
+              <a href="{$system['system_url']}/giao-dich-trung-gian/fees"><i class="fa fa-percent mr5 text-primary"></i><strong>💰 Chính sách phí & thuế</strong></a>
+            </li>
+            <li class="mb10">
+              <a href="{$system['system_url']}/giao-dich-trung-gian/privacy"><i class="fa fa-shield-alt mr5 text-primary"></i><strong>🔐 Chính sách bảo mật</strong></a>
+            </li>
+          </ul>
+
           <h3 class="mt25 mb15">🚀 Tham gia cùng chúng tôi ngay từ đầu</h3>
 
           <div class="row mt20 mb20">
@@ -120,7 +150,7 @@
 
 <script>
 (function() {
-  var systemUrl = '{$system['system_url']}';
+  var ajaxUrl = 'includes/ajax/escrow-feedback.php';
   document.querySelectorAll('.js-escrow-feedback').forEach(function(btn) {
     btn.addEventListener('click', function() {
       var type = this.getAttribute('data-type');
@@ -131,17 +161,24 @@
       var fd = new FormData();
       fd.append('type', type);
       fd.append('message', message || '');
-      fetch(systemUrl + '/includes/ajax/escrow-feedback.php', {
+      fetch(ajaxUrl, {
         method: 'POST',
         body: fd,
         credentials: 'same-origin',
         headers: { 'X-Requested-With': 'XMLHttpRequest' }
       })
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
+        .then(function(r) {
+          return r.text().then(function(text) {
+            try { return { ok: r.ok, data: JSON.parse(text) }; }
+            catch (e) { return { ok: false, data: { message: 'Lỗi kết nối. Kiểm tra đăng nhập hoặc thử lại.' } }; }
+          });
+        })
+        .then(function(o) {
           btn.disabled = false;
-          if (resultEl) resultEl.innerHTML = data.success ? '<span class="text-success">' + (data.message || 'Đã gửi. Cảm ơn bạn!') + '</span>' : '<span class="text-danger">' + (data.message || 'Có lỗi. Thử lại sau.') + '</span>';
-          if (data.success && type === 'feedback' && document.querySelector('.js-escrow-message')) document.querySelector('.js-escrow-message').value = '';
+          var data = o.data;
+          var msg = (data && data.message) ? data.message : 'Có lỗi. Thử lại sau.';
+          if (resultEl) resultEl.innerHTML = (data && data.success) ? '<span class="text-success">' + msg + '</span>' : '<span class="text-danger">' + msg + '</span>';
+          if (data && data.success && type === 'feedback' && document.querySelector('.js-escrow-message')) document.querySelector('.js-escrow-message').value = '';
         })
         .catch(function() {
           btn.disabled = false;

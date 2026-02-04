@@ -1,11 +1,11 @@
 <?php
-/* Smarty version 4.3.4, created on 2025-09-29 06:03:08
+/* Smarty version 4.3.4, created on 2025-11-06 19:05:14
   from '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/images/svg/friends.svg' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '4.3.4',
-  'unifunc' => 'content_68da211c809267_79558862',
+  'unifunc' => 'content_690cf16ae2c0e5_96072365',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
@@ -20,7 +20,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   array (
   ),
 ),false)) {
-function content_68da211c809267_79558862 (Smarty_Internal_Template $_smarty_tpl) {
+function content_690cf16ae2c0e5_96072365 (Smarty_Internal_Template $_smarty_tpl) {
 echo '<?'; ?>
 xml version="1.0" encoding="iso-8859-1"<?php echo '?>'; ?>
 

@@ -372,6 +372,11 @@
                   <span class="input-group-text"><i class="fas fa-envelope"></i></span>
                   <input type="text" class="form-control" name="user_email" value="{$data['user_email']}">
                 </div>
+                {if $data['user_phone']}
+                  <div class="form-text mt-2">
+                    <i class="fas fa-phone mr5"></i><strong>{__("Phone Number")}:</strong> {$data['user_phone']}
+                  </div>
+                {/if}
               </div>
             </div>
 
@@ -1603,7 +1608,7 @@
                       <option value="2">🥈 Silver - 27,000 VNĐ (Min: 1,000,000 VNĐ)</option>
                       <option value="3">🥇 Gold - 23,000 VNĐ (Min: 5,000,000 VNĐ)</option>
                       <option value="4">🏅 Platinum - 20,000 VNĐ (Min: 10,000,000 VNĐ)</option>
-                      <option value="5">🐀𳠠Diamond - 17,000 VNĐ (Min: 20,000,000 VNĐ)</option>
+                      <option value="5">💎 Diamond - 17,000 VNĐ (Min: 20,000,000 VNĐ)</option>
                       <option value="6">❤️‍🔥 Ruby - 14,000 VNĐ (Min: 35,000,000 VNĐ)</option>
                       <option value="7">🪐 Titan - 10,000 VNĐ (Min: 50,000,000 VNĐ)</option>
                       <option value="8">👑 Legend - 5,000 VNĐ (Min: 55,000,000 VNĐ)</option>

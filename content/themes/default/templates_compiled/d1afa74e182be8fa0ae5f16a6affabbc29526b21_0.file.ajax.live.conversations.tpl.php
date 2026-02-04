@@ -1,11 +1,11 @@
 <?php
-/* Smarty version 4.3.4, created on 2025-09-29 09:51:33
+/* Smarty version 4.3.4, created on 2025-11-06 14:08:50
   from '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/ajax.live.conversations.tpl' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '4.3.4',
-  'unifunc' => 'content_68da56a5651466_56366712',
+  'unifunc' => 'content_690cabf27cbf19_37953738',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
@@ -21,7 +21,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:__feeds_conversation.tpl' => 1,
   ),
 ),false)) {
-function content_68da56a5651466_56366712 (Smarty_Internal_Template $_smarty_tpl) {
+function content_690cabf27cbf19_37953738 (Smarty_Internal_Template $_smarty_tpl) {
 $_from = $_smarty_tpl->smarty->ext->_foreach->init($_smarty_tpl, $_smarty_tpl->tpl_vars['conversations']->value, 'conversation');
 $_smarty_tpl->tpl_vars['conversation']->do_else = true;
 if ($_from !== null) foreach ($_from as $_smarty_tpl->tpl_vars['conversation']->value) {

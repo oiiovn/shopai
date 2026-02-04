@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 4.3.4, created on 2025-09-29 06:03:15
+/* Smarty version 4.3.4, created on 2026-01-31 14:39:13
   from '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/__feeds_page.tpl' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '4.3.4',
-  'unifunc' => 'content_68da212323fa99_60171991',
+  'unifunc' => 'content_697e14110a3e15_38542750',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     '9165255aad1d8c4b7cc61bde069500d2a8fdcb90' => 
     array (
       0 => '/home/sho73359/domains/shop-ai.vn/public_html/content/themes/default/templates/__feeds_page.tpl',
-      1 => 1758369566,
+      1 => 1769870347,
       2 => 'file',
     ),
   ),
@@ -21,7 +21,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:__svg_icons.tpl' => 5,
   ),
 ),false)) {
-function content_68da212323fa99_60171991 (Smarty_Internal_Template $_smarty_tpl) {
+function content_697e14110a3e15_38542750 (Smarty_Internal_Template $_smarty_tpl) {
 if ($_smarty_tpl->tpl_vars['_tpl']->value == "box") {?>
   <li class="col-md-6 col-lg-3">
     <div class="ui-box <?php if ($_smarty_tpl->tpl_vars['_darker']->value) {?>darker<?php }?>">
@@ -45,13 +45,13 @@ if ($_smarty_tpl->tpl_vars['_search']->value) {?>?ref=qs<?php }?>"><?php echo $_
         <?php if ($_smarty_tpl->tpl_vars['_page']->value['page_verified'] == '1') {?>
           <span class="verified-badge" data-bs-toggle="tooltip" title='<?php echo __("Verified Page");?>
 '>
-            <?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"verified_badge",'width'=>"20px",'height'=>"20px"), 0, false);
+            <?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"verified_badge",'width'=>"15px",'height'=>"15px"), 0, false);
 ?>
           </span>
         <?php } elseif ($_smarty_tpl->tpl_vars['_page']->value['page_verified'] == '2') {?>
           <span class="verified-badge-gray" data-bs-toggle="tooltip" title='<?php echo __("Business Verified");?>
 '>
-            <?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"verified_badge_gray",'width'=>"20px",'height'=>"20px"), 0, true);
+            <?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"verified_badge_gray",'width'=>"15px",'height'=>"15px"), 0, true);
 ?>
           </span>
         <?php }?>
@@ -118,7 +118,7 @@ if ($_smarty_tpl->tpl_vars['_search']->value) {?>?ref=qs<?php }?>">
           <?php } else { ?>
             <button type="button" class="btn btn-sm btn-light rounded-pill js_like-page" data-id="<?php echo $_smarty_tpl->tpl_vars['_page']->value['page_id'];?>
 ">
-              <?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"plus",'class'=>"main-icon",'width'=>"20px",'height'=>"20px"), 0, true);
+              <?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"plus",'class'=>"main-icon",'width'=>"15px",'height'=>"15px"), 0, true);
 ?>
             </button>
           <?php }?>
@@ -134,13 +134,13 @@ if ($_smarty_tpl->tpl_vars['_search']->value) {?>?ref=qs<?php }?>"><?php echo $_
           <?php if ($_smarty_tpl->tpl_vars['_page']->value['page_verified'] == '1') {?>
             <span class="verified-badge" data-bs-toggle="tooltip" title='<?php echo __("Verified Page");?>
 '>
-              <?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"verified_badge",'width'=>"20px",'height'=>"20px"), 0, true);
+              <?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"verified_badge",'width'=>"15px",'height'=>"15px"), 0, true);
 ?>
             </span>
           <?php } elseif ($_smarty_tpl->tpl_vars['_page']->value['page_verified'] == '2') {?>
             <span class="verified-badge-gray" data-bs-toggle="tooltip" title='<?php echo __("Business Verified");?>
 '>
-              <?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"verified_badge_gray",'width'=>"20px",'height'=>"20px"), 0, true);
+              <?php $_smarty_tpl->_subTemplateRender('file:__svg_icons.tpl', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('icon'=>"verified_badge_gray",'width'=>"15px",'height'=>"15px"), 0, true);
 ?>
             </span>
           <?php }?>
